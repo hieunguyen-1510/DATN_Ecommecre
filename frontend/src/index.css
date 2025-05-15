@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Bebas+Neue&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.group:hover hr {
+  display: block;
+}
+
+* {
+  font-family: 'Outfit', sans-serif;
+}
+
+.bebas-neue {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Nếu cần Prata cho quote hoặc phần đặc biệt */
+.prata-regular {
+  font-family: 'Prata', serif;
+  font-weight: 400;
+  font-style: normal;
+}
