@@ -43,21 +43,31 @@ const addProduct = async (req, res) => {
 // Danh sách sản phẩm
 const listProducts = async (req, res) => {
   try {
-    console.log("Token từ API:", req.headers.authorization);
+    const { search = "", category = "", sortBy = "" } = req.query; 
+    const query = {};
+    
+    if (search) query.name = { $regex: search, $options: "i" };
+    if (category) query.category = category; 
+    if (req.query.status) query.status = req.query.status;
 
-    const { search = "" } = req.query;
-    const query = search ? { name: { $regex: search, $options: "i" } } : {};
+    let sortOptions = {}; // khoi tap sap xep
+    if(sortBy === "priceAsc"){
+      sortOptions.price = 1; // sap xep tang dan
+    } 
+    else if(sortBy === "priceDesc"){
+      sortOptions.price = -1; // sap xep giam dan
+    }
+    else{
+      sortOptions.createAt = -1; // sap xep moi nhat
+    }
 
-    // **Hiển thị toàn bộ sản phẩm** cho cả admin và user
-    const products = await productModel.find(query);
-
+    const products = await productModel.find(query).sort(sortOptions);
     res.json({ success: true, products, total: products.length });
   } catch (error) {
     console.error("Lỗi API:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 // Xóa sản phẩm
 const removeProduct = async (req, res) => {

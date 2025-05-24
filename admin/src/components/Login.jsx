@@ -23,7 +23,7 @@ const Login = ({ setToken }) => {
           localStorage.setItem("token", data.token); // luu token
         }
         else {
-          sessionStorage.setItem("token", data.token); // luu tam thoi ( het luu khi dong trinh duyet)
+          sessionStorage.setItem("token", data.token); // luu tam thoi 
         }
         // luu user name
         localStorage.setItem("username", data.name);
@@ -57,7 +57,7 @@ const Login = ({ setToken }) => {
   return (
     <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center relative"
-      style={{ backgroundImage: `url('/bg-login.jpg')` }}
+      style={{ backgroundImage: `url('https://t4.ftcdn.net/jpg/02/55/77/03/360_F_255770374_rbmJO9gkkIhMBcyVPc3iW016BCLDvcWc.jpg')` }}
     >
       {/* Overlay mờ nền */}
       <div className="absolute inset-0 bg-black/60 z-0" />
@@ -66,7 +66,7 @@ const Login = ({ setToken }) => {
       <div className="relative z-10 p-8 bg-white/10 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-md border border-white/20">
         <div className="text-center mb-6">
           <img
-            src="/admin-login.png"
+            src="https://www.shutterstock.com/image-vector/user-icon-vector-260nw-429103831.jpg"
             alt="Admin Logo"
             className="w-16 h-16 mx-auto mb-2"
           />

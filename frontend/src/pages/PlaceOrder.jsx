@@ -45,7 +45,7 @@ const PlaceOrder = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Sửa hàm checkPaymentStatus
+  // checkPaymentStatus
   const checkPaymentStatus = async () => {
     try {
       const response = await axios.get(
@@ -152,7 +152,7 @@ const PlaceOrder = () => {
         if (method === "COD") {
           navigate("/orders");
         } else if (method === "MOMO") {
-          console.log("Response từ backend:", response.data);
+          // console.log("Response từ backend:", response.data);
 
           // if (
           //   response.data.success &&
@@ -205,7 +205,7 @@ const PlaceOrder = () => {
               value={formData.fullname}
               className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               type="text"
-              placeholder="fullname"
+              placeholder="Full name..."
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -217,7 +217,7 @@ const PlaceOrder = () => {
               value={formData.email}
               className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               type="email"
-              placeholder="email"
+              placeholder="Email..."
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -231,7 +231,7 @@ const PlaceOrder = () => {
               value={formData.phonenumber}
               className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               type="number"
-              placeholder="phonenumber"
+              placeholder="Phone Number..."
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -242,7 +242,7 @@ const PlaceOrder = () => {
               value={formData.address}
               className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               type="text"
-              placeholder="address"
+              placeholder="Address..."
             />
           </div>
           <div className="flex gap-3">
@@ -257,7 +257,7 @@ const PlaceOrder = () => {
                 value={formData.ward}
                 className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 type="text"
-                placeholder="ward"
+                placeholder="Ward..."
               />
             </div>
             <div className="flex flex-col gap-1 w-full">
@@ -271,7 +271,7 @@ const PlaceOrder = () => {
                 value={formData.district}
                 className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 type="text"
-                placeholder="district"
+                placeholder="District..."
               />
             </div>
           </div>
@@ -286,7 +286,7 @@ const PlaceOrder = () => {
               value={formData.city}
               className="border border-gray-300 rounded-lg py-2.5 px-4 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               type="text"
-              placeholder="city"
+              placeholder="City..."
             />
           </div>
         </div>
@@ -341,7 +341,7 @@ const PlaceOrder = () => {
             >
               <img
                 className="h-6 w-6"
-                src={assets.atm}
+                src={assets.vnpay}
                 alt="Biểu tượng Ngân hàng"
               />
               <span className="text-gray-800 font-medium">

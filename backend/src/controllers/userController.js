@@ -88,10 +88,21 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ message: "ID người dùng không hợp lệ!" });
     }
 
-    let updateData = { name, email };
+    // Kiểm tra user tồn tại
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng!" });
+    }
 
-    if (role) {
-      // Validate role ID
+    // Chuẩn bị data update
+    const updateData = { 
+      name: name || user.name,
+      email: email || user.email,
+      role: user.role 
+    };
+
+    // Nếu có gửi role (kể cả null hoặc chuỗi rỗng)
+    if (role !== undefined) {
       if (!mongoose.Types.ObjectId.isValid(role)) {
         return res.status(400).json({ message: "ID vai trò không hợp lệ!" });
       }
@@ -109,10 +120,6 @@ const updateUser = async (req, res) => {
       .select("-password")
       .populate("role");
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "Không tìm thấy người dùng!" });
-    }
-
     res.status(200).json({
       message: "Cập nhật thành công!",
       data: updatedUser,
@@ -125,7 +132,6 @@ const updateUser = async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 };
-
 
 // delete user
 const deleteUser = async (req, res) => {

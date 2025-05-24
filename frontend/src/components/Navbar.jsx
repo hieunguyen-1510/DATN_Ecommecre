@@ -7,7 +7,15 @@ import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const {setShowSearch,getCartCount,navigate,token,setToken,setCartItems,user} = useContext(ShopContext);
+  const {
+    setShowSearch,
+    getCartCount,
+    navigate,
+    token,
+    setToken,
+    setCartItems,
+    user,
+  } = useContext(ShopContext);
 
   const logout = () => {
     toast.success("Bạn đã đăng xuất thành công!");

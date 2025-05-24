@@ -1,23 +1,96 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Bebas+Neue&display=swap');
+/* Định nghĩa font Be Vietnam Pro Regular */
+@font-face {
+  font-family: "Be Vietnam Pro";
+  src: url("/fonts/be-vietnam-pro-v11-vietnamese-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Định nghĩa font viết tay SVN-DancingScript */
+@font-face {
+  font-family: "SVN-DancingScript";
+  src: url("/fonts/SVN-DancingScript-Regular.woff2") format("woff2"),
+    url("/fonts/SVN-DancingScript-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Định nghĩa font Lexend (giữ lại để dùng cho mô tả dài nếu cần) */
+@font-face {
+  font-family: "Lexend";
+  src: url("/fonts/Lexend-Thin.woff2") format("woff2"),
+    url("/fonts/Lexend-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lexend";
+  src: url("/fonts/Lexend-Regular.woff2") format("woff2"),
+    url("/fonts/Lexend-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom styles */
+html {
+  font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+}
+
+/* Font và kích thước cho banner */
+.banner-title {
+  font-family: "SVN-DancingScript", cursive;
+  @apply font-normal text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide;
+}
+
+.banner-subtitle {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply font-medium text-gray-100 text-sm sm:text-base md:text-lg leading-relaxed;
+}
+
+/* Font cho các thành phần khác */
+.contact-title {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply text-xl sm:text-xl md:text-xl font-bold text-gray-900 mb-6;
+}
+
+.contact-info {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply text-gray-600 text-base sm:text-sm;
+}
+
+.form-label {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply text-gray-700 font-medium mb-2;
+}
+
+.form-input {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 text-sm;
+}
+
+.cta-button {
+  font-family: "Be Vietnam Pro", sans-serif;
+  @apply w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300 text-base sm:text-sm;
+}
+
+/* Hiệu ứng hover cho CTA */
+.cta-button:hover {
+  @apply scale-105 shadow-lg;
+}
+
 a.group:hover hr {
-  display: block;
+  @apply block;
 }
 
-* {
-  font-family: 'Outfit', sans-serif;
-}
-
-.bebas-neue {
-  font-family: 'Bebas Neue', sans-serif;
-}
-
-/* Nếu cần Prata cho quote hoặc phần đặc biệt */
-.prata-regular {
-  font-family: 'Prata', serif;
-  font-weight: 400;
-  font-style: normal;
+/* Class font-dancing nếu cần dùng ở nơi khác */
+.font-dancing {
+  font-family: "SVN-DancingScript", cursive;
 }

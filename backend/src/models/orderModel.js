@@ -15,10 +15,11 @@ const orderSchema = new mongoose.Schema({
   ],
   totalAmount: { type: Number, required: true },
   deliveryFee: { type: Number, default: 0 }, 
-  status: { type: String, default: "Chờ xử lý" },
+  status: { type: String, default: "Order Placed" }, 
+  cancelReason: { type: String }, // <-- THÊM DÒNG NÀY
   createdAt: { type: Date, default: Date.now },
 });
 
-const Order = mongoose.models.Order ||mongoose.model("Order", orderSchema);
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 
 export default Order;
