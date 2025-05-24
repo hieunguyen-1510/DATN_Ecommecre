@@ -18,6 +18,9 @@ import 'slick-carousel/slick/slick-theme.css';
 import BackToTop from "./components/BackToTop";
 import Profile from "./components/Profile";
 import ResetPassword from "./pages/ResetPassword";
+import MenProductsPage from "./pages/MenProductsPage";
+import WomenProductsPage from "./pages/WomenProductsPage";
+import KidsProductsPage from "./pages/KidsProductsPage";
 
 const App = () => {
   return (
@@ -27,6 +30,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/collection" element={<Collection />} />
+        <Route path="/men" element={<MenProductsPage />} />
+        <Route path="/women" element={<WomenProductsPage/>} />
+        <Route path="/kids" element={<KidsProductsPage/>} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/orders" element={<Orders />} />

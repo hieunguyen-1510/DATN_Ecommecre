@@ -3,32 +3,26 @@ import userModel from "../models/userModel.js";
 
 const adminAuth = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; 
-
-    if (!token) {
-      return res.status(401).json({ success: false, message: "Token không được cung cấp. Vui lòng đăng nhập." });
+    // Không cần decode lại token, sử dụng từ authUser
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, message: "Chưa xác thực người dùng" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-
-    // Kiem tra quyen truy cap
-    if (!decoded.role || (decoded.role !== "admin" && decoded.role !== "user")) {
+    // Kiểm tra quyền truy cập
+    if (req.user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Bạn không có quyền truy cập API này." });
     }
 
-    // neu la admin kiem tra xem co trong db
-    if (decoded.role === "admin") {
-      const admin = await userModel.findById(decoded.id);
-      if (!admin) {
-        return res.status(403).json({ success: false, message: "Admin không tồn tại." });
-      }
+    // Kiểm tra admin có tồn tại trong DB
+    const admin = await userModel.findById(req.user._id);
+    if (!admin) {
+      return res.status(403).json({ success: false, message: "Admin không tồn tại." });
     }
 
-    req.user = decoded;
-    next(); // chuyen tiep neu hop le
+    next();
   } catch (error) {
-    console.error("JWT Error:", error.message);
-    return res.status(401).json({ success: false, message: "Token không hợp lệ hoặc hết hạn. Vui lòng đăng nhập lại." });
+    console.error("Admin Auth Error:", error.message);
+    return res.status(500).json({ success: false, message: "Lỗi server khi xác thực admin!" });
   }
 };
 

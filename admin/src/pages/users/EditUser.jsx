@@ -10,7 +10,7 @@ const EditUser = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
-    role: "",
+    role: null, // Khởi tạo là null thay vì chuỗi rỗng
   });
   const [roles, setRoles] = useState([]);
   const [error, setError] = useState("");
@@ -20,28 +20,30 @@ const EditUser = () => {
     const fetchData = async () => {
       try {
         // Fetch roles
-        const rolesRes = await axios.get(`${backendUrl}/api/roles`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const [rolesRes, userRes] = await Promise.all([
+          axios.get(`${backendUrl}/api/roles`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }),
+          axios.get(`${backendUrl}/api/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          })
+        ]);
+
         setRoles(rolesRes.data.data);
-
-        // Fetch user data
-        const userRes = await axios.get(`${backendUrl}/api/users/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        // Lấy ID role từ user
+        
+        const userData = userRes.data.data;
         setUser({
-          name: userRes.data.data.name,
-          email: userRes.data.data.email,
-          role: userRes.data.data.role, // Lưu ID của role
+          name: userData.name,
+          email: userData.email,
+          role: userData.role?._id || userData.role, 
         });
       } catch (err) {
         setError("Không thể tải dữ liệu");
+        console.error("Fetch error:", err);
       }
     };
     fetchData();
@@ -50,14 +52,29 @@ const EditUser = () => {
   const handleSubmit = async (formData) => {
     setLoading(true);
     try {
-      await axios.put(`${backendUrl}/api/users/${id}`, formData, {
+      // Chỉ gửi các trường thay đổi
+      const dataToSend = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role // Không cần || null vì backend đã xử lý
+      };
+      
+      console.log("Sending data:", dataToSend); // Debug log
+      
+      const response = await axios.put(`${backendUrl}/api/users/${id}`, dataToSend, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      
+      console.log("Update response:", response.data); // Debug log
       navigate("/users");
     } catch (err) {
-      setError(err.response?.data?.message || "Cập nhật thất bại");
+      const errorMsg = err.response?.data?.message || 
+                      err.response?.data?.error || 
+                      "Cập nhật thất bại";
+      setError(errorMsg);
+      console.error("Update error:", err.response?.data || err.message);
     } finally {
       setLoading(false);
     }

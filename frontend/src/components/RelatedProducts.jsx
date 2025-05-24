@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShopContext } from '../context/ShopContext';
 import Title from './Title';
-import ProductsItem from './ProductsItem';
+import ProductCard from './ProductCard'; 
 
 const RelatedProducts = ({ category, subCategory }) => {
   const { products } = useContext(ShopContext);
@@ -12,9 +12,10 @@ const RelatedProducts = ({ category, subCategory }) => {
     // Lọc sản phẩm theo danh mục và danh mục con
     if (products.length > 0) {
       const filteredProducts = products.filter(
-        (item) => item.category === category && item.subCategory === subCategory
+        (item) => item.category === category && item.subCategory === subCategory && item._id
       );
-      setRelated(filteredProducts.slice(0, 5));
+      // Lấy tối đa 4 sản phẩm liên quan để hiển thị trong grid 4 cột
+      setRelated(filteredProducts.slice(0, 4)); 
     }
   }, [products, category, subCategory]);
 
@@ -29,32 +30,36 @@ const RelatedProducts = ({ category, subCategory }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="py-24 bg-white"
+     
+      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden" 
     >
-      <div className="container max-w-7xl mx-auto px-8">
+      <div className="container max-w-7xl mx-auto px-4">
         {/* Tiêu đề */}
-        <div className="text-center text-3xl py-2 bebas-neue text-black">
+        <div className="text-center pb-12"> {/* Đồng bộ padding bottom */}
           <Title text1="SẢN PHẨM" text2="LIÊN QUAN" />
         </div>
+        
         {/* Danh sách sản phẩm liên quan */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10">
-          {related.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative bg-white p-4 rounded-lg shadow-lg hover:scale-105 transition transform"
-            >
-              <ProductsItem id={item._id} name={item.name} image={item.image} price={item.price} />
-              {item.isNew && (
-                <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded shadow">
-                  New
-                </span>
-              )}
-            </motion.div>
-          ))}
-        </div>
+        {related.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10"> 
+            {related.map((item) => ( 
+              <motion.div
+                key={item._id} 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              
+                className="relative z-10" 
+              >
+                <ProductCard product={item} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-600 text-lg mt-8">
+            Không tìm thấy sản phẩm liên quan nào.
+          </div>
+        )}
       </div>
     </motion.div>
   );

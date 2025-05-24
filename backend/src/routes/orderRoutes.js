@@ -1,7 +1,6 @@
 import express from "express";
 import {
   placeOrder,
-  placeOrderVNPay,
   allOrders,
   userOrders,
   updateStatus,
@@ -15,15 +14,14 @@ import authUser from "../middleware/auth.js";
 const orderRouter = express.Router();
 
 // Admin Features
-orderRouter.post("/all", adminAuth, allOrders);
-orderRouter.post("/status", adminAuth, updateStatus);
+orderRouter.get('/all', authUser, adminAuth, allOrders);
+orderRouter.post("/status", authUser, adminAuth, updateStatus);
 
 // Get order detail
 orderRouter.get("/detail/:orderId", authUser, getOrderDetail);
 
 // Payment Features
 orderRouter.post("/place", authUser, placeOrder);
-orderRouter.post("/vnpay", authUser, placeOrderVNPay);
 
 // User Features
 orderRouter.get("/user-orders", authUser, userOrders);

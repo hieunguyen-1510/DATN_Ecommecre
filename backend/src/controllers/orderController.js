@@ -5,20 +5,29 @@ import Payment from "../models/paymentModel.js";
 import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
 import { createMomoPayment } from "../services/momo.Service.js";
+import { createVnpayPayment } from "../services/vnpay.Service.js";
 
-const generateTransactionId = (orderId) => {
-  return `TXN_${orderId}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+const generateTransactionId = () => {
+  return `COD${Date.now()}`;
 };
 
+// COD Payment
 const placeOrder = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { address, paymentMethod, items, totalAmount, deliveryFee = 0 } = req.body;
+    const {
+      address,
+      paymentMethod,
+      items,
+      totalAmount,
+      deliveryFee = 0,
+    } = req.body;
 
     if (!userId || !address || !paymentMethod || !items?.length) {
       return res.status(400).json({
         success: false,
-        message: "Thiếu thông tin userId, địa chỉ, phương thức thanh toán hoặc sản phẩm.",
+        message:
+          "Thiếu thông tin userId, địa chỉ, phương thức thanh toán hoặc sản phẩm.",
       });
     }
 
@@ -31,7 +40,9 @@ const placeOrder = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "Người dùng không tồn tại." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Người dùng không tồn tại." });
     }
 
     let calculatedSubtotal = 0;
@@ -59,7 +70,7 @@ const placeOrder = async (req, res) => {
 
     const finalAmount = calculatedSubtotal + deliveryFee;
 
-    if (Math.abs(totalAmount - finalAmount) > 1) { 
+    if (Math.abs(totalAmount - finalAmount) > 1) {
       return res.status(400).json({
         success: false,
         message: `Tổng số tiền không khớp. Client gửi: ${totalAmount}, Server tính: ${finalAmount}`,
@@ -88,51 +99,82 @@ const placeOrder = async (req, res) => {
       method: methodUpper,
       amount: finalAmount,
       status: methodUpper === "COD" ? "completed" : "pending",
-      transactionId, 
+      transactionId,
     });
 
     await newPayment.save();
     savedOrder.paymentId = newPayment._id;
     await savedOrder.save();
 
+    // MOMO Payment
     if (methodUpper === "MOMO") {
-  try {
-    const momoResult = await createMomoPayment({
-      orderId: savedOrder._id,
-      amount: finalAmount,
-      orderInfo: `Thanh toán đơn hàng ${savedOrder._id}`,
-    });
+      try {
+        const momoResult = await createMomoPayment({
+          orderId: savedOrder._id,
+          amount: finalAmount,
+          orderInfo: `Thanh toán đơn hàng ${savedOrder._id}`,
+        });
 
-    console.log("MoMo Result:", momoResult);
+        console.log("MoMo Result:", momoResult);
 
-    await Payment.findByIdAndUpdate(
-      newPayment._id,
-      {
-        transactionId: momoResult.requestId,
+        await Payment.findByIdAndUpdate(newPayment._id, {
+          transactionId: momoResult.requestId,
+        });
+
+        if (!momoResult.payUrl) {
+          throw new Error("MoMo không trả về payUrl");
+        }
+
+        newPayment.transactionId = momoResult.requestId || transactionId;
+        newPayment.momoRequest = momoResult;
+        await newPayment.save();
+
+        responseData = {
+          success: true,
+          payUrl: momoResult.payUrl,
+          orderId: savedOrder._id,
+        };
+      } catch (momoError) {
+        console.error("Lỗi gọi MoMo API:", momoError);
+        return res.status(500).json({
+          success: false,
+          message: "Không thể tạo thanh toán MoMo: " + momoError.message,
+        });
       }
-    );
-
-    if (!momoResult.payUrl) {
-      throw new Error("MoMo không trả về payUrl");
     }
 
-    newPayment.transactionId = momoResult.requestId || transactionId;
-    newPayment.momoRequest = momoResult;
-    await newPayment.save();
+    // Xử lý thanh toán VNPAY
+    if (methodUpper === "VNPAY") {
+      try {
+        const ipAddr = req.ip || req.connection.remoteAddress; // Lấy địa chỉ IP của client
+        const orderInfo = `Thanh toán đơn hàng ${savedOrder._id}`;
 
-    responseData = {
-      success: true,
-      payUrl: momoResult.payUrl,
-      orderId: savedOrder._id,
-    };
-  } catch (momoError) {
-    console.error("Lỗi gọi MoMo API:", momoError);
-    return res.status(500).json({
-      success: false,
-      message: "Không thể tạo thanh toán MoMo: " + momoError.message,
-    });
-  }
-}
+        const vnpayResult = await createVnpayPayment({
+          amount: finalAmount,
+          orderInfo,
+          bankCode,
+          ipAddr,
+        });
+
+        console.log("VNPay Result:", vnpayResult);
+        // Cập nhật thông tin thanh toán
+        newPayment.vnpayResponse = vnpayResult; // Lưu thông tin từ VNPay
+        await newPayment.save();
+
+        responseData = {
+          success: true,
+          payUrl: vnpayResult, // Trả về URL thanh toán
+          orderId: savedOrder._id,
+        };
+      } catch (vnpayError) {
+        console.error("Lỗi gọi VNPay API:", vnpayError);
+        return res.status(500).json({
+          success: false,
+          message: "Không thể tạo thanh toán VNPay: " + vnpayError.message,
+        });
+      }
+    }
+    // delete cart
     const cart = await Cart.findOneAndUpdate(
       { userId },
       { $set: { items: [] } },
@@ -153,42 +195,37 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// VNPay Payment
-const placeOrderVNPay = async (req, res) => {
-  try {
-    res.json({
-      success: true,
-      message: "Chuyển hướng đến VNPay",
-      redirectUrl: "#",
-    });
-  } catch (error) {
-    console.error("Lỗi VNPay:", error);
-    res.status(500).json({ success: false, message: "Lỗi thanh toán VNPay" });
-  }
-};
-
 // GET all orders
 const allOrders = async (req, res) => {
   try {
     // Kiểm tra kết nối MongoDB
     if (!mongoose.connection.readyState) {
-      return res.status(500).json({ success: false, message: "Không thể kết nối tới cơ sở dữ liệu" });
+      return res.status(500).json({
+        success: false,
+        message: "Không thể kết nối tới cơ sở dữ liệu",
+      });
     }
 
-    // Tìm tất cả đơn hàng 
+    // Xử lý cả GET và POST method
     const orders = await Order.find()
-      .populate("userId", "name email") 
-      .populate("items.productId")      
-      .sort({ createdAt: -1 });         
+      .populate("userId", "name email")
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
 
     if (!orders.length) {
-      return res.status(404).json({ success: false, message: "Không có đơn hàng nào." });
+      return res.status(404).json({
+        success: false,
+        message: "Không có đơn hàng nào.",
+      });
     }
 
     res.json({ success: true, orders });
   } catch (error) {
-    console.error("Lỗi lấy đơn hàng:", error.message); 
-    res.status(500).json({ success: false, message: "Lỗi server. Không thể lấy đơn hàng." });
+    console.error("Lỗi lấy đơn hàng:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server. Không thể lấy đơn hàng.",
+    });
   }
 };
 
@@ -199,19 +236,29 @@ const getOrderDetail = async (req, res) => {
 
     const order = await Order.findById(orderId)
       .populate({
-        path: "items.productId", 
-        model: "Product", 
+        path: "items.productId",
+        model: "Product",
       })
       .populate("paymentId")
       .populate("userId", "name email");
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy đơn hàng." });
     }
 
-    // Nếu không phải admin và không phải chủ đơn thì không cho xem
-    if (req.user.role !== "admin" && req.user.id !== order.userId._id.toString()) {
-      return res.status(403).json({ success: false, message: "Không có quyền truy cập đơn hàng này." });
+    // Nếu không phải admin và user
+    if (
+      req.user.role !== "admin" &&
+      req.user.id !== order.userId._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Không có quyền truy cập đơn hàng này.",
+        });
     }
 
     res.json({ success: true, order });
@@ -240,23 +287,23 @@ const getOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const order = await Order.findById(orderId).select("status");
-    
+
     if (!order) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Không tìm thấy đơn hàng." 
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy đơn hàng.",
       });
     }
-    
-    res.json({ 
-      success: true, 
-      status: order.status 
+
+    res.json({
+      success: true,
+      status: order.status,
     });
   } catch (error) {
     console.error("Lỗi lấy trạng thái đơn hàng:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Lỗi server" 
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
     });
   }
 };
@@ -264,22 +311,33 @@ const getOrderStatus = async (req, res) => {
 const cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
+    const { cancelReason } = req.body;
 
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy đơn hàng." });
     }
 
     if (req.user.id !== order.userId.toString()) {
-      return res.status(403).json({ success: false, message: "Không có quyền hủy đơn hàng này." });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền hủy đơn hàng này." });
     }
 
     if (order.status !== "Order Placed" && order.status !== "Processing") {
-      return res.status(400).json({ success: false, message: "Không thể hủy đơn hàng ở trạng thái hiện tại." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Không thể hủy đơn hàng ở trạng thái hiện tại.",
+        });
     }
 
     order.status = "Cancelled";
+    order.cancelReason = cancelReason; //
     await order.save();
 
     res.json({ success: true, message: "Hủy đơn hàng thành công.", order });
@@ -292,29 +350,84 @@ const cancelOrder = async (req, res) => {
 // Update order status
 const updateStatus = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: "Chỉ admin mới có quyền cập nhật trạng thái." });
-    }
-
     const { orderId, status } = req.body;
-    const validStatuses = ["Processing", "Shipped", "Delivered", "Cancelled", "Refunded"];
+    const validStatuses = [
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+      "Refunded",
+    ];
+
+    if (!orderId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu orderId hoặc status",
+      });
+    }
 
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ success: false, message: "Trạng thái không hợp lệ" });
+      return res.status(400).json({
+        success: false,
+        message: "Trạng thái không hợp lệ",
+      });
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(orderId, { status }, { new: true }).populate("items.productId");
-
-    if (!updatedOrder) {
-      return res.status(404).json({ success: false, message: "Không tìm thấy đơn hàng." });
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy đơn hàng.",
+      });
     }
 
-    res.json({ success: true, order: updatedOrder });
+    // Kiểm tra điều kiện chuyển trạng thái
+    if (
+      order.status === "Delivered" &&
+      ["Cancelled", "Refunded"].includes(status)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Không thể hủy hoặc hoàn tiền đơn đã giao",
+      });
+    }
+
+    // Cập nhật Order
+    order.status = status;
+    await order.save();
+
+    // Cập nhật Payment status tương ứng
+    let paymentStatus;
+    if (status === "Delivered") {
+      paymentStatus = "completed";
+    } else if (status === "Cancelled" || status === "Refunded") {
+      paymentStatus = "refunded";
+    } else {
+      paymentStatus = "pending";
+    }
+
+    await Payment.findOneAndUpdate({ orderId }, { status: paymentStatus });
+
+    res.json({
+      success: true,
+      message: "Cập nhật trạng thái thành công",
+      order: await Order.findById(orderId).populate("items.productId"),
+    });
   } catch (error) {
     console.error("Lỗi cập nhật trạng thái:", error);
-    res.status(500).json({ success: false, message: "Lỗi server" });
+    res.status(500).json({
+      success: false,
+      message: error.message || "Lỗi server khi cập nhật trạng thái",
+    });
   }
 };
 
-
-export {placeOrder,placeOrderVNPay,allOrders,userOrders, updateStatus,getOrderDetail,getOrderStatus,cancelOrder};
+export {
+  placeOrder,
+  allOrders,
+  userOrders,
+  updateStatus,
+  getOrderDetail,
+  getOrderStatus,
+  cancelOrder,
+};

@@ -13,6 +13,10 @@ import userListRouter from './src/routes/userRoutes.js';
 import reviewsRouter from './src/routes/reviewsRoutes.js';
 import orderRouter from './src/routes/orderRoutes.js';
 import roleRouter from './src/routes/roleRoutes.js';
+import inventoryRouter from './src/routes/inventoryRoutes.js';
+import discountRouter from './src/routes/discountRoutes.js';
+import reportRouter from './src/routes/reportRoutes.js';
+import bannerRouter from './src/routes/bannerRoutes.js';
 
 const app = express();
 
@@ -33,6 +37,10 @@ app.use('/api/payment',paymentRouter);
 app.use('/api/users',userListRouter);
 app.use('/api/roles',roleRouter);
 app.use('/api/orders',orderRouter);
+app.use('/api/inventory',inventoryRouter);
+app.use('/api/discounts',discountRouter);
+app.use('/api/banners',bannerRouter);
+app.use('/api/reports',reportRouter);
 app.get('/', (req, res) => {
     res.send('API Server working...');
 });

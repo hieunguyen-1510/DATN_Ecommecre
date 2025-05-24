@@ -5,35 +5,80 @@ import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { FaSpinner, FaEye, FaTimesCircle } from "react-icons/fa"; 
+import CancelConfirmationModal from "../components/CancelConfirmationModal"; 
 
 const Orders = () => {
-  const { backendUrl, token, currency } = useContext(ShopContext);
+  const { backendUrl, token, currency, navigate } = useContext(ShopContext);
   const [orders, setOrders] = useState([]);
-  const [loadingOrderId,setLoadingOrderId] = useState(null);
+  const [loadingOrderId, setLoadingOrderId] = useState(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null); 
 
-   // Hàm cập nhật trạng thái đơn hàng
+  // State để quản lý modal hủy đơn hàng
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancelId, setOrderToCancelId] = useState(null);
+
   const refreshOrderStatus = async (orderId) => {
-  try {
-    setLoadingOrderId(orderId);
-    // GET status
-    const { data } = await axios.get(
-      `${backendUrl}/api/orders/${orderId}/status`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    try {
+      setLoadingOrderId(orderId);
+      const { data } = await axios.get(
+        `${backendUrl}/api/orders/${orderId}/status`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // Update state
-    setOrders(prevOrders => 
-      prevOrders.map(order => 
-        order._id === orderId ? { ...order, status: data.status } : order
-      )
-    );
-    toast.success("Đã cập nhật trạng thái mới nhất!");
-  } catch (error) {
-    toast.error("Không thể cập nhật trạng thái");
-  } finally {
-    setLoadingOrderId(null);
-  }
-};
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId ? { ...order, status: data.status } : order
+        )
+      );
+      toast.success("Đã cập nhật trạng thái mới nhất!");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      toast.error("Không thể cập nhật trạng thái. Vui lòng thử lại.");
+    } finally {
+      setLoadingOrderId(null);
+    }
+  };
+
+  // Hàm mở modal xác nhận hủy
+  const handleCancelClick = (orderId) => {
+    setOrderToCancelId(orderId);
+    setShowCancelModal(true);
+  };
+
+  // Hàm thực hiện hủy đơn hàng sau khi xác nhận từ modal
+  const confirmCancelOrder = async (reason) => { 
+    if (!orderToCancelId) return; 
+
+    try {
+      setCancellingOrderId(orderToCancelId); 
+      setShowCancelModal(false); // Đóng modal 
+
+      const response = await axios.put(
+        `${backendUrl}/api/orders/cancel/${orderToCancelId}`, 
+        { cancelReason: reason }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order._id === orderToCancelId ? { ...order, status: 'Cancelled' } : order
+          )
+        );
+        toast.success("Đơn hàng đã được hủy thành công!");
+      } else {
+        toast.error(response.data.message || "Không thể hủy đơn hàng.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi hủy đơn hàng:", error);
+      toast.error("Có lỗi xảy ra khi hủy đơn hàng. Vui lòng thử lại.");
+    } finally {
+      setCancellingOrderId(null); 
+      setOrderToCancelId(null); 
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -47,12 +92,15 @@ const Orders = () => {
         });
         const data = await response.json();
         if (data.success) {
-          setOrders(data.orders);
+          const sortedOrders = data.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+          setOrders(sortedOrders);
         } else {
           console.error(data.message);
+          toast.error("Không thể tải danh sách đơn hàng.");
         }
       } catch (error) {
         console.error("Lỗi khi lấy đơn hàng:", error);
+        toast.error("Có lỗi xảy ra khi tải đơn hàng.");
       }
     };
 
@@ -61,96 +109,171 @@ const Orders = () => {
     }
   }, [backendUrl, token]);
 
- return (
-    <div className="border-t pt-16 bg-gray-50 min-h-[80vh] px-6">
-      <ToastContainer />
-      <div className="text-2xl mb-8 text-center">
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Delivered': return 'bg-green-500 text-green-600';
+      case 'Cancelled': return 'bg-red-500 text-red-600';
+      case 'Processing': return 'bg-blue-500 text-blue-600';
+      case 'Shipped': return 'bg-purple-500 text-purple-600';
+      default: return 'bg-yellow-500 text-yellow-600';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'Order Placed': return 'Đang chờ xử lý';
+      case 'Processing': return 'Đang xử lý';
+      case 'Shipped': return 'Đang giao hàng';
+      case 'Delivered': return 'Đã giao hàng';
+      case 'Cancelled': return 'Đã hủy';
+      default: return 'Không xác định';
+    }
+  };
+
+  const calculateOrderTotal = (orderItems) => {
+    return orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  };
+
+  const canCancelOrder = (status) => {
+    return status === 'Order Placed' || status === 'Processing';
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-16 px-4">
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      
+      <div className="text-center pb-12">
         <Title text1="ĐƠN" text2="HÀNG" />
       </div>
 
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-8">
         {orders.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">
-            Bạn chưa có đơn hàng nào.
-          </p>
+          <div className="text-center py-10 bg-white rounded-2xl shadow-xl">
+            <p className="text-gray-600 text-xl mb-6">Bạn chưa có đơn hàng nào.</p>
+            <button
+              onClick={() => navigate("/collection")}
+              className="inline-block px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
+              Tiếp tục mua sắm
+            </button>
+          </div>
         ) : (
           orders.map((order) => (
-            <div
+            <motion.div
               key={order._id}
-              className="py-4 border-t border-b bg-white shadow-md text-gray-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 rounded-lg hover:shadow-lg transition-shadow"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300"
             >
-              <div className="flex items-start gap-4 text-sm">
+              {/* Order Header */}
+              <div className="border-b border-gray-200 pb-4 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <h3 className="text-xl font-bold text-gray-900">
+                  Mã đơn hàng: <span className="text-orange-600">{order._id.substring(0, 8).toUpperCase()}</span>
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Ngày đặt: <span className="font-semibold">{dayjs(order.date).format("DD [tháng] MM,YYYY")}</span> 
+                </p>
+              </div>
+
+              {/* Order Items List */}
+              <div className="space-y-4 mb-6">
                 {order.items.map((item) => (
-                  <div key={item._id} className="flex items-start gap-4">
-                    <img
-                      src={item.productId.image[0]}
-                      className="w-16 sm:w-20 rounded-lg border border-gray-200"
-                      alt={item.productId.name}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <p className="sm:text-base font-semibold text-gray-900">
-                        {item.productId.name}
+                  <div key={item._id} className="flex items-center gap-4 border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                    {item.productId ? (
+                      <img
+                        src={item.productId.image?.[0] || 'https://placehold.co/80x100/E0E0E0/6C6C6C?text=No+Image'}
+                        className="w-20 h-24 object-cover rounded-lg border border-gray-200"
+                        alt={item.productId.name || 'Sản phẩm'}
+                        onError={(e) => { e.target.src = 'https://placehold.co/80x100/E0E0E0/6C6C6C?text=No+Image'; }}
+                      />
+                    ) : (
+                      <img
+                        src="https://placehold.co/80x100/E0E0E0/6C6C6C?text=No+Image"
+                        className="w-20 h-24 object-cover rounded-lg border border-gray-200"
+                        alt="Sản phẩm đã bị xóa"
+                      />
+                    )}
+                    <div className="flex flex-col flex-grow">
+                      <p className="text-base font-semibold text-gray-900">
+                        {item.productId?.name || 'Sản phẩm đã bị xóa'}
                       </p>
-                      <p className="text-red-600 font-semibold">
-                        {item.price.toLocaleString("vi-VN")} {currency}
-                      </p>
-                      <p className="text-gray-600">Số lượng: {item.quantity}</p>
-                      <p className="text-gray-600">Kích thước: {item.size}</p>
-                      <p className="text-gray-600">
-                        Ngày đặt:{" "}
-                        <span className="text-gray-400">
-                          {dayjs(order.date).format("DD [tháng] MM, YYYY")}
-                        </span>
+                      <p className="text-gray-600 text-sm">Size: {item.size}</p>
+                      <p className="text-gray-600 text-sm">Số lượng: {item.quantity}</p>
+                      <p className="text-orange-500 font-bold text-base mt-1">
+                        {(item.price * item.quantity).toLocaleString("vi-VN")} {currency}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
-              {/* Trạng thái và nút theo dõi đơn hàng */}
-              <div className="md:w-1/2 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${
-                    order.status === "Delivered" ? "bg-green-500" :
-                    order.status === "Cancelled" ? "bg-red-500" : 
-                    "bg-yellow-500"
-                  }`}></span>
-                  <p className={`text-sm ${
-                    order.status === "Delivered" ? "text-green-600" :
-                    order.status === "Cancelled" ? "text-red-600" : 
-                    "text-yellow-600"
-                  }`}>
-                    {{
-                      'Order Placed': 'Đang chờ xử lý',
-                      'Processing': 'Đang xử lý',
-                      'Shipped': 'Đang giao hàng',
-                      'Delivered': 'Đã giao hàng',
-                      'Cancelled': 'Đã hủy'
-                    }[order.status]}
+
+              {/* Order Summary & Actions */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-3">
+                  <span className={`w-4 h-4 rounded-full ${getStatusColor(order.status).split(' ')[0]}`}></span>
+                  <p className={`font-semibold text-lg ${getStatusColor(order.status).split(' ')[1]}`}>
+                    Trạng thái: {getStatusText(order.status)}
                   </p>
                 </div>
-
-                <button 
-                  onClick={() => refreshOrderStatus(order._id)}
-                  disabled={loadingOrderId === order._id}
-                  className="border border-blue-500 text-blue-500 px-4 py-2 
-                    text-sm rounded-lg hover:bg-blue-50 flex items-center gap-2
-                    disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loadingOrderId === order._id ? (
-                    <>
-                      <div className="animate-spin h-4 w-4 border-2 border-blue-500 
-                        border-t-transparent rounded-full"></div>
-                      Đang cập nhật...
-                    </>
-                  ) : (
-                    "Theo dõi đơn hàng"
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <p className="text-xl font-bold text-gray-900">
+                    Tổng cộng: <span className="text-orange-600">{calculateOrderTotal(order.items).toLocaleString("vi-VN")} {currency}</span>
+                  </p>
+                  
+                  {/* Cancel Order Button */}
+                  {canCancelOrder(order.status) && (
+                    <button
+                      onClick={() => handleCancelClick(order._id)} 
+                      disabled={cancellingOrderId === order._id}
+                      className="px-6 py-3 bg-red-500 text-white font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {cancellingOrderId === order._id ? (
+                        <>
+                          <FaSpinner className="animate-spin w-4 h-4" />
+                          Đang hủy...
+                        </>
+                      ) : (
+                        <>
+                          <FaTimesCircle className="w-4 h-4" />
+                          Hủy đơn hàng
+                        </>
+                      )}
+                    </button>
                   )}
-                </button>
+
+                  {/* Track Order Button */}
+                  <button
+                    onClick={() => refreshOrderStatus(order._id)}
+                    disabled={loadingOrderId === order._id}
+                    className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loadingOrderId === order._id ? (
+                      <>
+                        <FaSpinner className="animate-spin w-4 h-4" />
+                        Đang cập nhật...
+                      </>
+                    ) : (
+                      <>
+                        <FaEye className="w-4 h-4" />
+                        Theo dõi đơn hàng
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))
         )}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      <CancelConfirmationModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)} 
+        onConfirm={confirmCancelOrder}
+        orderId={orderToCancelId} 
+      />
     </div>
   );
 };

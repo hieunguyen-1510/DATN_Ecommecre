@@ -1,49 +1,64 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const UserForm = ({
-  user,
+  user = {},
   roles = [],
   onSubmit,
   onCancel,
   isEdit = false,
-  error,
-  loading,
+  error = "",
+  loading = false,
 }) => {
-  // Khởi tạo formData với role là ID (nếu có)
+  // Khởi tạo form
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
+    name: "",
+    email: "",
     password: "",
-    role: user?.role || (roles.length > 0 ? roles[0]._id : ""),
+    role: "",
   });
 
   const [validationErrors, setValidationErrors] = useState({});
+  const navigate = useNavigate();
 
-  // Cập nhật formData khi roles thay đổi (tránh lỗi khởi tạo ban đầu)
+  //xu ly su kien nut huy bo
+  const handleCancel = () =>{
+    //Quay lai trang truoc do
+    navigate(-1);
+  }
+
+  // Khởi tạo giá trị
   useEffect(() => {
-    if (!isEdit && roles.length > 0 && !formData.role) {
-      setFormData((prev) => ({
+    if (isEdit && user) {
+      // Xử lý cho trường hợp chỉnh sửa
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        password: "", 
+        role: user.role?._id || user.role || "", 
+      });
+    } else if (!isEdit && roles.length > 0) {
+      // Xử lý cho trường hợp tạo mới
+      setFormData(prev => ({
         ...prev,
-        role: roles[0]._id,
+        role: roles[0]?._id || "", 
       }));
     }
-  }, [roles]);
+  }, [user, roles, isEdit]);
 
-  // Hàm chuyển đổi ID role sang tên để hiển thị
-  const getRoleNameById = (roleId) => {
-    const role = roles.find((r) => r._id === roleId);
-    return role ? role.name : "Đang tải...";
-  };
-
+  // Xử lý thay đổi giá trị form
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
-    setValidationErrors((prev) => ({ ...prev, [name]: "" }));
+    // Xóa lỗi validation khi người dùng nhập
+    setValidationErrors(prev => ({ ...prev, [name]: "" }));
   };
 
+  // Validate form trước khi submit
   const validateForm = () => {
     const errors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,20 +72,34 @@ const UserForm = ({
     if (!isEdit && formData.password.length < 6) {
       errors.password = "Mật khẩu phải có ít nhất 6 ký tự";
     }
+    if (!formData.role) {
+      errors.role = "Vui lòng chọn vai trò";
+    }
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  // Xử lý khi submit form
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData); // Gửi role ID
+      // Chuẩn bị dữ liệu để gửi đi
+      const submitData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        ...(!isEdit && { password: formData.password }), 
+        role: formData.role, 
+      };
+
+      // console.log("Form data to submit:", submitData); 
+      onSubmit(submitData);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+      {/* Hiển thị lỗi chung */}
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
           {error}
@@ -78,13 +107,14 @@ const UserForm = ({
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Tên */}
+        {/* Trường tên */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             Tên *
           </label>
           <input
             type="text"
+            id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -98,13 +128,14 @@ const UserForm = ({
           )}
         </div>
 
-        {/* Email */}
+        {/* Trường email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email *
           </label>
           <input
             type="email"
+            id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -114,27 +145,26 @@ const UserForm = ({
             placeholder="Nhập địa chỉ email"
           />
           {validationErrors.email && (
-            <p className="text-red-500 text-sm mt-1">
-              {validationErrors.email}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{validationErrors.email}</p>
           )}
         </div>
 
-        {/* Mật khẩu (chỉ hiển thị khi thêm mới) */}
+        {/* Trường mật khẩu (chỉ hiển thị khi tạo mới) */}
         {!isEdit && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Mật khẩu *
             </label>
             <input
               type="password"
+              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-md ${
                 validationErrors.password ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Nhập mật khẩu"
+              placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
             />
             {validationErrors.password && (
               <p className="text-red-500 text-sm mt-1">
@@ -144,54 +174,82 @@ const UserForm = ({
           </div>
         )}
 
-        {/* Vai trò */}
+        {/* Trường vai trò */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
             Vai trò *
           </label>
           <select
+            id="role"
             name="role"
-            value={formData.role}
+            value={formData.role || ""}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className={`w-full px-3 py-2 border rounded-md ${
+              validationErrors.role ? "border-red-500" : "border-gray-300"
+            } ${roles.length === 0 ? "bg-gray-100" : ""}`}
             disabled={roles.length === 0}
           >
-            {roles.length > 0 ? (
-              roles.map((role) => (
-                <option key={role._id} value={role._id}>
-                  {role.name}
-                </option>
-              ))
+            {roles.length === 0 ? (
+              <option value="">Đang tải vai trò...</option>
             ) : (
-              <option value="">Không có vai trò nào</option>
+              <>
+                <option value="">-- Chọn vai trò --</option>
+                {roles.map((role) => (
+                  <option key={role._id} value={role._id}>
+                    {role.name}
+                  </option>
+                ))}
+              </>
             )}
           </select>
+          {validationErrors.role && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors.role}</p>
+          )}
         </div>
 
-        {/* Nút submit và cancel */}
-        <div className="flex space-x-4">
+        {/* Nhóm nút hành động */}
+        <div className="flex space-x-4 pt-4">
           <button
             type="submit"
-            disabled={loading || roles.length === 0}
+            disabled={loading}
             className={`flex-1 py-2 px-4 rounded-md text-white font-medium ${
-              loading || roles.length === 0
-                ? "bg-gray-400"
-                : "bg-blue-500 hover:bg-blue-600"
+              loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
             }`}
           >
-            {loading ? "Đang xử lý..." : isEdit ? "Cập nhật" : "Thêm mới"}
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {isEdit ? "Đang cập nhật..." : "Đang tạo..."}
+              </span>
+            ) : isEdit ? "Cập nhật" : "Tạo mới"}
           </button>
+          
           <button
             type="button"
-            onClick={onCancel}
-            className="flex-1 py-2 px-4 rounded-md bg-gray-300 text-gray-700 font-medium hover:bg-gray-400"
+            onClick={handleCancel}
+            disabled={loading}
+            className="flex-1 py-2 px-4 rounded-md bg-gray-200 text-gray-700 font-medium hover:bg-gray-300"
           >
-            Hủy
+            Hủy bỏ
           </button>
         </div>
       </form>
     </div>
   );
+};
+
+// Prop types validation
+UserForm.propTypes = {
+  user: PropTypes.object,
+  roles: PropTypes.array.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  isEdit: PropTypes.bool,
+  error: PropTypes.string,
+  loading: PropTypes.bool,
 };
 
 export default UserForm;

@@ -1,25 +1,28 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShopContext } from '../context/ShopContext';
-import { assets } from '../assets/assets';
-import RelatedProducts from '../components/RelatedProducts';
-import ReviewProduct from '../components/ReviewProduct';
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ShopContext } from "../context/ShopContext";
+import RelatedProducts from "../components/RelatedProducts";
+import ReviewProduct from "../components/ReviewProduct";
+import { FaStar, FaCheck } from "react-icons/fa";
 
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
-  const [image, setImage] = useState('');
-  const [size, setSize] = useState('');
-  const [selectedStar, setSelectedStar] = useState(0);
+  const [mainImage, setMainImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [activeTab, setActiveTab] = useState("description");
 
   useEffect(() => {
     const product = products.find((item) => item._id === productId);
     if (product) {
       setProductData(product);
-      setImage(product.image[0]);
+      setMainImage(product.image[0]);
       document.title = `Street Style - ${product.name}`;
+    } else {
+      console.error("Không tìm thấy sản phẩm với ID:", productId);
+      setProductData(null);
     }
   }, [productId, products]);
 
@@ -33,108 +36,224 @@ const Product = () => {
       variants={sectionVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen bg-gray-100 py-24"
+      // Đồng bộ nền và padding với các section khác
+      className="min-h-screen bg-gray-50 py-16"
     >
-      <div className="container max-w-7xl mx-auto px-8">
+      <div className="container max-w-7xl mx-auto px-4">
+        {" "}
+        {/* Đồng bộ padding ngang */}
         <div className="flex flex-col-reverse lg:flex-row lg:gap-16 gap-8">
-          {/* Ảnh */}
+          {/* Product Images */}
           <motion.div
             variants={sectionVariants}
-            className="flex-1 flex flex-col-reverse lg:flex-row lg:gap-8"
+            className="flex-1 flex flex-col-reverse lg:flex-row lg:gap-8 h-full"
           >
-            <div className="flex lg:flex-col overflow-x-auto lg:overflow-y-scroll justify-between lg:w-[18%] w-full">
+            {/* Thumbnail Images */}
+            <div className="flex lg:flex-col overflow-x-auto lg:overflow-y-scroll justify-start lg:w-[18%] w-full gap-4 lg:gap-0">
+              {" "}
+              {/* Thêm gap, justify-start */}
               {productData.image.map((img, index) => (
                 <img
                   key={index}
-                  src={img}
-                  alt={productData.name}
-                  className="w-[30%] lg:w-full flex-shrink-0 rounded-lg shadow-md cursor-pointer mb-4 lg:mb-0"
-                  onClick={() => setImage(img)}
+                  src={
+                    img ||
+                    "https://placehold.co/100x133/E0E0E0/6C6C6C?text=No+Image"
+                  } // Placeholder cho thumbnail
+                  alt={`${productData.name} - ${index + 1}`}
+                  className={`w-24 h-32 object-cover rounded-xl shadow-md cursor-pointer mb-4 lg:mb-4 flex-shrink-0 
+                              ${
+                                mainImage === img
+                                  ? "border-4 border-yellow-500 scale-105"
+                                  : "border-2 border-gray-200 hover:border-yellow-300"
+                              } 
+                              transition-all duration-200`} // Style cho thumbnail
+                  onClick={() => setMainImage(img)}
                 />
               ))}
             </div>
-            <div className="w-full lg:w-[80%]">
+            {/* Main Product Image */}
+            <div className="w-full lg:w-[80%] h-full">
               <motion.img
-                whileHover={{ scale: 1.05 }}
-                src={image}
+                whileHover={{ scale: 1.02 }}
+                src={
+                  mainImage ||
+                  "https://placehold.co/600x800/E0E0E0/6C6C6C?text=No+Image"
+                } // Placeholder cho ảnh chính
                 alt={productData.name}
-                className="w-full h-auto rounded-lg shadow-lg"
+                className="w-full h-full object-cover rounded-2xl shadow-xl"
+                style={{ maxHeight: "600px" }}
               />
             </div>
           </motion.div>
 
-          {/* Thông tin */}
+          {/* Product Info */}
           <motion.div
             variants={sectionVariants}
-            className="flex-1 bg-white p-6 rounded-lg shadow-lg"
+            // Đồng bộ padding, bo góc, bóng và khoảng cách giữa các phần
+            className="flex-1 bg-white p-8 rounded-2xl shadow-xl space-y-6"
           >
-            <h1 className="font-bold text-3xl mt-2 bebas-neue text-black">{productData.name}</h1>
-            <div className="flex items-center gap-1 mt-2">
-              {[...Array(4)].map((_, i) => (
-                <img key={i} src={assets.star_icon} alt="Star" className="w-4" />
-              ))}
-              <img src={assets.star_dull_icon} alt="Star" className="w-4" />
-              <p className="pl-2 text-gray-600">(122 đánh giá)</p>
+            {/* Product Title */}
+            <h1 className="font-black text-2xl text-gray-900 leading-tight">
+              {" "}
+              {productData.name}
+            </h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-3">
+              {" "}
+              {/* Tăng gap */}
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <FaStar key={i} className="w-4 h-4 text-yellow-500" />
+                ))}
+              </div>
+              <span className="text-gray-700 text-sm font-medium">
+                (122 đánh giá)
+              </span>{" "}
             </div>
-            <p className="mt-5 text-3xl font-medium text-red-500">
-              {productData.price.toLocaleString('vi-VN')} {currency}
+
+            {/* Price */}
+            <p className="text-2xl font-black text-orange-500">
+              {" "}
+              {productData.price.toLocaleString("vi-VN")} {currency}
             </p>
-            <p className="mt-5 text-gray-600 md:w-4/5">{productData.description}</p>
-            <div className="flex flex-col gap-4 my-8">
-              <p className="text-gray-700">Chọn kích cỡ</p>
-              <div className="flex gap-3">
-                {productData.sizes.map((item, index) => (
+
+            {/* Description */}
+            <p className="text-gray-700 leading-relaxed text-base">
+              {" "}
+              {/* Đổi màu, tăng line-height, kích thước */}
+              {productData.description ||
+                "Áo thun oversize giặt acid loang jổ, như bức tranh đường phố sống động. Thoải mái, nổi loạn - chuẩn gu Việt!"}
+            </p>
+
+            {/* Size Selection */}
+            <div className="pt-4">
+              <h3 className="font-bold text-gray-900 text-base mb-4">
+                Chọn kích cỡ
+              </h3>{" "}
+              <div className="grid grid-cols-4 gap-3 md:gap-4">
+                {" "}
+                {productData.sizes?.map((size) => (
                   <button
-                    key={index}
-                    className={`border py-2 px-4 rounded-lg hover:bg-gradient-to-r hover:from-red-200 hover:to-red-500 ${
-                      item === size ? 'border-red-500' : 'border-gray-200'
-                    }`}
-                    onClick={() => setSize(item)}
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`py-3 px-2 rounded-lg border-2 text-base font-semibold transition-all duration-200 
+                                ${
+                                  selectedSize === size
+                                    ? "border-yellow-500 bg-yellow-100 text-yellow-800 shadow-md"
+                                    : "border-gray-300 text-gray-700 hover:border-yellow-400 hover:bg-gray-100"
+                                }`}
                   >
-                    {item}
+                    {size}
                   </button>
                 ))}
               </div>
             </div>
-            <button
-              className="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 hover:scale-105 transition transform"
-              onClick={() => addToCart(productData._id, size)}
+
+            {/* Add to Cart Button */}
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0px 10px 25px rgba(0,0,0,0.2)",
+              }} // Hiệu ứng hover
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.3 }}
+              className="w-full mt-6 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" // Đồng bộ style nút
+              onClick={() => addToCart(productData._id, selectedSize)}
+              disabled={!selectedSize}
             >
               THÊM VÀO GIỎ
-            </button>
-            <hr className="mt-8 lg:w-4/5 border-gray-200" />
-            <div className="text-sm text-gray-600 flex flex-col gap-1 mt-5">
-              <p>100% Sản phẩm chính hãng</p>
-              <p>Hỗ trợ thanh toán khi nhận hàng</p>
-              <p>Đổi/trả dễ dàng trong vòng 7 ngày</p>
+            </motion.button>
+
+            {/* Product Guarantees */}
+            <div className="space-y-3 pt-6">
+              {" "}
+              {/* Tăng space-y và padding top */}
+              <div className="flex items-center gap-3 text-gray-700 text-base font-medium">
+                {" "}
+                {/* Tăng gap, màu chữ, kích thước, độ đậm */}
+                <FaCheck className="w-6 h-6 text-green-600" />{" "}
+                {/* Tăng kích thước icon, đổi màu xanh đậm hơn */}
+                <span>100% Sản phẩm chính hãng</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-700 text-base font-medium">
+                <FaCheck className="w-6 h-6 text-green-600" />
+                <span>Hỗ trợ thanh toán khi nhận hàng</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-700 text-base font-medium">
+                <FaCheck className="w-6 h-6 text-green-600" />
+                <span>Đổi trả dễ dàng trong vòng 7 ngày</span>
+              </div>
             </div>
           </motion.div>
         </div>
-
-        {/* Mô tả chi tiết */}
+        {/* Product Details Tabs */}
         <motion.div
           variants={sectionVariants}
-          className="mt-20 bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-lg shadow-lg"
+          // Đồng bộ bo góc, bóng và padding
+          className="mt-20 bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          <div className="flex">
-            <b className="border px-5 py-3 bg-red-500 text-white rounded-tl-lg rounded-tr-lg">Mô tả</b>
-            <p className="border px-5 py-3 bg-gray-100 text-gray-600">Đánh giá (122)</p>
+          <div className="flex border-b border-gray-200">
+            {" "}
+            {/* Thêm border màu xám nhạt */}
+            <button
+              className={`px-8 py-4 font-semibold text-lg transition-colors duration-200 ${
+                // Tăng padding, font-size, font-weight
+                activeTab === "description"
+                  ? "text-yellow-600 border-b-2 border-yellow-500"
+                  : "text-gray-700 hover:text-yellow-500"
+              }`}
+              onClick={() => setActiveTab("description")}
+            >
+              Mô tả sản phẩm
+            </button>
+            <button
+              className={`px-8 py-4 font-semibold text-lg transition-colors duration-200 ${
+                activeTab === "reviews"
+                  ? "text-yellow-600 border-b-2 border-yellow-500"
+                  : "text-gray-700 hover:text-yellow-500"
+              }`}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Đánh giá
+            </button>
           </div>
-          <div className="flex flex-col gap-4 border border-gray-200 px-6 py-6 bg-white rounded-bl-lg rounded-br-lg">
-            <p>{productData.description}</p>
-            <p>Được làm từ chất liệu cao cấp, đảm bảo độ bền và sự thoải mái. Thiết kế mang đậm phong cách đường phố Việt Nam.</p>
+
+          <div className="p-8 text-gray-700 leading-relaxed space-y-5">
+            {" "}
+            {/* Tăng padding, line-height, space-y */}
+            {activeTab === "description" ? (
+              <div className="space-y-4">
+                <p>{productData.description}</p>
+                <p>
+                  Được làm từ chất liệu cao cấp, đảm bảo độ bền và sự thoải mái.
+                  Thiết kế mang đậm phong cách đường phố Việt Nam.
+                </p>
+                <ul className="list-disc pl-6 space-y-3">
+                  {" "}
+                  {/* Tăng pl và space-y */}
+                  <li>Chất liệu: {productData.material || "Cotton 100%"}</li>
+                  <li>Kiểu dáng: {productData.style || "Oversize"}</li>
+                  <li>Phong cách: {productData.type || "Streetwear"}</li>
+                  <li>Màu sắc: {productData.colors || "Đa dạng"}</li>
+                </ul>
+              </div>
+            ) : (
+              <ReviewProduct productId={productId} />
+            )}
           </div>
         </motion.div>
-
-        {/* Form đánh giá */}
-        <ReviewProduct productId={productId} />
-
-        {/* Sản phẩm liên quan */}
-        <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
+        {/* Related Products - Đã được cập nhật ở bước trước */}
+        <RelatedProducts
+          category={productData.category}
+          subCategory={productData.subCategory}
+        />
       </div>
     </motion.div>
   ) : (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      {" "}
+      {/* Đồng bộ nền */}
       <p className="text-gray-600 text-lg">Không tìm thấy sản phẩm</p>
     </div>
   );

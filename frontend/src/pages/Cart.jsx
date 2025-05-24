@@ -1,119 +1,188 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
-import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import { motion } from "framer-motion";
+import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, navigate } =
+    useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
     const tempData = [];
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
+    for (const productId in cartItems) {
+      for (const size in cartItems[productId]) {
+        if (cartItems[productId][size] > 0) {
           tempData.push({
-            _id: items,
-            size: item,
-            quantity: cartItems[items][item],
+            _id: productId,
+            size: size,
+            quantity: cartItems[productId][size],
           });
         }
       }
     }
     setCartData(tempData);
-    // console.log("Cart Data:", tempData); 
-  }, [cartItems]);
+  }, [cartItems, products]);
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  };
 
   return (
-    <div className="border-t pt-14 bg-gray-50 min-h-[80vh]">
-      {/* Title Section */}
-      <div className="text-3xl mb-8 text-center">
-        <Title text1="GIỎ" text2="HÀNG" />
-      </div>
+    <motion.div
+      variants={sectionVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-screen bg-gray-50 py-16"
+    >
+      <div className="container max-w-7xl mx-auto px-4">
+        {/* Title Section */}
+        <div className="text-center pb-12">
+          <Title text1="GIỎ" text2="HÀNG" />
+        </div>
 
-      {/* Cart Items Section */}
-      <div className="max-w-5xl mx-auto px-4">
         {cartData.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">Giỏ hàng của bạn đang trống.</p>
+          <div className="text-center py-10 bg-white rounded-2xl shadow-xl">
+            <p className="text-gray-600 text-xl mb-6">
+              Giỏ hàng của bạn đang trống.
+            </p>
+            <button
+              onClick={() => navigate("/collection")}
+              className="inline-block px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
+              Tiếp tục mua sắm
+            </button>
+          </div>
         ) : (
-          cartData.map((item, index) => {
-            const productData = products.find((product) => product._id === item._id);
-            if (!productData || !productData.image || productData.image.length === 0) {
-              console.log(`Product not found or missing image for _id: ${item._id}`); // Debug
-              return null; // Skip rendering if product or image is missing
-            }
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Cart Items Section */}
+            <div className="flex-1 bg-white rounded-2xl shadow-xl p-6">
+              {/* Header của bảng */}
+              <div className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] sm:grid-cols-[2.5fr_1fr_1fr_0.5fr] md:grid-cols-[3fr_1fr_1fr_0.5fr] gap-4 py-4 px-6 border-b-2 border-gray-200 font-semibold text-gray-700 uppercase text-sm md:text-base">
+                <p>Tên sản phẩm</p>
+                <p className="text-center">Số lượng</p>
+                <p className="text-right">Tổng tiền</p>
+                <p className="text-center">Xóa</p>
+              </div>
 
-            return (
-              <div
-                key={index}
-                className="py-4 border-b bg-white shadow-sm text-gray-700 grid grid-cols-[4fr_1fr_0.5fr] sm:grid-cols-[4fr_1.5fr_0.5fr] items-center gap-4 px-6 rounded-lg mb-4 hover:shadow-md transition-shadow"
-              >
-                {/* Product Info */}
-                <div className="flex items-center gap-4">
-                  <img
-                    src={productData.image[0] || assets.placeholder_image || "/placeholder.jpg"}
-                    alt={productData.name || "Product"}
-                    className="w-16 sm:w-20 rounded-lg border border-gray-200"
-                  />
-                  <div>
-                    <p className="text-base sm:text-lg font-bold text-gray-900">
-                      {productData.name}
+              {/* Danh sách sản phẩm trong giỏ */}
+              {cartData.map((item) => {
+                const productData = products.find(
+                  (product) => product._id === item._id
+                );
+                if (!productData) {
+                  console.warn(`Product data not found for ID: ${item._id}`);
+                  return null;
+                }
+
+                const itemTotalPrice = productData.price * item.quantity;
+
+                return (
+                  <div
+                    key={`${item._id}-${item.size}`}
+                    className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] sm:grid-cols-[2.5fr_1fr_1fr_0.5fr] md:grid-cols-[3fr_1fr_1fr_0.5fr] items-center gap-4 py-4 px-6 border-b border-gray-100 text-gray-800 text-sm md:text-base"
+                  >
+                    {/* Product Info */}
+                    <div className="flex items-center gap-4">
+                      <Link to={`/product/${item._id}`}>
+                        <img
+                          src={
+                            productData.image[0] ||
+                            "https://placehold.co/80x100/E0E0E0/6C6C6C?text=No+Image"
+                          }
+                          alt={productData.name}
+                          className="w-20 h-24 object-cover rounded-lg shadow-sm border border-gray-200"
+                        />
+                      </Link>
+                      <div>
+                        <Link
+                          to={`/product/${item._id}`}
+                          className="font-semibold text-gray-900 hover:text-yellow-600 transition-colors block mb-1"
+                        >
+                          {productData.name}
+                        </Link>
+                        <p className="text-gray-600 text-xs">
+                          Size: {item.size}
+                        </p>
+                        <p className="text-orange-500 font-bold text-sm mt-1">
+                          {productData.price.toLocaleString("vi-VN")} {currency}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() =>
+                          updateQuantity(item._id, item.size, item.quantity - 1)
+                        }
+                        disabled={item.quantity <= 1}
+                        className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <FaMinus className="w-4 h-4 text-gray-700" />
+                      </button>
+                      <input
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (value > 0 || e.target.value === "") {
+                            updateQuantity(item._id, item.size, value);
+                          }
+                        }}
+                        type="number"
+                        min={1}
+                        value={item.quantity}
+                        className="border border-gray-300 px-2 py-1 text-center w-12 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      />
+                      <button
+                        onClick={() =>
+                          updateQuantity(item._id, item.size, item.quantity + 1)
+                        }
+                        className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                      >
+                        <FaPlus className="w-4 h-4 text-gray-700" />
+                      </button>
+                    </div>
+
+                    {/* Total Price for Item */}
+                    <p className="text-right font-bold text-orange-600 text-base">
+                      {itemTotalPrice.toLocaleString("vi-VN")} {currency}
                     </p>
-                    <div className="flex items-center gap-3 mt-1 text-sm">
-                      <p className="text-red-600 font-semibold text-base">
-                        {productData.price.toLocaleString("vi-VN")} {currency}
-                      </p>
-                      <p className="px-3 py-1 border rounded-full bg-gray-100 text-gray-600">
-                        Size: {item.size}
-                      </p>
+
+                    {/* Delete Button */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => updateQuantity(item._id, item.size, 0)}
+                        className="p-2 rounded-full text-red-500 hover:bg-red-100 transition-colors"
+                        aria-label="Xóa sản phẩm"
+                      >
+                        <FaTrashAlt className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
-                </div>
+                );
+              })}
+            </div>
 
-                {/* Quantity Input */}
-                <input
-                  onChange={(e) =>
-                    e.target.value === "" || e.target.value === "0"
-                      ? null
-                      : updateQuantity(item._id, item.size, Number(e.target.value))
-                  }
-                  type="number"
-                  min={1}
-                  value={item.quantity}
-                  className="border px-3 py-1 text-center w-16 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-
-                {/* Delete Button */}
+            {/* Cart Total Section (Sidebar) */}
+            <div className="w-full lg:w-1/3">
+              <CartTotal />
+              <div className="w-full text-center mt-6">
                 <button
-                  onClick={() => updateQuantity(item._id, item.size, 0)}
-                  className="text-red-500 hover:text-red-700 transition-colors"
+                  className="w-full px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  onClick={() => navigate("/place-order")}
                 >
-                  <img src={assets.bin_icon} alt="Thùng rác" className="w-5 sm:w-6" />
+                  Tiến hành thanh toán
                 </button>
               </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Cart Total Section */}
-      {cartData.length > 0 && (
-        <div className="flex justify-end my-10 px-4">
-          <div className="w-full sm:w-[450px] bg-white p-6 rounded-lg shadow-md">
-            <CartTotal />
-            <div className="w-full text-center">
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm my-8 px-8 py-3 rounded-lg uppercase font-semibold transition-colors"
-                onClick={() => navigate("/place-order")}
-              >
-                Tiến hành thanh toán
-              </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

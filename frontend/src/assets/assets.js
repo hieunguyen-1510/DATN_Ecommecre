@@ -73,7 +73,6 @@ import p_img69 from "./p_img69.jpg";
 // giao dien
 import logo from "./logo.png";
 import hero_img from "./hero_img.png";
-import banner from "./banner.png";
 import cart_icon from "./cart_icon.png";
 import bin_icon from "./bin_icon.png";
 import dropdown_icon from "./dropdown_icon.png";
@@ -95,7 +94,7 @@ import store from "./store1.png";
 import store2 from "./store2.jpeg";
 import banner1 from "./banner1.jpg";
 import banner2 from "./banner2.png";
-import banner3 from "./banner3.jpg";
+import banner3 from "./banner3.png";
 import product1 from "./product1.jpg";
 import product2 from "./product2.jpg";
 import product3 from "./product3.jpg";
@@ -105,15 +104,21 @@ import product6 from "./product6.jpg";
 import cod from "./cod.png"
 import momo from "./momo.png"
 import atm from "./atm.jpg"
-import menFashion from "./menFashion.jpg"
-import womenFashion from "./womenFashion.jpg"
-import kidsFashion from "./kidsFashion.jpg"
+import menFashion from "./menFashion.avif"
+import womenFashion from "./womenFashion.avif"
+import kidsFashion from "./kidsFashion.avif"
 import profile from "./profile.jpg"
+import story_img from "./story_img.jpg"
+import mission_img from "./mission_img.jpg"
+import community_img from "./community_img.jpg"
+import creative_img from "./creative_img.jpg"
+import quality_img from "./quality_img.jpg"
+import banner4 from "./banner4.avif"
+import vnpay from "./vnpay.png"
 
 export const assets = {
   logo,
   hero_img,
-  banner,
   cart_icon,
   bin_icon,
   dropdown_icon,
@@ -148,7 +153,14 @@ export const assets = {
   menFashion,
   womenFashion,
   kidsFashion,
-  profile
+  profile,
+  story_img,
+  mission_img,
+  quality_img,
+  creative_img,
+  community_img,
+  banner4,
+  vnpay
 };
 
 export const products = [

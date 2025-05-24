@@ -132,12 +132,12 @@ const ShopContextProvider = (props) => {
 
   const getProductsData = async () => {
     try {
-      console.log("Gọi API lấy sản phẩm... Token:", token);
+      // console.log("Gọi API lấy sản phẩm... Token:", token);
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
-        console.log("Fetched Products:", response.data.products);
+        // console.log("Fetched Products:", response.data.products);
         setProducts(response.data.products);
       } else {
         toast.error(response.data.message || "Không thể lấy sản phẩm");
@@ -178,7 +178,7 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     if (token && token !== "") {
-      console.log("Gọi API với token:", token);
+      // console.log("Gọi API với token:", token);
       getUserCart();
       getProductsData();
     }

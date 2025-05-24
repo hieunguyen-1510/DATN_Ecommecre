@@ -1,13 +1,12 @@
-import React from 'react';
-import Slider from 'react-slick';
-import { assets } from '../assets/assets'; 
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import React from "react";
+import Slider from "react-slick";
+import { assets } from "../assets/assets";
+
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Hiệu ứng cho nội dung banner
 const contentVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -17,118 +16,161 @@ const contentVariants = {
   },
 };
 
-const CustomArrow = ({ style, onClick, direction }) => {
-  return (
-    <motion.div
-      className={`absolute top-1/2 transform -translate-y-1/2 ${
-        direction === "left" ? "left-4" : "right-4"
-      } flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out`}
-      style={{ ...style, zIndex: 1 }}
-      onClick={onClick}
-      whileHover={{
-        scale: 1.3,
-        rotate: direction === "left" ? -15 : 15,
-        boxShadow: "0px 0px 10px rgba(236, 72, 153, 0.5)",
-      }}
-      whileTap={{ scale: 0.9 }}
-      transition={{ duration: 0.2 }}
-    >
-      {direction === "left" ? (
-        <AiOutlineLeft className="text-orange-400 text-3xl drop-shadow-lg hover:text-pink-500" />
-      ) : (
-        <AiOutlineRight className="text-orange-400 text-3xl drop-shadow-lg hover:text-pink-500" />
-      )}
-    </motion.div>
-  );
-};
-
 const HeroSection = () => {
   const settings = {
-    dots: true,
+    dots: false,
+    arrows: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
-    prevArrow: <CustomArrow direction="left" />,
-    nextArrow: <CustomArrow direction="right" />,
+    autoplaySpeed: 5000,
+    prevArrow: <div className="slick-prev" />,
+    nextArrow: <div className="slick-next" />,
   };
 
   const defaultBanners = [
     {
       image: "https://via.placeholder.com/1200x600?text=Default+Banner",
-      title: "Thể Hiện Phong Cách",
+      title: "Express Your Style",
       highlight: "",
-      subtitle: "Khám phá ngay!",
+      subtitle: "Shop Now!",
     },
   ];
 
-  // Dữ liệu banners
   const banners = [
     {
-      image: assets?.banner1 || defaultBanners[0].image,
-      title: "Thể Hiện Phong Cách Đường Phố",
+      image: assets?.banner3 || defaultBanners[0].image,
+      title: "STREET STYLE VIBE",
       highlight: "",
-      subtitle: "Khám phá bộ sưu tập mới nhất lấy cảm hứng từ nhịp sống đô thị Việt Nam",
+      subtitle: "EXPLORE THE TREND",
+      cta: "SHOP NOW →",
+      textPosition: "left",
+      textColor: "text-white",
+      bgColor: "bg-gradient-to-r from-black/60 to-transparent",
+      titleFont: "font-dancing font-bold text-5xl uppercase tracking-widest mb-4",
+      highlightFont: "",
+      subtitleFont: "text-xl tracking-wider mb-8",
+      ctaStyle:
+        "bg-white hover:bg-amber-100 text-black font-bold py-3 px-8 rounded-full text-lg transition-all shadow-lg",
+      spacing: "flex flex-col items-start justify-center h-full ml-8 md:ml-16",
     },
     {
       image: assets?.banner2 || defaultBanners[0].image,
-      title: "Mùa Hè Ưu Đãi Lớn",
-      highlight: "50% OFF",
-      subtitle: "Cơ hội giảm giá lên đến 50% cho các sản phẩm được chọn",
+      title: "SUMMER SALE",
+      highlight: "30% OFF",
+      subtitle: "LIMITED TIME OFFER - ENDS SOON",
+      cta: "SHOP NOW →",
+      textPosition: "center",
+      textColor: "text-white",
+      bgColor: "bg-gradient-to-b from-black/60 to-black/30",
+      titleFont: "font-dancing font-bold text-5xl uppercase tracking-widest mb-2",
+      highlightFont: "font-black text-7xl my-6 text-amber-400",
+      subtitleFont: "text-xl tracking-wider mb-8",
+      ctaStyle:
+        "bg-white hover:bg-amber-100 text-black font-bold py-4 px-10 rounded-full text-lg transition-all shadow-lg",
+      spacing: "flex flex-col items-center justify-center h-full",
     },
     {
-      image: assets?.banner3 || defaultBanners[0].image,
-      title: "Thể Hiện Phong Cách Cá Nhân",
+      image: assets?.banner4 || defaultBanners[0].image,
+      title: "BE UNIQUE",
       highlight: "",
-      subtitle: "Hãy táo bạo và là chính bạn với bộ sưu tập độc đáo của chúng tôi",
+      subtitle: "SHOW YOUR EDGE",
+      cta: "DISCOVER MORE →",
+      textPosition: "right",
+      textColor: "text-white",
+      bgColor: "bg-gradient-to-l from-black/60 to-transparent",
+      titleFont: "font-dancing font-bold text-5xl uppercase tracking-widest mb-4",
+      highlightFont: "",
+      subtitleFont: "text-xl tracking-wider mb-8",
+      ctaStyle:
+        "bg-white hover:bg-amber-100 text-black font-bold py-3 px-8 rounded-full text-lg transition-all shadow-lg",
+      spacing: "flex flex-col items-end justify-center h-full mr-8 md:mr-16",
     },
   ];
 
   return (
     <div className="w-full relative">
+      <style>
+        {`
+          .slick-prev, .slick-next {
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+          }
+          .slick-prev:before, .slick-next:before {
+            font-size: 40px;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+          }
+          .slick-prev:hover:before, .slick-next:hover:before {
+            color: #000;
+            opacity: 1;
+          }
+          .slick-prev {
+            left: 25px;
+          }
+          .slick-next {
+            right: 25px;
+          }
+        `}
+      </style>
       <Slider {...settings}>
         {Array.isArray(banners) && banners.length > 0 ? (
           banners.map((banner, index) => (
             <div key={index}>
               <div
-                className="relative h-[60vh] min-h-[400px] bg-cover bg-center"
+                className="relative h-[80vh] min-h-[500px] bg-cover bg-center"
                 style={{
-                  backgroundImage: banner.image ? `url(${banner.image})` : "none",
+                  backgroundImage: banner.image
+                    ? `url(${banner.image})`
+                    : "none",
                   backgroundColor: banner.image ? "transparent" : "#f0f0f0",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               >
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center px-6 md:px-12">
+                {/* Gradient Overlay */}
+                <div className={`absolute inset-0 ${banner.bgColor}`}></div>
+
+                {/* Content Container */}
+                <div
+                  className={`relative ${banner.spacing} ${
+                    banner.textPosition === "center"
+                      ? "text-center"
+                      : banner.textPosition === "right"
+                      ? "text-right"
+                      : "text-left"
+                  } px-4`}
+                >
                   <motion.div
                     variants={contentVariants}
                     initial="hidden"
                     animate="visible"
+                    className={`${banner.textColor} max-w-2xl`}
                   >
-                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white">
+                    <h1 className={`${banner.titleFont} font-dancing`}>
                       {banner.title}
                       {banner.highlight && (
-                        <span className="text-orange-400"> {banner.highlight}</span>
+                        <span className={`${banner.highlightFont}`}>
+                          {" "}
+                          {banner.highlight}
+                        </span>
                       )}
                     </h1>
-                    <p className="text-lg sm:text-xl text-gray-100 mt-4 max-w-2xl">
+                    <p className={`${banner.subtitleFont}`}>
                       {banner.subtitle}
                     </p>
                     <motion.div
-                      className="mt-6"
-                      whileHover={{
-                        scale: 1.1,
-                        background: "linear-gradient(90deg, #fb923c, #ec4899)",
-                      }}
+                      whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ duration: 0.3 }}
+                      className="mt-8"
                     >
-                      <Link
-                        to="/collection"
-                        className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-400 to-pink-500 text-white font-semibold rounded-full hover:shadow-lg transition-transform"
-                      >
-                        Shop Now
-                        <AiOutlineRight className="ml-2" />
+                      <Link to="/collection" className={`${banner.ctaStyle}`}>
+                        {banner.cta}
                       </Link>
                     </motion.div>
                   </motion.div>
@@ -137,8 +179,8 @@ const HeroSection = () => {
             </div>
           ))
         ) : (
-          <div className="h-[60vh] min-h-[400px] flex items-center justify-center bg-gray-200">
-            <p className="text-gray-600 text-lg">Không có banner để hiển thị</p>
+          <div className="h-[50vh] min-h-[350px] flex items-center justify-center bg-gray-200">
+            <p className="text-gray-600 text-lg">No banners to display</p>
           </div>
         )}
       </Slider>

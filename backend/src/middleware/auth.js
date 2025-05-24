@@ -9,8 +9,14 @@ const authUser = async (req, res, next) => {
 
         const token = authHeader.split(" ")[1]; 
         try {
-            const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = token_decode;  
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            // Thêm thông tin user vào req.user
+            req.user = {
+                _id: decoded.userId || decoded.id,
+                id: decoded.userId || decoded.id, 
+                role: decoded.role,
+                name: decoded.name
+            };
             next();
         } catch (error) {
             console.error("Lỗi xác thực token:", error.message);

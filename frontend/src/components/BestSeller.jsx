@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import Title from "./Title";
-import ProductsItem from "./ProductsItem";
-import { ShopContext } from "../context/ShopContext";
+import Title from "./Title"; 
+import ProductCard from "./ProductCard"; 
+import { ShopContext } from "../context/ShopContext"; 
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi"; 
 
-// Hiệu ứng animation
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -23,87 +23,116 @@ const itemVariants = {
 const BestSeller = () => {
   const { products } = useContext(ShopContext);
   const [bestseller, setBestSeller] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const carouselRef = useRef(null);
 
   // Lọc sản phẩm bán chạy
   useEffect(() => {
-    const filtered = products
-      .filter((item) => item.bestseller === true)
-      .slice(0, 6); // Hiển thị 6 sản phẩm
+    const filtered = products.filter((item) => item.bestseller === true);
     setBestSeller(filtered);
   }, [products]);
+
+  // Hiển thị 3 sản phẩm mỗi lần
+  const visibleProducts = bestseller.slice(currentIndex, currentIndex + 3);
+
+  const nextSlide = () => {
+    if (currentIndex + 3 < bestseller.length) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="my-12 bg-gray-50 py-12 px-4 rounded-xl shadow-md"
+      
+      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden" 
     >
       {/* Tiêu đề */}
-      <div className="text-center pb-8">
-        <Title text1="SẢN PHẨM" text2="BÁN CHẠY" />
-        <p className="w-3/4 sm:w-1/2 m-auto text-sm md:text-base text-gray-600 mt-4 leading-relaxed">
-          Chinh phục đường phố với những item hot nhất từ cộng đồng Street Style.
+      <div className="text-center pb-12"> 
+        <Title text1="SẢN PHẨM" text2="BÁN CHẠY" /> 
+        <p className="w-3/4 sm:w-1/2 m-auto text-base md:text-base text-gray-700 mt-4 font-light leading-relaxed"> 
+          Khám phá những mặt hàng độc đáo, thể hiện cá tính riêng, và luôn dẫn đầu xu hướng từ cộng đồng Street Style.
         </p>
+      </div>
+
+      {/* Nút điều hướng */}
+      <div className="flex justify-between items-center absolute top-1/2 left-0 right-0 z-20 px-6 transform -translate-y-1/2"> 
+        <button
+          onClick={prevSlide}
+          disabled={currentIndex === 0}
+          className={`p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 ${
+            currentIndex === 0 ? "opacity-40 cursor-not-allowed" : "text-yellow-500" 
+          }`}
+        >
+          <FiChevronLeft className="text-3xl" /> 
+        </button>
+        <button
+          onClick={nextSlide}
+          disabled={currentIndex + 3 >= bestseller.length}
+          className={`p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 ${
+            currentIndex + 3 >= bestseller.length
+              ? "opacity-40 cursor-not-allowed"
+              : "text-yellow-500" 
+          }`}
+        >
+          <FiChevronRight className="text-3xl" /> 
+        </button>
       </div>
 
       {/* Hiển thị sản phẩm */}
       <motion.div
-        className="container max-w-7xl mx-auto"
+        className="container max-w-6xl mx-auto overflow-hidden px-4" 
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
+        ref={carouselRef}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {bestseller.map((item, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          {visibleProducts.map((item, index) => (
             <motion.div
               key={item._id || index}
               variants={itemVariants}
-              className="relative group rounded-xl bg-white border border-gray-200 shadow hover:shadow-lg overflow-hidden z-10"
-              whileHover={{
-                scale: 1.01,
-                boxShadow: "0px 10px 20px rgba(0,0,0,0.1)",
-              }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              
+              className="relative z-10" 
             >
-              {/* Wrapper để giữ click hoạt động */}
-              <div className="relative z-20">
-                <ProductsItem
-                  id={item._id}
-                  name={item.name}
-                  image={item.image}
-                  price={item.price}
-                />
-                {/* Badge HOT */}
-                <motion.span
-                  className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white px-3 py-1 text-xs rounded-full shadow pointer-events-none z-10"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                >
-                  🔥 Hot
-                </motion.span>
-              </div>
-              {/* Viền cam khi hover */}
-              <div className="absolute inset-0 border-2 border-transparent group-hover:border-orange-400 rounded-xl transition-colors duration-300 pointer-events-none z-0" />
+              <ProductCard product={item} /> 
+              
+              {/* Badge Hot - Đảm bảo hiển thị trên cùng */}
+              <motion.span
+                className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold px-4 py-1.5 text-xs rounded-full shadow-md pointer-events-none z-30 uppercase tracking-wider" // Tăng z-index lên z-30
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }} 
+              >
+                🔥 Hot
+              </motion.span>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
       {/* Nút CTA */}
-      <div className="text-center mt-10">
+      <div className="text-center mt-16 px-4">
         <motion.div
           whileHover={{
-            scale: 1.1,
-            background: "linear-gradient(90deg, #fb923c, #ec4899)",
+            scale: 1.05, 
+            boxShadow: "0px 10px 25px rgba(0,0,0,0.2)", 
           }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.3 }}
+          className="inline-block rounded-full overflow-hidden" 
         >
           <a
             href="/collection"
-            className="px-8 py-3 bg-gradient-to-r from-orange-400 to-pink-500 text-white font-semibold rounded-full uppercase hover:shadow-lg transition-transform"
+            className="inline-block px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" 
           >
             Xem thêm
           </a>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import { Route, Routes, Navigate, Outlet } from "react-router-dom";
-import Product from "./pages/products/Product";
+import ProductManagement from "./pages/products/ProductManagement";
 import Order from "./pages/orders/Order";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@ant-design/v5-patch-for-react-19";
 import AddProduct from "./pages/products/AddProduct";
 import EditProduct from "./pages/products/EditProduct";
@@ -14,9 +15,11 @@ import EditUser from "./pages/users/EditUser";
 import UserDetail from "./pages/users/UserDetail";
 import Reviews from "./pages/reviews/Reviews";
 import Payments from "./pages/payments/Payments";
-import Statistics from "./components/Statistics";
-import Inventory from "./pages/products/Inventory";
+import InventoryManagement from "./pages/products/InventoryManagement";
 import OrderDetail from "./pages/orders/OrderDetail";
+import BannerManagement from "./pages/banner/BannerManagement";
+import DiscountManagement from "./pages/discount/DiscountManagement";
+import StatisticDashboard from "./pages/statistics/StatisticsDashboard";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "đ";
@@ -30,7 +33,18 @@ const App = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route
@@ -48,11 +62,13 @@ const App = () => {
             )
           }
         >
-          <Route path="statistics" element={<Statistics token={token} />} />
+          <Route path="statistics" element={<StatisticDashboard token={token} />} />
           <Route path="add-product" element={<AddProduct token={token} />} />
           <Route path="edit-product/:id" element={<EditProduct token={token} />} />
-          <Route path="products" element={<Product token={token} />} />
-          <Route path="inventory" element={<Inventory token={token} />} />
+          <Route path="products" element={<ProductManagement token={token} />} />
+          <Route path="discounts" element={<DiscountManagement token={token} />} />
+          <Route path="banners" element={<BannerManagement token={token} />} />
+          <Route path="inventory" element={<InventoryManagement token={token} />} />
           <Route path="orders" element={<Order token={token} />} />
           <Route path="orders/:orderId" element={<OrderDetail token={token} />} />
           <Route path="users" element={<UserList token={token} />} />

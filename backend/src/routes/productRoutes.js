@@ -2,12 +2,15 @@ import express from 'express';
 import { addProduct, removeProduct, listProducts, singleProduct, updateProduct } from '../controllers/productController.js';
 import upload from '../middleware/multer.js';
 import adminAuth from '../middleware/adminAuth.js';
+import authUser from '../middleware/auth.js';
+import authAccess from '../middleware/authAccess.js';
 
 const productRouter = express.Router();
 
 // Thêm sản phẩm
 productRouter.post(
   '/add',
+  authUser,
   adminAuth,
   upload.fields([
     { name: "image1", maxCount: 1 },
@@ -21,6 +24,7 @@ productRouter.post(
 // Cập nhật sản phẩm
 productRouter.put(
   '/update/:id',
+  authUser,
   adminAuth,
   upload.fields([
     { name: "image1", maxCount: 1 },
@@ -35,9 +39,9 @@ productRouter.put(
 productRouter.delete('/:id', adminAuth, removeProduct);
 
 // Lấy danh sách sản phẩm
-productRouter.get('/list', adminAuth, listProducts);
+productRouter.get('/list',authUser,authAccess,listProducts);
 
 // Lấy chi tiết sản phẩm
-productRouter.get('/:id', adminAuth, singleProduct);
+productRouter.get('/:id',authUser,authAccess,singleProduct);
 
 export default productRouter;

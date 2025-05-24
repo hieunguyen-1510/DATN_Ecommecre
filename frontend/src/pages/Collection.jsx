@@ -1,299 +1,227 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
-import Title from "../components/Title";
-import ProductsItem from "../components/ProductsItem";
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
-  const [filterProducts, setFilterProducts] = useState([]);
-  const [showFilter, setShowFilter] = useState(false);
-  const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
-  const [sortType, setSortType] = useState("relavent");
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Toggle category filter
-  const toggleCategory = (e) => {
-    const value = e.target.value;
-    if (category.includes(value)) {
-      setCategory((prev) => prev.filter((item) => item !== value));
-    } else {
-      setCategory((prev) => [...prev, value]);
-    }
-  };
+  const collections = [
+    {
+      name: "LIMITED EDITION",
+      subtitle: "Xu hướng thời trang SS'23",
+      image: assets.menFashion,
+      path: "/men",
+      theme: "dark",
+      badge: "Mới",
+      productCount: 12,
+    },
+    {
+      name: "EXCLUSIVE LINEN",
+      subtitle: "Bộ sưu tập mùa hè 2024",
+      image: assets.womenFashion,
+      path: "/women",
+      theme: "light",
+      badge: "Bán chạy",
+      productCount: 24,
+    },
+    {
+      name: "BAROQUE GLAM",
+      subtitle: "Phong cách cổ điển hiện đại",
+      image: assets.kidsFashion,
+      path: "/kids",
+      theme: "dark",
+      badge: "Giảm 30%",
+      productCount: 8,
+    },
+  ];
 
-  // Toggle subcategory filter
-  const toggleSubCategory = (e) => {
-    const value = e.target.value;
-    if (subCategory.includes(value)) {
-      setSubCategory((prev) => prev.filter((item) => item !== value));
-    } else {
-      setSubCategory((prev) => [...prev, value]);
-    }
-  };
-
-  // Apply filters to products
-  const applyFilter = () => {
-    let productsCopy = [...products];
-    // console.log("Products before filter:", products.length);
-
-    // Debug sample product data
-    if (products.length > 0) {
-      console.log("Sample product:", {
-        category: products[0].category,
-        subCategory: products[0].subCategory,
-      });
-    }
-
-    // Filter by category
-    if (category.length > 0) {
-      // console.log("Category filter:", category);
-      productsCopy = productsCopy.filter((item) => {
-        const itemCategory = String(item.category || "").toLowerCase().trim();
-        console.log(`Product category: ${itemCategory}`); 
-        return category.some(
-          (cat) => String(cat).toLowerCase().trim() === itemCategory
-        );
-      });
-    }
-
-    // Filter by subcategory
-    if (subCategory.length > 0) {
-      // console.log("Applying subCategory filter:", subCategory);
-      productsCopy = productsCopy.filter((item) => {
-        const itemSubCategory = String(item.subCategory || "")
-          .toLowerCase()
-          .trim();
-        return subCategory.some(
-          (sub) => String(sub).toLowerCase().trim() === itemSubCategory
-        );
-      });
-    }
-    // console.log("Products after subCategory filter:", productsCopy.length);
-
-    // Filter by search query
-    if (showSearch && search) {
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    // console.log("Products after all filters:", productsCopy.length);
-
-    // Update filtered products
-    setFilterProducts(productsCopy);
-  };
-
-  // Sort products based on selected sort type
-  const sortProducts = () => {
-    let filteredProductsCopy = [...filterProducts];
-    switch (sortType) {
-      case "thấp-cao":
-        setFilterProducts(
-          filteredProductsCopy.sort((a, b) => a.price - b.price)
-        );
-        break;
-      case "cao-thấp":
-        setFilterProducts(
-          filteredProductsCopy.sort((a, b) => b.price - a.price)
-        );
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Trigger applyFilter when filtering conditions change
-  useEffect(() => {
-    applyFilter();
-  }, [category, subCategory, search, showSearch, products]);
-
-  // Trigger sortProducts when sortType or filtered products change
-  useEffect(() => {
-    if (filterProducts.length > 0) {
-      sortProducts();
-    }
-  }, [sortType]);
-
-  // Set default display of all products when the page loads
-  useEffect(() => {
-    if (products.length > 0 && filterProducts.length === 0) {
-      setFilterProducts([...products]);
-    }
-  }, [products]);
-
-  // Animation variants for sections
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800">
-      {/* Banner */}
-      <motion.div
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="relative h-64 bg-cover bg-center"
-        style={{ backgroundImage: `url(${assets.banner3})` }}
-      >
-        <div className="absolute inset-0 bg-gray-900 bg-opacity-60 flex flex-col items-center justify-center text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg bebas-neue">
-            Khám phá bộ sưu tập phong cách đường phố
-          </h1>
-          <p className="text-md md:text-lg text-gray-200 mt-2">
-            Định hình phong cách của bạn với thời trang đường phố Việt Nam chính
-            hiệu
-          </p>
+    <div className="mt-0 min-h-screen bg-white text-gray-900">
+      {/* ===== Breadcrumbs ===== */}
+      <nav className="bg-gray-50 py-3 px-4">
+        <div className="container max-w-7xl mx-auto text-sm">
+          <Link to="/" className="text-gray-600 hover:text-red-600">
+            Trang chủ
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="font-medium text-gray-900">Bộ sưu tập</span>
         </div>
-      </motion.div>
+      </nav>
 
-      {/* Main Content */}
-      <motion.div
+      {/* ===== Hero Section ===== */}
+      <motion.section
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="py-16"
+        className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white p-4"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.banner3})`,
+        }}
       >
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row gap-8">
-          {/* Filter Section */}
-          <div className="min-w-64 bg-white p-6 rounded-xl shadow-md">
-            <p
-              className="my-2 text-xl flex items-center cursor-pointer gap-2 bebas-neue text-black"
-              onClick={() => setShowFilter(!showFilter)}
+        <div className="container max-w-7xl mx-auto px-4 text-center z-10">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-3xl sm:text-5xl lg:text-3xl font-extrabold mb-4 drop-shadow-md"
+          >
+            BỘ SƯU TẬP
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-base sm:text-xl max-w-3xl mx-auto mb-8 drop-shadow-sm"
+          >
+            Khám phá các xu hướng thời trang mới nhất mùa hè 2025. Mỗi bộ sưu tập là một câu chuyện, một phong cách, mang đến cho bạn những lựa chọn độc đáo và đẳng cấp.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Link
+              to="/collection"
+              className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white py-3 px-8 rounded-full text-base font-medium transition-all duration-300 hover:scale-105 shadow-lg"
             >
-              BỘ LỌC
-              <img
-                src={assets.dropdown_icon}
-                className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
-                alt="dropdown"
-              />
-            </p>
+              Khám phá bộ sưu tập →
+            </Link>
+          </motion.div>
+        </div>
+      </motion.section>
 
-            {/* Debug information */}
-            {process.env.NODE_ENV === "development" && (
-              <div className="mb-2 text-xs text-gray-500">
-                <p>Lọc theo: {category.join(", ")}</p>
-                <p>Loại: {subCategory.join(", ")}</p>
-                <p>Sản phẩm: {filterProducts.length}</p>
-              </div>
-            )}
+      {/* ===== Main Content Container ===== */}
+      <div className="container max-w-7xl mx-auto px-4 sm:px-8 lg:px-14">
+        {/* ===== Filter Bar ===== */}
+        <div className="flex flex-wrap justify-center sm:justify-start items-center my-8 gap-2">
+          <button className="px-6 py-2 bg-gray-900 text-white rounded-full text-sm">
+            Tất cả
+          </button>
+          <button
+            onClick={() => navigate("/men")}
+            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+          >
+            Nam
+          </button>
+          <button
+            onClick={() => navigate("/women")}
+            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+          >
+            Nữ
+          </button>
+          <button
+            onClick={() => navigate("/kids")}
+            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+          >
+            Trẻ em
+          </button>
+        </div>
 
-            {/* Category Filter */}
-            <div
-              className={`border border-gray-200 bg-gray-50 pl-5 py-4 my-5 rounded-lg ${
-                showFilter ? "" : "hidden"
-              } sm:block`}
+        {/* ===== Collection Grid ===== */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+          {collections.map((collection, index) => (
+            <motion.div
+              key={collection.name}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
             >
-              <p className="mb-3 text-sm font-medium text-gray-700">DANH MỤC</p>
-              <div className="flex flex-col gap-2 text-sm text-gray-600">
-                {["Men", "Women", "Kids"].map((cat) => (
-                  <p key={cat} className="flex gap-2 items-center">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-red-500 rounded"
-                      value={cat}
-                      onChange={toggleCategory}
-                      checked={category.includes(cat)}
-                    />
-                    {cat}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* Subcategory Filter */}
-            <div
-              className={`border border-gray-200 bg-gray-50 pl-5 py-4 my-5 rounded-lg ${
-                showFilter ? "" : "hidden"
-              } sm:block`}
-            >
-              <p className="mb-3 text-sm font-medium text-gray-700">LOẠI</p>
-              <div className="flex flex-col gap-2 text-sm text-gray-600">
-                {["Street Tops", "Street Bottoms", "Hoodies", "Outerwear"].map(
-                  (sub) => (
-                    <p key={sub} className="flex gap-2 items-center">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 accent-red-500 rounded"
-                        value={sub}
-                        onChange={toggleSubCategory}
-                        checked={subCategory.includes(sub)}
-                      />
-                      {sub}
-                    </p>
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* Reset filter button */}
-            {(category.length > 0 || subCategory.length > 0) && (
-              <button
-                onClick={() => {
-                  setCategory([]);
-                  setSubCategory([]);
-                }}
-                className="w-full bg-gray-100 hover:bg-red-500 hover:text-white py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+              <Link
+                to={collection.path}
+                className="relative block group overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               >
-                Xóa bộ lọc
-              </button>
-            )}
-          </div>
-
-          {/* Product List */}
-          <div className="flex-1">
-            <div className="flex justify-between items-center text-base sm:text-2xl mb-8">
-              <Title text1="TẤT CẢ" text2="BỘ SƯU TẬP" />
-              <select
-                className="border-2 border-gray-200 bg-white text-sm px-4 py-2 rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-none"
-                onChange={(e) => setSortType(e.target.value)}
-                value={sortType}
-              >
-                <option value="relavent">Sắp xếp theo: Phù hợp</option>
-                <option value="thấp-cao">Sắp xếp theo: Giá thấp đến cao</option>
-                <option value="cao-thấp">Sắp xếp theo: Giá cao đến thấp</option>
-              </select>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filterProducts.length > 0 ? (
-                filterProducts.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: Math.min(index * 0.05, 0.3),
-                    }}
-                    className="relative bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+                {/* Badge */}
+                {collection.badge && (
+                  <div
+                    className={`absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-xs font-bold ${
+                      collection.badge.includes("Giảm")
+                        ? "bg-red-600 text-white"
+                        : collection.theme === "dark"
+                        ? "bg-white text-gray-900"
+                        : "bg-gray-900 text-white"
+                    }`}
                   >
-                    <ProductsItem
-                      id={item._id}
-                      name={item.name}
-                      image={item.image}
-                      price={item.price}
-                      className="p-4"
-                    />
-                    {item.isNew && (
-                      <span className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded-full shadow">
-                        Mới
-                      </span>
-                    )}
-                  </motion.div>
-                ))
-              ) : (
-                <p className="col-span-full text-center py-8 text-gray-500">
-                  Không tìm thấy sản phẩm phù hợp
-                </p>
-              )}
-            </div>
-          </div>
+                    {collection.badge}
+                  </div>
+                )}
+
+                {/* Image Container */}
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  {loading && (
+                    <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+                  )}
+                  <img
+                    src={collection.image}
+                    alt={`Bộ sưu tập ${collection.name} - ${collection.subtitle}`}
+                    className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+                      loading ? "opacity-0" : "opacity-100"
+                    }`}
+                    onLoad={() => setLoading(false)}
+                  />
+                </div>
+
+                {/* Gradient Overlay */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t ${
+                    collection.theme === "dark"
+                      ? "from-black/70 via-black/40 to-transparent"
+                      : "from-white/70 via-white/40 to-transparent"
+                  }`}
+                />
+
+                {/* Content */}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 p-6 ${
+                    collection.theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  <h3 className="text-2xl font-bold mb-1 group-hover:text-red-300 transition-colors duration-300">
+                    {collection.name}
+                  </h3>
+                  <p className="text-sm opacity-80 mb-2">{collection.subtitle}</p>
+                  <p className="text-sm">{collection.productCount} sản phẩm</p>
+                  <div className="mt-3 h-px w-0 bg-current transition-all duration-500 group-hover:w-16" />
+                </div>
+                {/* Hover CTA */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <span
+                    className={`inline-block border-2 ${
+                      collection.theme === "dark"
+                        ? "border-white hover:bg-white/20 text-white"
+                        : "border-gray-900 hover:bg-gray-900/10 text-gray-900"
+                    } px-6 py-2 text-sm font-medium rounded-full transition-all`}
+                  >
+                    KHÁM PHÁ NGAY
+                  </span>
+                </motion.div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
-      </motion.div>
+      </div>
+
+      {/* ===== Load More ===== */}
+      <div className="mt-16 text-center pb-12">
+        <button
+          onClick={() => navigate("/")}
+          className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3 rounded-full font-medium transition-all duration-300"
+        >
+          Xem thêm bộ sưu tập
+        </button>
+      </div>
     </div>
   );
 };
