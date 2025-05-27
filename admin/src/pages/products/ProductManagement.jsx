@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { backendUrl, currency } from "../../App";
+import { backendUrl, currency } from "../../App"; 
 import { toast } from "react-toastify";
 import {
   EditOutlined,
@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 const { Title, Text } = Typography;
 
-const Product = ({ token }) => {
+const ProductManagement = ({ token }) => {
   const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -199,7 +199,19 @@ const Product = ({ token }) => {
       render: (text) => <Tag color="blue">{text}</Tag>,
     },
     {
-      title: "Giá",
+      title: "Giá mua",
+      dataIndex: "purchasePrice", 
+      key: "purchasePrice",
+      width: 150,
+      align: "right",
+      render: (purchasePrice) => (
+        <Text className="text-gray-600">
+          {purchasePrice ? `${purchasePrice.toLocaleString()} ${currency}` : "N/A"}
+        </Text>
+      ),
+    },
+      {
+      title: "Giá bán",
       dataIndex: "price",
       key: "price",
       width: 150,
@@ -336,7 +348,13 @@ const Product = ({ token }) => {
                 <p className="text-gray-800">{selectedProduct.category}</p>
               </div>
               <div>
-                <Text strong>Giá:</Text>
+                <Text strong>Giá mua:</Text> {/* Thêm vào chi tiết sản phẩm */}
+                <p className="text-gray-600 font-medium">
+                  {selectedProduct.purchasePrice?.toLocaleString()} {currency}
+                </p>
+              </div>
+              <div>
+                <Text strong>Giá bán:</Text>
                 <p className="text-green-600 font-medium">
                   {selectedProduct.price?.toLocaleString()} {currency}
                 </p>
@@ -384,4 +402,4 @@ const Product = ({ token }) => {
   );
 };
 
-export default Product;
+export default ProductManagement;

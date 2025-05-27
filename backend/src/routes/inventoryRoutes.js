@@ -22,6 +22,6 @@ inventoryRouter.put('/:id/stock', authUser, updateStock);
 
 // Admin routes
 inventoryRouter.post('/discounts', authUser, adminAuth, createDiscount);
-inventoryRouter.post('/:productId/apply-discount', authUser, applyProductDiscount);
+inventoryRouter.post('/:productId/apply-discount', authUser, adminAuth, applyProductDiscount);
 
 export default inventoryRouter;

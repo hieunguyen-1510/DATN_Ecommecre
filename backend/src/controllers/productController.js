@@ -4,7 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 // Thêm sản phẩm
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, sizes, bestseller, stock, status } = req.body;
+    const { name, description, price, category, subCategory, sizes, bestseller, stock, status, purchasePrice } = req.body;
     const images = ["image1", "image2", "image3", "image4"]
       .map((key) => req.files?.[key]?.[0])
       .filter((item) => item !== undefined);
@@ -22,7 +22,8 @@ const addProduct = async (req, res) => {
     const product = new productModel({
       name,
       description,
-      price: Number(price),
+      price: Number(price), // gia ban
+      purchasePrice: Number(purchasePrice), // gia mua
       category,
       subCategory,
       bestseller: bestseller === "true",
@@ -43,26 +44,30 @@ const addProduct = async (req, res) => {
 // Danh sách sản phẩm
 const listProducts = async (req, res) => {
   try {
-    const { search = "", category = "", sortBy = "" } = req.query; 
+    const { search = "", category = "", sortBy = "" } = req.query;
     const query = {};
-    
+
     if (search) query.name = { $regex: search, $options: "i" };
-    if (category) query.category = category; 
+    if (category) query.category = category;
     if (req.query.status) query.status = req.query.status;
 
     let sortOptions = {}; // khoi tap sap xep
-    if(sortBy === "priceAsc"){
+    if (sortBy === "priceAsc") {
       sortOptions.price = 1; // sap xep tang dan
-    } 
-    else if(sortBy === "priceDesc"){
+    }
+    else if (sortBy === "priceDesc") {
       sortOptions.price = -1; // sap xep giam dan
     }
-    else{
+    else {
       sortOptions.createAt = -1; // sap xep moi nhat
     }
 
-    const products = await productModel.find(query).sort(sortOptions);
-    res.json({ success: true, products, total: products.length });
+    const products = await productModel.find(query).sort(sortOptions).select('-__v'); 
+    const productList = products.map(product => ({
+        ...product.toObject(),
+        purchasePrice: product.purchasePrice || null,
+    }));
+    res.json({ success: true, products: productList, total: products.length });
   } catch (error) {
     console.error("Lỗi API:", error);
     res.status(500).json({ success: false, message: error.message });
@@ -72,7 +77,7 @@ const listProducts = async (req, res) => {
 // Xóa sản phẩm
 const removeProduct = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const product = await productModel.findById(id);
     if (!product) {
       return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
@@ -95,11 +100,15 @@ const removeProduct = async (req, res) => {
 // Lấy thông tin sản phẩm
 const singleProduct = async (req, res) => {
   try {
-    const product = await productModel.findById(req.params.id);
+    const product = await productModel.findById(req.params.id).select('-__v'); 
     if (!product) {
       return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
     }
-    res.json({ success: true, product });
+    const productData = {
+        ...product.toObject(),
+        purchasePrice: product.purchasePrice || null,
+    };
+    res.json({ success: true, product: productData });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
@@ -110,46 +119,89 @@ const singleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, subCategory, sizes, bestseller, stock, status } = req.body;
+    const {
+      name,
+      description,
+      price,
+      purchasePrice,
+      category,
+      subCategory,
+      sizes,
+      bestseller,
+      stock,
+      status,
+    } = req.body;
+
+    // Lấy các file ảnh mới được upload
     const images = ["image1", "image2", "image3", "image4"]
       .map((key) => req.files?.[key]?.[0])
-      .filter((item) => item !== undefined);
+      .filter(Boolean); // Lọc bỏ các phần tử undefined
 
     let imagesUrl = [];
+
     if (images.length > 0) {
-      // Xóa hình ảnh cũ
+      // Nếu có ảnh mới được upload
+
+      // Tìm sản phẩm trong database theo id để lấy ảnh cũ
       const product = await productModel.findById(id);
-      if (product.image.length > 0) {
-        await Promise.all(product.image.map(async (url) => {
-          const publicId = url.split("/").pop().split(".")[0];
-          await cloudinary.uploader.destroy(publicId);
-        }));
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
       }
 
-      imagesUrl = await Promise.all(images.map(async (item) => {
-        const result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
-        return result.secure_url;
-      }));
+      // Nếu sản phẩm có ảnh cũ, tiến hành xóa ảnh cũ trên Cloudinary
+      if (product.image && product.image.length > 0) {
+        await Promise.all(
+          product.image.map(async (url) => {
+
+            const parts = url.split("/");
+            const filename = parts[parts.length - 1];
+            const publicId = filename.split(".")[0];
+            await cloudinary.uploader.destroy(publicId);
+          })
+        );
+      }
+
+      // Upload ảnh mới lên Cloudinary, lấy URL trả về
+      imagesUrl = await Promise.all(
+        images.map(async (file) => {
+          const result = await cloudinary.uploader.upload(file.path, {
+            resource_type: "image",
+          });
+          return result.secure_url;
+        })
+      );
     }
 
-    const updatedProduct = await productModel.findByIdAndUpdate(id, {
+    // Chuẩn bị dữ liệu cập nhật cho sản phẩm
+    const updateData = {
       name,
       description,
       price: Number(price),
+      purchasePrice: Number(purchasePrice),
       category,
       subCategory,
       bestseller: bestseller === "true",
-      sizes: Array.isArray(sizes) ? sizes : [],
+      sizes: sizes ? JSON.parse(sizes) : [],
       stock: Number(stock) || 0,
       status: status || "active",
-      ...(imagesUrl.length > 0 && { image: imagesUrl }),
-    }, { new: true });
+    };
+
+    // Nếu có ảnh mới upload thì cập nhật trường image
+    if (imagesUrl.length > 0) {
+      updateData.image = imagesUrl;
+    }
+
+    // Cập nhật sản phẩm trong database
+    const updatedProduct = await productModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedProduct) {
       return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
     }
 
-    res.json({ success: true, message: "Sản phẩm đã được cập nhật!" });
+    // Trả về kết quả thành công
+    res.json({ success: true, message: "Sản phẩm đã được cập nhật!", product: updatedProduct });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });

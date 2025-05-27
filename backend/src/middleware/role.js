@@ -22,12 +22,12 @@ const initializeRolesAndAssignDefault = async function (next) {
       }
 
       // Đảm bảo trường role là ObjectId thay vì chuỗi
-      this.role = mongoose.Types.ObjectId(userRole._id); // Gán ObjectId cho trường role
+      this.role = mongoose.Types.ObjectId(userRole._id); 
     }
 
-    next(); // Tiến hành lưu người dùng sau khi gán role
+    next(); 
   } catch (error) {
-    next(error); // Nếu có lỗi, chuyền lỗi vào next() để xử lý
+    next(error); 
   }
 };
 

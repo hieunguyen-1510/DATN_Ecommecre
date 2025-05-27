@@ -15,7 +15,7 @@ import EditUser from "./pages/users/EditUser";
 import UserDetail from "./pages/users/UserDetail";
 import Reviews from "./pages/reviews/Reviews";
 import Payments from "./pages/payments/Payments";
-import InventoryManagement from "./pages/products/InventoryManagement";
+import InventoryManagement from "./pages/inventory/InventoryManagement";
 import OrderDetail from "./pages/orders/OrderDetail";
 import BannerManagement from "./pages/banner/BannerManagement";
 import DiscountManagement from "./pages/discount/DiscountManagement";

@@ -36,7 +36,7 @@ productRouter.put(
 );
 
 // Xóa sản phẩm
-productRouter.delete('/:id', adminAuth, removeProduct);
+productRouter.delete('/:id',authUser,adminAuth, removeProduct);
 
 // Lấy danh sách sản phẩm
 productRouter.get('/list',authUser,authAccess,listProducts);

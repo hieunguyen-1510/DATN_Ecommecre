@@ -84,7 +84,7 @@ const CancelConfirmationModal = ({ isOpen, onClose, onConfirm, orderId }) => {
                 Quay lại
               </button>
               <button
-                onClick={handleConfirm} // Gọi hàm handleConfirm mới
+                onClick={handleConfirm} 
                 className="flex-1 px-6 py-3 bg-red-500 text-white font-bold rounded-full hover:bg-red-600 transition-colors duration-300 shadow-md hover:shadow-lg"
               >
                 Xác nhận hủy

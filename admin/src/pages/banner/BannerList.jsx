@@ -3,14 +3,20 @@ import axios from "axios";
 import { backendUrl } from "../../App";
 import { toast } from "react-toastify";
 
-function BannerList({ banners, onEdit, onBannerDeleted, onBannerStatusChanged }) {
+function BannerList({
+  banners,
+  onEdit,
+  onBannerDeleted,
+  onBannerStatusChanged,
+}) {
   const token = localStorage.getItem("token");
 
-  // Hàm mới để xử lý kích hoạt và hủy kích hoạt
-  const handleToggleStatus = async (id, currentIsActive) => {
+  // xử lý kích hoạt và hủy kích hoạt
+  const handleToggleStatus = async (id, currentActive) => {
     try {
       let res;
-      if (currentIsActive) { 
+      if (currentActive) {
+        // Kiểm tra currentActive
         res = await axios.put(
           `${backendUrl}/api/banners/${id}/deactivate`,
           {},
@@ -25,10 +31,16 @@ function BannerList({ banners, onEdit, onBannerDeleted, onBannerStatusChanged })
         );
         toast.success("Kích hoạt banner thành công!");
       }
-      // Gọi hàm callback từ component cha để cập nhật state
-      if (onBannerStatusChanged) onBannerStatusChanged(res.data.banner); 
+      // Gọi hàm callback
+      if (onBannerStatusChanged) onBannerStatusChanged(res.data.banner);
     } catch (err) {
-      toast.error(`Thao tác thất bại: ${err.response?.data?.message || err.response?.data?.error || 'Lỗi không xác định'}`);
+      toast.error(
+        `Thao tác thất bại: ${
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Lỗi không xác định"
+        }`
+      );
     }
   };
 
@@ -52,36 +64,39 @@ function BannerList({ banners, onEdit, onBannerDeleted, onBannerStatusChanged })
         <div key={banner._id} className="bg-white p-4 rounded-xl shadow">
           <img
             src={banner.imageUrl}
-            alt={banner.title}
+            alt="Banner Image"
             className="w-full h-40 object-cover rounded"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "/no-image.png";
+              e.target.src =
+                "https://placehold.co/600x400/cccccc/333333?text=No+Image";
             }}
           />
           <div className="mt-3">
-            <h4 className="font-bold">{banner.title}</h4>
-            <div className="text-sm text-gray-600">Vị trí: {banner.position}</div>
-            <div className="text-sm text-gray-600">Thứ tự: {banner.order}</div>
             <div className="text-sm text-gray-600">
               Trạng thái:{" "}
               <span
-                className={banner.isActive ? "text-green-600" : "text-gray-400"}
+                className={banner.active ? "text-green-600" : "text-gray-400"}
               >
-                {banner.isActive ? "Đang sử dụng" : "Ẩn"}
+                {banner.active ? "Đang sử dụng" : "Ẩn"}{" "}
               </span>
+            </div>
+            <div className="text-sm text-gray-600">
+              Ngày tạo: {new Date(banner.created_at).toLocaleDateString()}{" "}
+              {/* Hiển thị created_at */}
             </div>
             <div className="flex space-x-2 mt-2">
               {/* Nút Kích hoạt/Hủy kích hoạt */}
               <button
-                onClick={() => handleToggleStatus(banner._id, banner.isActive)}
+                onClick={() => handleToggleStatus(banner._id, banner.active)}
                 className={`px-3 py-1 rounded font-semibold ${
-                  banner.isActive
-                    ? "bg-red-500 text-white hover:bg-red-700" 
-                    : "bg-blue-500 text-white hover:bg-blue-700" 
+                  banner.active
+                    ? "bg-red-500 text-white hover:bg-red-700"
+                    : "bg-blue-500 text-white hover:bg-blue-700"
                 }`}
               >
-                {banner.isActive ? "Hủy kích hoạt" : "Kích hoạt"}
+                {banner.active ? "Hủy kích hoạt" : "Kích hoạt"}{" "}
+                {/* Đổi banner.isActive thành banner.active */}
               </button>
               <button
                 onClick={() => onEdit(banner)}

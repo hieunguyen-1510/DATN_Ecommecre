@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
+    purchasePrice: { type: Number, required: true, min: 0 }, // Giá mua/Giá vốn
     image: { type: [String], default: [] }, 
     category: { type: String, required: true },
     subCategory: { type: String, required: true },

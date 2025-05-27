@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Select, Button, Upload, Checkbox, InputNumber, notification } from "antd";
+import {
+  Form,
+  Input,
+  Select,
+  Button,
+  Upload,
+  Checkbox,
+  InputNumber,
+  notification,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { backendUrl, currency } from "../../App";
@@ -24,9 +33,12 @@ const AddProduct = ({ token }) => {
   // Fetch sản phẩm nếu đang chỉnh sửa
   const fetchProduct = async (productId) => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/${productId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${backendUrl}/api/product/${productId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.data.success) {
         const product = response.data.product;
@@ -36,6 +48,7 @@ const AddProduct = ({ token }) => {
           category: product.category,
           subCategory: product.subCategory,
           price: product.price,
+          purchasePrice: product.purchasePrice,
           stock: product.stock,
           sizes: product.sizes,
           status: product.status,
@@ -69,12 +82,12 @@ const AddProduct = ({ token }) => {
     setLoading(true);
     try {
       const formData = new FormData();
-      
+
       // Đảm bảo dữ liệu được gửi đúng định dạng
       Object.keys(values).forEach((key) => {
         if (key === "sizes") {
-          formData.append(key, JSON.stringify(values[key])); // Chuyển mảng về JSON
-        } else {
+          formData.append(key, JSON.stringify(values[key]));
+        } else if (values[key] !== undefined && values[key] !== null) {
           formData.append(key, values[key]);
         }
       });
@@ -95,14 +108,18 @@ const AddProduct = ({ token }) => {
         method,
         url,
         data: formData,
-        headers: { 
-          "Content-Type": "multipart/form-data", 
-          Authorization: `Bearer ${token}` 
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.data.success) {
-        toast.success(isEditMode ? "Cập nhật sản phẩm thành công!" : "Thêm sản phẩm thành công!");
+        toast.success(
+          isEditMode
+            ? "Cập nhật sản phẩm thành công!"
+            : "Thêm sản phẩm thành công!"
+        );
         navigate("/products");
       } else {
         toast.error(response.data.message);
@@ -118,10 +135,12 @@ const AddProduct = ({ token }) => {
   // Xử lý upload ảnh
   const handleUploadChange = ({ fileList }) => {
     setFileList(
-      fileList.map((file) => ({
-        ...file,
-        originFileObj: file.originFileObj || file,
-      })).slice(0, 4)
+      fileList
+        .map((file) => ({
+          ...file,
+          originFileObj: file.originFileObj || file,
+        }))
+        .slice(0, 4)
     );
   };
 
@@ -141,6 +160,7 @@ const AddProduct = ({ token }) => {
           status: "active",
           bestseller: false,
           stock: 0,
+          purchasePrice: 0,
         }}
       >
         <Form.Item
@@ -174,23 +194,40 @@ const AddProduct = ({ token }) => {
           rules={[{ required: true, message: "Vui lòng chọn danh mục con!" }]}
         >
           <Select>
-            <Select.Option value="Street Tops">Áo Street</Select.Option>
-            <Select.Option value="Street Bottoms">Quần Street</Select.Option>
+            <Select.Option value="Street Tops">Áo đường phố</Select.Option>
+            <Select.Option value="Street Bottoms">Quần đường phố</Select.Option>
             <Select.Option value="Hoodies">Hoodies</Select.Option>
             <Select.Option value="Outerwear">Áo Khoác</Select.Option>
           </Select>
         </Form.Item>
+        {/* Thêm trường "Giá mua" */}
+        <Form.Item name="purchasePrice" label="Giá mua sản phẩm">
+          <InputNumber
+            min={0}
+            style={{ width: "100%" }}
+            formatter={(value) => `${value} ${currency}`}
+            parser={(value) => value.replace(` ${currency}`, "")}
+          />
+        </Form.Item>
+        {/* Giá bán sản phẩm */}
         <Form.Item
           name="price"
-          label="Giá sản phẩm"
-          rules={[{ required: true, message: "Vui lòng nhập giá!" }]}
+          label="Giá bán sản phẩm"
+          rules={[{ required: true, message: "Vui lòng nhập giá bán!" }]}
         >
-          <InputNumber min={0} style={{ width: "100%" }} formatter={(value) => `${value} ${currency}`} />
+          <InputNumber
+            min={0}
+            style={{ width: "100%" }}
+            formatter={(value) => `${value} ${currency}`}
+            parser={(value) => value.replace(` ${currency}`, "")}
+          />
         </Form.Item>
         <Form.Item
           name="stock"
           label="Tồn kho"
-          rules={[{ required: true, message: "Vui lòng nhập số lượng tồn kho!" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số lượng tồn kho!" },
+          ]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
@@ -204,11 +241,21 @@ const AddProduct = ({ token }) => {
         <Form.Item name="sizes" label="Kích cỡ sản phẩm">
           <Checkbox.Group options={["S", "M", "L", "XL", "XXL"]} />
         </Form.Item>
-        <Form.Item name="bestseller" valuePropName="checked" label="Sản phẩm bán chạy">
+        <Form.Item
+          name="bestseller"
+          valuePropName="checked"
+          label="Sản phẩm bán chạy"
+        >
           <Checkbox />
         </Form.Item>
         <Form.Item label="Hình ảnh sản phẩm">
-          <Upload fileList={fileList} onChange={handleUploadChange} beforeUpload={() => false} listType="picture" maxCount={4}>
+          <Upload
+            fileList={fileList}
+            onChange={handleUploadChange}
+            beforeUpload={() => false}
+            listType="picture"
+            maxCount={4}
+          >
             <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
           </Upload>
         </Form.Item>
