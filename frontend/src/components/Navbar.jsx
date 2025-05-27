@@ -15,6 +15,7 @@ const Navbar = () => {
     setToken,
     setCartItems,
     user,
+    setSearch
   } = useContext(ShopContext);
 
   const logout = () => {
@@ -27,6 +28,7 @@ const Navbar = () => {
 
   const handleSearchClick = () => {
     setShowSearch(true);
+    setSearch(""); 
   };
 
   return (

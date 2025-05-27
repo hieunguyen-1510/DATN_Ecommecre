@@ -23,7 +23,7 @@ const SearchBar = () => {
         className="inline w-4 cursor-pointer ml-2"
         onClick={() => {
           setShowSearch(false);
-          setSearch("");
+          setSearch(""); // xoa sau khi search xong
         }}
       />
     </div>

@@ -1,5 +1,6 @@
 import Product from "../models/productModel.js";
 import Discount from "../models/discountModel.js";
+import InventoryTransaction from "../models/inventoryTransactionModel.js";
 import dayjs from "dayjs";
 
 // Helper functions
@@ -14,7 +15,7 @@ const calculateStockStatus = (product) => {
 export const updateProductStockStatus = async (productId) => {
   const product = await Product.findById(productId);
   if (!product) return null;
-  
+
   const newStatus = calculateStockStatus(product);
   if (product.stockStatus !== newStatus) {
     product.stockStatus = newStatus;
@@ -26,21 +27,22 @@ export const updateProductStockStatus = async (productId) => {
 // Dashboard
 export const getInventoryDashboard = async (req, res) => {
   try {
-    const [totalProducts, lowStock, criticalStock, overstock] = await Promise.all([
-      Product.countDocuments({ status: { $ne: "hidden" } }),
-      Product.countDocuments({ stockStatus: "low" }),
-      Product.countDocuments({ stockStatus: "critical" }),
-      Product.countDocuments({ stockStatus: "overstock" })
-    ]);
-    
+    const [totalProducts, lowStock, criticalStock, overstock] =
+      await Promise.all([
+        Product.countDocuments({ status: { $ne: "hidden" } }),
+        Product.countDocuments({ stockStatus: "low" }),
+        Product.countDocuments({ stockStatus: "critical" }),
+        Product.countDocuments({ stockStatus: "overstock" }),
+      ]);
+
     res.json({
       success: true,
-      data: { totalProducts, lowStock, criticalStock, overstock }
+      data: { totalProducts, lowStock, criticalStock, overstock },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Lỗi khi lấy thống kê tồn kho"
+    res.status(500).json({
+      success: false,
+      message: error.message || "Lỗi khi lấy thống kê tồn kho",
     });
   }
 };
@@ -50,7 +52,7 @@ export const getStockAlerts = async (req, res) => {
   try {
     const { status, page = 1, limit = 10, search } = req.query;
     const query = { status: { $ne: "hidden" } };
-    
+
     // Sửa phần lọc trạng thái
     if (status) {
       if (Array.isArray(status)) {
@@ -59,35 +61,35 @@ export const getStockAlerts = async (req, res) => {
         query.stockStatus = status; // Xử lý khi chỉ có 1 trạng thái
       }
     }
-    
+
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { category: { $regex: search, $options: 'i' } }
+        { name: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
       ];
     }
-    
+
     const [products, total] = await Promise.all([
       Product.find(query)
         .skip((page - 1) * limit)
         .limit(Number(limit))
         .sort({ stockStatus: -1, stock: 1 }),
-      Product.countDocuments(query)
+      Product.countDocuments(query),
     ]);
-    
+
     res.json({
       success: true,
       data: products,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total
-      }
+        total,
+      },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Lỗi khi lấy danh sách cảnh báo"
+    res.status(500).json({
+      success: false,
+      message: error.message || "Lỗi khi lấy danh sách cảnh báo",
     });
   }
 };
@@ -96,31 +98,44 @@ export const getStockAlerts = async (req, res) => {
 export const updateStock = async (req, res) => {
   try {
     const { id } = req.params;
-    const { stock } = req.body;
-    
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { stock },
-      { new: true }
-    );
-    
+    const { stock, transactionType, source, sourceId, note, createdBy } =
+      req.body;
+
+    const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Không tìm thấy sản phẩm" 
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy sản phẩm",
       });
     }
-    
-    await updateProductStockStatus(product._id);
+
+    const previousStock = product.stock;
+    product.stock = stock;
+    await product.save();
+
+    // Create InventoryTransaction
+    await InventoryTransaction.create({
+      product: product._id,
+      sku: product.sku, // Assuming product has sku
+      transactionType: transactionType || "adjustment",
+      quantity: Math.abs(stock - previousStock),
+      previousStock: previousStock,
+      newStock: stock,
+      source: source || "manual_adjustment",
+      sourceId: sourceId,
+      note: note,
+      createdBy: createdBy || req.user._id,
+    });
+
     res.json({
       success: true,
       data: product,
-      message: "Cập nhật tồn kho thành công"
+      message: "Cập nhật tồn kho và ghi nhận giao dịch thành công",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Lỗi khi cập nhật tồn kho"
+    res.status(500).json({
+      success: false,
+      message: error.message || "Lỗi khi cập nhật tồn kho",
     });
   }
 };
@@ -128,34 +143,44 @@ export const updateStock = async (req, res) => {
 // Create discount
 export const createDiscount = async (req, res) => {
   try {
-    const { discountType, value, applicableProducts, minOrderValue, endDate, usageLimit } = req.body;
-    
+    const {
+      discountType,
+      value,
+      applicableProducts,
+      minOrderValue,
+      endDate,
+      usageLimit,
+    } = req.body;
+
     // Validation
     if (discountType === "percentage" && value > 100) {
       return res.status(400).json({
         success: false,
-        message: "Giảm giá phần trăm không thể vượt quá 100%"
+        message: "Giảm giá phần trăm không thể vượt quá 100%",
       });
     }
 
     const discount = new Discount({
       ...req.body,
-      code: `DISCOUNT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      code: `DISCOUNT-${Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase()}`,
       createdBy: req.user._id,
       startDate: dayjs().toDate(),
-      status: "active"
+      status: "active",
     });
 
     await discount.save();
     res.status(201).json({
       success: true,
       data: discount,
-      message: "Tạo mã giảm giá thành công"
+      message: "Tạo mã giảm giá thành công",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || "Lỗi khi tạo mã giảm giá"
+      message: error.message || "Lỗi khi tạo mã giảm giá",
     });
   }
 };
@@ -171,18 +196,20 @@ export const applyProductDiscount = async (req, res) => {
     if (!discount) {
       return res.status(404).json({
         success: false,
-        message: "Mã giảm giá không tồn tại"
+        message: "Mã giảm giá không tồn tại",
       });
     }
 
     // Check validity
     const now = dayjs();
-    if (discount.status !== "active" || 
-        now.isBefore(dayjs(discount.startDate)) || 
-        now.isAfter(dayjs(discount.endDate))) {
+    if (
+      discount.status !== "active" ||
+      now.isBefore(dayjs(discount.startDate)) ||
+      now.isAfter(dayjs(discount.endDate))
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Mã giảm giá không khả dụng"
+        message: "Mã giảm giá không khả dụng",
       });
     }
 
@@ -190,16 +217,18 @@ export const applyProductDiscount = async (req, res) => {
     if (discount.usageLimit && discount.usedCount >= discount.usageLimit) {
       return res.status(400).json({
         success: false,
-        message: "Mã giảm giá đã hết lượt sử dụng"
+        message: "Mã giảm giá đã hết lượt sử dụng",
       });
     }
 
     // Check product eligibility
-    if (discount.applicableProducts.length > 0 && 
-        !discount.applicableProducts.some(id => id.equals(productId))) {
+    if (
+      discount.applicableProducts.length > 0 &&
+      !discount.applicableProducts.some((id) => id.equals(productId))
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Mã giảm giá không áp dụng cho sản phẩm này"
+        message: "Mã giảm giá không áp dụng cho sản phẩm này",
       });
     }
 
@@ -207,10 +236,12 @@ export const applyProductDiscount = async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       productId,
       {
-        discountPercentage: discount.discountType === "percentage" ? discount.value : null,
-        discountAmount: discount.discountType === "fixed_amount" ? discount.value : null,
+        discountPercentage:
+          discount.discountType === "percentage" ? discount.value : null,
+        discountAmount:
+          discount.discountType === "fixed_amount" ? discount.value : null,
         discountExpiry: discount.endDate,
-        discountCode: discount.code
+        discountCode: discount.code,
       },
       { new: true }
     );
@@ -225,12 +256,16 @@ export const applyProductDiscount = async (req, res) => {
     res.json({
       success: true,
       data: product,
-      message: `Áp dụng giảm giá thành công (${discount.discountType === "percentage" ? `${discount.value}%` : `$${discount.value}`})`
+      message: `Áp dụng giảm giá thành công (${
+        discount.discountType === "percentage"
+          ? `${discount.value}%`
+          : `$${discount.value}`
+      })`,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || "Lỗi khi áp dụng giảm giá"
+      message: error.message || "Lỗi khi áp dụng giảm giá",
     });
   }
 };
@@ -242,16 +277,16 @@ export const searchProducts = async (req, res) => {
     const products = await Product.find({
       status: { $ne: "hidden" },
       $or: [
-        { name: { $regex: q, $options: 'i' } },
-        { category: { $regex: q, $options: 'i' } }
-      ]
+        { name: { $regex: q, $options: "i" } },
+        { category: { $regex: q, $options: "i" } },
+      ],
     }).limit(10);
-    
+
     res.json({ success: true, data: products });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || "Lỗi khi tìm kiếm sản phẩm"
+    res.status(500).json({
+      success: false,
+      message: error.message || "Lỗi khi tìm kiếm sản phẩm",
     });
   }
 };

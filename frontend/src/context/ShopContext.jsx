@@ -13,6 +13,8 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
   const [products, setProducts] = useState([]);
+  // trang thai cho san pham da loc
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
 
   const navigate = useNavigate();
@@ -139,6 +141,7 @@ const ShopContextProvider = (props) => {
       if (response.data.success) {
         // console.log("Fetched Products:", response.data.products);
         setProducts(response.data.products);
+        setFilteredProducts(response.data.products);
       } else {
         toast.error(response.data.message || "Không thể lấy sản phẩm");
       }
@@ -169,6 +172,18 @@ const ShopContextProvider = (props) => {
   }
 };
 
+// search products
+  const searchProducts = (searchTerm) => {
+    if (searchTerm) {
+      const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(products);
+    }
+  };
+
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     if (savedToken && !token) {
@@ -184,8 +199,13 @@ const ShopContextProvider = (props) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    searchProducts(search);
+  }, [search, products]); 
+
   const value = {
     products,
+    filteredProducts,
     currency,
     delivery_fee,
     search,

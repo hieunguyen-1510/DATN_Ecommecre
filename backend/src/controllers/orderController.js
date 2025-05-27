@@ -184,7 +184,7 @@ const placeOrder = async (req, res) => {
       console.warn("Không tìm thấy giỏ hàng để cập nhật:", userId);
     }
 
-    console.log("Response Data sent to frontend:", responseData); // Thêm log
+    // console.log("Response Data sent to frontend:", responseData); 
     res.status(201).json(responseData);
   } catch (error) {
     console.error("Lỗi khi đặt hàng:", error);

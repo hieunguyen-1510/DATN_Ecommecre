@@ -6,7 +6,7 @@ import { backendUrl } from "../../App";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BannerManagement = ({ userId }) => {
+const BannerManagement = () => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bannerToEdit, setBannerToEdit] = useState(null);
@@ -20,7 +20,7 @@ const BannerManagement = ({ userId }) => {
         const res = await axios.get(`${backendUrl}/api/banners`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Đảm bảo dữ liệu luôn là một mảng, ngay cả khi API trả về trực tiếp mảng thay vì {data: []}
+        // Đảm bảo dữ liệu luôn là một mảng
         setBanners(Array.isArray(res.data) ? res.data : res.data.data || []);
       } catch {
         toast.error("Không thể tải danh sách banner");
@@ -57,18 +57,14 @@ const BannerManagement = ({ userId }) => {
   const handleBannerStatusChanged = (changedBanner) => {
     setBanners((prev) =>
       prev.map((b) => {
-        // Nếu là banner vừa thay đổi, cập nhật trạng thái isActive của nó
+        // Nếu là banner vừa thay đổi, cập nhật trạng thái active của nó
         if (b._id === changedBanner._id) {
           return changedBanner;
         }
-       
-        if (changedBanner.isActive && b.position === changedBanner.position) {
-          return { ...b, isActive: false };
-        }
+
         return b;
       })
     );
-    // Thông báo toast đã được xử lý trong BannerList, không cần ở đây nữa.
   };
 
   const handleEditClick = (banner) => {
@@ -82,7 +78,6 @@ const BannerManagement = ({ userId }) => {
       <h1 className="text-3xl font-bold mb-8">🎯 Quản lý Banner</h1>
 
       <BannerForm
-        userId={userId}
         bannerToEdit={bannerToEdit}
         onBannerSaved={handleBannerSaved}
       />
@@ -94,7 +89,7 @@ const BannerManagement = ({ userId }) => {
           banners={banners}
           onEdit={handleEditClick}
           onBannerDeleted={handleBannerDeleted}
-          onBannerStatusChanged={handleBannerStatusChanged} 
+          onBannerStatusChanged={handleBannerStatusChanged}
         />
       )}
     </div>

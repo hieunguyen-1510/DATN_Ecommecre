@@ -7,12 +7,10 @@ import Report from "../models/reportModel.js";
 export const getOrderTimeStats = async (req, res) => {
   try {
     const { period = 'day', startDate, endDate } = req.query;
-    
-    // Validate input dates
+
     const start = startDate ? new Date(startDate) : new Date(new Date().setMonth(new Date().getMonth() - 1));
     const end = endDate ? new Date(endDate) : new Date();
-    
-    // Format based on period
+
     let format, groupId;
     switch (period) {
       case 'year':
@@ -36,19 +34,8 @@ export const getOrderTimeStats = async (req, res) => {
     }
     
     const stats = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: start, $lte: end }
-        }
-      },
-      {
-        $group: {
-          _id: groupId,
-          totalOrders: { $sum: 1 },
-          totalRevenue: { $sum: "$totalAmount" },
-          date: { $first: "$createdAt" }
-        }
-      },
+      { $match: { createdAt: { $gte: start, $lte: end } } },
+      { $group: { _id: groupId, totalOrders: { $sum: 1 }, totalRevenue: { $sum: "$totalAmount" }, date: { $first: "$createdAt" } } },
       { $sort: { _id: 1 } }
     ]);
     
@@ -68,12 +55,7 @@ export const getOrderTimeStats = async (req, res) => {
           dateLabel = date.format('DD/MM/YYYY');
       }
       
-      return {
-        date: dateLabel,
-        totalOrders: item.totalOrders,
-        totalRevenue: item.totalRevenue,
-        rawDate: item.date
-      };
+     return { date: dateLabel, totalOrders: item.totalOrders, totalRevenue: item.totalRevenue, rawDate: item.date };
     });
     
     res.status(200).json({ data: formattedStats });
@@ -90,9 +72,8 @@ export const getInventoryStats = async (req, res) => {
     const start = startDate ? new Date(startDate) : new Date(new Date().setMonth(new Date().getMonth() - 1));
     const end = endDate ? new Date(endDate) : new Date();
 
-    // Aggregate inventory stats
     const products = await Product.find({
-      createdAt: { $gte: start, $lte: end },
+      // createdAt: { $gte: start, $lte: end },
     }).select("stock stockStatus lastSoldDate");
 
     const totalProducts = products.length;
@@ -106,7 +87,6 @@ export const getInventoryStats = async (req, res) => {
       lastSoldDate: p.lastSoldDate,
     }));
 
-    // Save to Report
     await Report.findOneAndUpdate(
       { type: "stock_status", createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
       {
@@ -145,7 +125,6 @@ export const getBestSellers = async (req, res) => {
       .limit(parseInt(limit))
       .select("name averageDailySales stock");
 
-    // Save to Report
     await Report.findOneAndUpdate(
       { type: "bestseller", createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
       {
@@ -154,7 +133,7 @@ export const getBestSellers = async (req, res) => {
           bestSellers: bestSellers.map(p => ({
             product: p._id,
             name: p.name,
-            sold: p.averageDailySales,
+            sold: p.averageDailySales, 
             stock: p.stock,
           })),
         },
@@ -167,6 +146,7 @@ export const getBestSellers = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 // Báo cáo trạng thái đơn hàng
 export const generateOrderStatsReport = async (req, res) => {
   try {

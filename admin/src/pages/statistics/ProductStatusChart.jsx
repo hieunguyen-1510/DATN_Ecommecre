@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import axios from 'axios';
 import { backendUrl } from '../../App';
@@ -15,53 +15,70 @@ const ProductStatusChart = () => {
   const [chartData, setChartData] = useState({
     labels: ['Đã bán', 'Chưa bán'],
     datasets: [{
-      data: [22, 9],
-      backgroundColor: ['#4caf50', '#ff9800'],
+      data: [],
+      backgroundColor: ['#4caf50', '#ff9800'], 
       borderWidth: 1,
     }],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Callback function to fetch data for product status
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`${backendUrl}/api/reports?type=product_status`);
+      const data = res.data; 
+
+      const labels = data.map(item => item.type);
+      const values = data.map(item => item.value);
+
+      setChartData({
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: ['#4caf50', '#ff9800'],
+          borderWidth: 1,
+          hoverOffset: 4
+        }],
+      });
+    } catch (err) {
+      console.error('Lỗi gọi API product Stats:', err);
+      setError('Không thể tải dữ liệu thống kê sản phẩm.');
+      // Fallback to empty data on error
+      setChartData({
+        labels: ['Đã bán', 'Chưa bán'],
+        datasets: [{
+          data: [0, 0], // Show zero if data fails
+          backgroundColor: ['#4caf50', '#ff9800'],
+          borderWidth: 1,
+        }],
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []); 
+
+  // Fetch data when component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(`${backendUrl}/api/reports?type=product_status`);
-        const labels = res.data.map(item => item.type === 'sold' ? 'Đã bán' : 'Chưa bán');
-        const values = res.data.map(item => item.value);
-        
-        setChartData({
-          labels,
-          datasets: [{
-            data: values,
-            backgroundColor: ['#4caf50', '#ff9800'],
-            borderWidth: 1,
-          }]
-        });
-      } catch (err) {
-        console.error('Lỗi gọi API product Stats:', err);
-        setError('Không thể tải dữ liệu thống kê sản phẩm');
-        // Sử dụng dữ liệu mặc định khi API fail
-        setChartData({
-          labels: ['Đã bán', 'Chưa bán'],
-          datasets: [{
-            data: [22, 9],
-            backgroundColor: ['#4caf50', '#ff9800'],
-            borderWidth: 1,
-          }],
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, []);
+  }, [fetchData]);
 
+  // Chart options for legend, tooltips, and aspect ratio
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'right',
+        labels: {
+          font: {
+            size: 14
+          },
+          boxWidth: 20,
+          padding: 15,
+        }
       },
       tooltip: {
         callbacks: {
@@ -69,30 +86,42 @@ const ProductStatusChart = () => {
             const label = context.label || '';
             const value = context.raw || 0;
             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = Math.round((value / total) * 100);
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
             return `${label}: ${value} (${percentage}%)`;
           }
         }
+      },
+      title: {
+        display: true,
+        text: 'TRẠNG THÁI SẢN PHẨM',
+        font: {
+          size: 18,
+          weight: 'bold'
+        },
+        color: '#333',
       }
     },
-    maintainAspectRatio: false,
-    responsive: true
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow h-full">
-      <h3 className="text-lg font-semibold mb-4 text-center">TRẠNG THÁI SẢN PHẨM</h3>
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      ) : error ? (
-        <div className="text-red-500 text-center p-4">{error}</div>
-      ) : (
-        <div className="h-64">
-          <Doughnut data={chartData} options={options} />
-        </div>
-      )}
+    <div className="bg-white p-6 rounded-lg shadow-lg h-full flex flex-col">
+      <h3 className="text-xl font-semibold mb-4 text-center text-gray-800">TRẠNG THÁI SẢN PHẨM</h3>
+      <div className="flex-grow flex items-center justify-center min-h-[250px]">
+        {loading ? (
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+          </div>
+        ) : error ? (
+          <p className="text-red-500 text-center">{error}</p>
+        ) : (chartData.datasets[0]?.data.reduce((sum, val) => sum + val, 0) > 0) ? ( 
+          <div className="w-full h-full flex items-center justify-center">
+            <Doughnut data={chartData} options={options} />
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center">Không có dữ liệu trạng thái sản phẩm.</p>
+        )}
+      </div>
     </div>
   );
 };

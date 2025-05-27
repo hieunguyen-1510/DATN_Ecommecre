@@ -30,7 +30,7 @@ const reportSchema = new mongoose.Schema({
     ],
     inventoryAlerts: [
       {
-        alert: { type: mongoose.Schema.Types.ObjectId, ref: "InventoryAlert" },
+        alert: { type: mongoose.Schema.Types.ObjectId, ref: "InventoryTransaction" },
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         currentStock: Number,
         alertLevel: Number,
@@ -53,8 +53,5 @@ const reportSchema = new mongoose.Schema({
   },
 }, { versionKey: false });
 
-// Index for faster queries
-reportSchema.index({ type: 1 });
-
-const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);
+const Report = mongoose.models.Report || mongoose.model("Report",reportSchema);
 export default Report;
