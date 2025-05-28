@@ -4,6 +4,7 @@ import User from "../models/userModel.js";
 import Payment from "../models/paymentModel.js";
 import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
+import Report from "../models/reportModel.js";
 import { createMomoPayment } from "../services/momo.Service.js";
 import { createVnpayPayment } from "../services/vnpay.Service.js";
 
@@ -50,12 +51,19 @@ const placeOrder = async (req, res) => {
 
     for (const item of items) {
       const product = await Product.findById(item.productId);
+
       if (!product) {
         return res.status(400).json({
           success: false,
           message: `Sản phẩm với ID ${item.productId} không tồn tại.`,
         });
       }
+
+      product.sold += item.quantity;
+      product.stock -= item.quantity;
+
+      // Lưu lại sản phẩm với số lượng đã cập nhật
+      await product.save();
 
       const itemTotal = product.price * item.quantity;
       calculatedSubtotal += itemTotal;
@@ -146,7 +154,7 @@ const placeOrder = async (req, res) => {
     // Xử lý thanh toán VNPAY
     if (methodUpper === "VNPAY") {
       try {
-        const ipAddr = req.ip || req.connection.remoteAddress; // Lấy địa chỉ IP của client
+        const ipAddr = req.ip || req.connection.remoteAddress;
         const orderInfo = `Thanh toán đơn hàng ${savedOrder._id}`;
 
         const vnpayResult = await createVnpayPayment({
@@ -158,12 +166,12 @@ const placeOrder = async (req, res) => {
 
         console.log("VNPay Result:", vnpayResult);
         // Cập nhật thông tin thanh toán
-        newPayment.vnpayResponse = vnpayResult; // Lưu thông tin từ VNPay
+        newPayment.vnpayResponse = vnpayResult;
         await newPayment.save();
 
         responseData = {
           success: true,
-          payUrl: vnpayResult, // Trả về URL thanh toán
+          payUrl: vnpayResult,
           orderId: savedOrder._id,
         };
       } catch (vnpayError) {
@@ -184,7 +192,6 @@ const placeOrder = async (req, res) => {
       console.warn("Không tìm thấy giỏ hàng để cập nhật:", userId);
     }
 
-    // console.log("Response Data sent to frontend:", responseData); 
     res.status(201).json(responseData);
   } catch (error) {
     console.error("Lỗi khi đặt hàng:", error);
@@ -253,12 +260,10 @@ const getOrderDetail = async (req, res) => {
       req.user.role !== "admin" &&
       req.user.id !== order.userId._id.toString()
     ) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Không có quyền truy cập đơn hàng này.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền truy cập đơn hàng này.",
+      });
     }
 
     res.json({ success: true, order });
@@ -307,6 +312,7 @@ const getOrderStatus = async (req, res) => {
     });
   }
 };
+
 // cancel order user
 const cancelOrder = async (req, res) => {
   try {
@@ -328,16 +334,14 @@ const cancelOrder = async (req, res) => {
     }
 
     if (order.status !== "Order Placed" && order.status !== "Processing") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không thể hủy đơn hàng ở trạng thái hiện tại.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Không thể hủy đơn hàng ở trạng thái hiện tại.",
+      });
     }
 
     order.status = "Cancelled";
-    order.cancelReason = cancelReason; //
+    order.cancelReason = cancelReason;
     await order.save();
 
     res.json({ success: true, message: "Hủy đơn hàng thành công.", order });
@@ -381,7 +385,6 @@ const updateStatus = async (req, res) => {
       });
     }
 
-    // Kiểm tra điều kiện chuyển trạng thái
     if (
       order.status === "Delivered" &&
       ["Cancelled", "Refunded"].includes(status)
@@ -400,6 +403,18 @@ const updateStatus = async (req, res) => {
     let paymentStatus;
     if (status === "Delivered") {
       paymentStatus = "completed";
+
+      // Cộng doanh thu khi chuyển thành Delivered
+      let revenueReport = await Report.findOne({ type: "total_revenue" });
+      if (!revenueReport) {
+        revenueReport = new Report({
+          type: "total_revenue",
+          data: { totalRevenue: { total: 0, lastUpdated: new Date() } },
+        });
+      }
+      revenueReport.data.totalRevenue.total += order.totalAmount;
+      revenueReport.data.totalRevenue.lastUpdated = new Date();
+      await revenueReport.save();
     } else if (status === "Cancelled" || status === "Refunded") {
       paymentStatus = "refunded";
     } else {

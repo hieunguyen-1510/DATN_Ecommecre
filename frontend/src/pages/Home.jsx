@@ -1,14 +1,14 @@
 import React from "react";
-import HeroSection from "../components/HeroSection";
 import BestSeller from "../components/BestSeller";
 import OurPolicy from "../components/OurPolicy";
 import LatestCollection from "../components/LatestCollection";
 import NewsletterForm from "../components/NewsletterForm";
+import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
   <div className="bg-[#fafbfc]">
     <section className="mb-12">
-      <HeroSection />
+      <BannerSlider />
     </section>
     <section className="mb-12">
       <BestSeller />
@@ -19,7 +19,7 @@ const Home = () => (
     <section className="mb-12">
       <OurPolicy />
     </section>
-     <section> 
+    <section>
       <NewsletterForm />
     </section>
   </div>

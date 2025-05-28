@@ -4,7 +4,7 @@ const reportSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["product_status", "order_stats", "bestseller", "stock_status", "inventory_alert"],
+    enum: ["product_status", "order_stats", "bestseller", "stock_status", "inventory_alert","total_revenue"],
   },
   data: {
     inventoryStats: {
@@ -45,11 +45,15 @@ const reportSchema = new mongoose.Schema({
         ],
       },
     ],
+     totalRevenue: { 
+      total: { type: Number, default: 0 },
+      lastUpdated: { type: Date, default: Date.now },
+    },
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: "1d", // Auto-delete after 1 day
+    expires: "1d", 
   },
 }, { versionKey: false });
 

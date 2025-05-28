@@ -39,7 +39,11 @@ const Collection = () => {
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
   };
 
   return (
@@ -55,7 +59,7 @@ const Collection = () => {
         </div>
       </nav>
 
-      {/* ===== Hero Section ===== */}
+      {/* Hero Section */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -63,42 +67,9 @@ const Collection = () => {
         viewport={{ once: true }}
         className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white p-4"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.banner3})`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url(${assets.bst_banner})`,
         }}
-      >
-        <div className="container max-w-7xl mx-auto px-4 text-center z-10">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl sm:text-5xl lg:text-3xl font-extrabold mb-4 drop-shadow-md"
-          >
-            BỘ SƯU TẬP
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-base sm:text-xl max-w-3xl mx-auto mb-8 drop-shadow-sm"
-          >
-            Khám phá các xu hướng thời trang mới nhất mùa hè 2025. Mỗi bộ sưu tập là một câu chuyện, một phong cách, mang đến cho bạn những lựa chọn độc đáo và đẳng cấp.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            <Link
-              to="/collection"
-              className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white py-3 px-8 rounded-full text-base font-medium transition-all duration-300 hover:scale-105 shadow-lg"
-            >
-              Khám phá bộ sưu tập →
-            </Link>
-          </motion.div>
-        </div>
-      </motion.section>
+      ></motion.section>
 
       {/* ===== Main Content Container ===== */}
       <div className="container max-w-7xl mx-auto px-4 sm:px-8 lg:px-14">
@@ -188,7 +159,9 @@ const Collection = () => {
                   <h3 className="text-2xl font-bold mb-1 group-hover:text-red-300 transition-colors duration-300">
                     {collection.name}
                   </h3>
-                  <p className="text-sm opacity-80 mb-2">{collection.subtitle}</p>
+                  <p className="text-sm opacity-80 mb-2">
+                    {collection.subtitle}
+                  </p>
                   <p className="text-sm">{collection.productCount} sản phẩm</p>
                   <div className="mt-3 h-px w-0 bg-current transition-all duration-500 group-hover:w-16" />
                 </div>

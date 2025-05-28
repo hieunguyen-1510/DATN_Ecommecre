@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ProductCard from "../components/ProductCard";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { ShopContext } from "../context/ShopContext";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const KidsProductsPage = () => {
+  const { search, token } = useContext(ShopContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,22 +20,27 @@ const KidsProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
 
         if (!token) {
-          setError("Bạn chưa đăng nhập hoặc token không hợp lệ.");
+          setError("Bạn chưa đăng nhập hoặc phiên đăng nhập không hợp lệ.");
           setLoading(false);
           return;
         }
 
         let apiUrl = `${backendUrl}/api/product/list?category=Kids`;
-        if (sortBy === "thấp-cao") apiUrl += `&sortBy=priceAsc`;
-        else if (sortBy === "cao-thấp") apiUrl += `&sortBy=priceDesc`;
+
+        if (search) {
+          apiUrl += `&search=${search}`;
+        }
+
+        if (sortBy === "thấp-cao") {
+          apiUrl += `&sortBy=priceAsc`;
+        } else if (sortBy === "cao-thấp") {
+          apiUrl += `&sortBy=priceDesc`;
+        }
 
         const response = await axios.get(apiUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.data.success) {
@@ -51,14 +58,13 @@ const KidsProductsPage = () => {
         } else {
           setError(err.message || "Đã xảy ra lỗi khi tải sản phẩm.");
         }
-        console.error("Lỗi khi tải sản phẩm trẻ em:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [sortBy]);
+  }, [sortBy, search, token]);
 
   // Animation variants
   const gridVariants = {
