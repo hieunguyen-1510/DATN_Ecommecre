@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import ProductCard from "../components/ProductCard";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-
+import { ShopContext } from "../context/ShopContext";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const WomenProductsPage = () => {
+  const { search, token } = useContext(ShopContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,39 +19,51 @@ const WomenProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
 
         if (!token) {
-          setError("Bạn chưa đăng nhập hoặc token không hợp lệ.");
+          setError("Bạn chưa đăng nhập hoặc phiên đăng nhập không hợp lệ.");
           setLoading(false);
           return;
         }
 
         let apiUrl = `${backendUrl}/api/product/list?category=Women`;
-        if (sortBy === "thấp-cao") apiUrl += `&sortBy=priceAsc`;
-        else if (sortBy === "cao-thấp") apiUrl += `&sortBy=priceDesc`;
+
+        if (search) {
+          apiUrl += `&search=${search}`;
+        }
+
+        if (sortBy === "thấp-cao") {
+          apiUrl += `&sortBy=priceAsc`;
+        } else if (sortBy === "cao-thấp") {
+          apiUrl += `&sortBy=priceDesc`;
+        }
 
         const response = await axios.get(apiUrl, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.data.success) setProducts(response.data.products);
-        else
+        if (response.data.success) {
+          setProducts(response.data.products);
+        } else {
           setError(
             response.data.message || "Không thể tải danh sách sản phẩm."
           );
+        }
       } catch (err) {
-        if (err.response && err.response.status === 401)
+        if (err.response && err.response.status === 401) {
           setError(
             "Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại."
           );
-        else setError(err.message || "Đã xảy ra lỗi khi tải sản phẩm.");
+        } else {
+          setError(err.message || "Đã xảy ra lỗi khi tải sản phẩm.");
+        }
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, [sortBy]);
+  }, [sortBy, search, token]);
 
   // Animation variants
   const gridVariants = {
@@ -85,7 +98,7 @@ const WomenProductsPage = () => {
         className="relative h-64 sm:h-80 bg-cover bg-center flex items-center justify-center text-white"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${
-            assets.banner3 ||
+            assets.bst_banner ||
             "https://images.unsplash.com/photo-1582719500649-064106517a10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
           })`,
         }}

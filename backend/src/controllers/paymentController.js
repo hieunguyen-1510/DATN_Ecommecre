@@ -11,12 +11,47 @@ import {
 
 import Payment from "../models/paymentModel.js";
 import Order from "../models/orderModel.js";
+import Report from "../models/reportModel.js";
 
 const paymentController = {
   handleMomoIPN: async (req, res) => {
     try {
       const data = req.body;
       const result = await momoServiceIPN(data);
+
+      // Kiểm tra kết quả từ MoMo
+      if (result.resultCode === 0) { // Thanh toán thành công
+        const { orderId } = data;
+
+        // Tìm Payment và Order
+        const payment = await Payment.findOne({ orderId });
+        if (!payment) {
+          return res.status(404).json({ message: "Không tìm thấy thông tin thanh toán" });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+          return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        // Cập nhật trạng thái
+        payment.status = "completed";
+        payment.momoResponse = result;
+        await payment.save();
+
+        order.status = "Delivered"; // Hoặc "Shipped" tùy logic của bạn
+        order.paymentStatus = "completed";
+        await order.save();
+
+        // Cộng doanh thu
+        let revenueReport = await Report.findOne({ type: "total_revenue" });
+        if (!revenueReport) {
+          revenueReport = new Report({ type: "total_revenue", data: { totalRevenue: { total: 0, lastUpdated: new Date() } } });
+        }
+        revenueReport.data.totalRevenue.total += order.totalAmount;
+        revenueReport.data.totalRevenue.lastUpdated = new Date();
+        await revenueReport.save();
+      }
       res.status(200).json({ message: "IPN processed successfully", result });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -61,6 +96,24 @@ const paymentController = {
       payment.momoResponse = statusData;
       await payment.save();
 
+      if (statusData.resultCode === 0) {
+        const order = await Order.findById(payment.orderId);
+        if (order) {
+          order.status = "Delivered";
+          order.paymentStatus = "completed";
+          await order.save();
+
+          // Cộng doanh thu
+          let revenueReport = await Report.findOne({ type: "total_revenue" });
+          if (!revenueReport) {
+            revenueReport = new Report({ type: "total_revenue", data: { totalRevenue: { total: 0, lastUpdated: new Date() } } });
+          }
+          revenueReport.data.totalRevenue.total += order.totalAmount;
+          revenueReport.data.totalRevenue.lastUpdated = new Date();
+          await revenueReport.save();
+        }
+      }
+
       res.json({
         success: true,
         status: payment.status,
@@ -93,14 +146,23 @@ const paymentController = {
         await payment.save();
 
         if (statusResult.resultCode === 0) {
-          await Order.findByIdAndUpdate(
+          const order = await Order.findByIdAndUpdate(
             payment.orderId,
             {
-              status: "paid",
+              status: "Delivered",
               paymentStatus: "completed",
             },
             { new: true }
           ).populate("items.productId");
+
+          // Cộng doanh thu
+          let revenueReport = await Report.findOne({ type: "total_revenue" });
+          if (!revenueReport) {
+            revenueReport = new Report({ type: "total_revenue", data: { totalRevenue: { total: 0, lastUpdated: new Date() } } });
+          }
+          revenueReport.data.totalRevenue.total += order.totalAmount;
+          revenueReport.data.totalRevenue.lastUpdated = new Date();
+          await revenueReport.save();
         }
       }
 
@@ -142,6 +204,36 @@ const paymentController = {
     try {
       const query = req.query; // VNPay gửi thông tin qua query string
       const result = await vnpayServiceIPN(query);
+
+      if (result.RspCode === "00") { // Thanh toán thành công
+        const orderId = query.vnp_TxnRef;
+
+        const payment = await Payment.findOne({ orderId });
+        if (!payment) {
+          return res.status(404).json({ message: "Không tìm thấy thông tin thanh toán" });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+          return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+        }
+
+        payment.status = "completed";
+        payment.vnpayResponse = query;
+        await payment.save();
+
+        order.status = "Delivered";
+        order.paymentStatus = "completed";
+        await order.save();
+
+        let revenueReport = await Report.findOne({ type: "total_revenue" });
+        if (!revenueReport) {
+          revenueReport = new Report({ type: "total_revenue", data: { totalRevenue: { total: 0, lastUpdated: new Date() } } });
+        }
+        revenueReport.data.totalRevenue.total += order.totalAmount;
+        revenueReport.data.totalRevenue.lastUpdated = new Date();
+        await revenueReport.save();
+      }
 
       // Trả về phản hồi cho VNPay
       res.status(200).json({ message: "IPN processed successfully", result });

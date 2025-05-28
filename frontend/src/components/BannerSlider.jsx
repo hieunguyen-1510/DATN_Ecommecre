@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const HeroSection = () => {
+const BannerSlider = () => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -80,4 +80,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default BannerSlider;

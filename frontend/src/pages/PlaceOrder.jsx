@@ -159,11 +159,11 @@ const PlaceOrder = () => {
           //   response.data.payUrl &&
           //   response.data.momoOrderId
           // ) {
-            setPayUrl(response.data.payUrl);
-            setOrderId(response.data.momoOrderId);
-            console.log("response.data.payUrl", response.data.payUrl);
-            
-            window.open(response.data.payUrl, "_blank");  
+          setPayUrl(response.data.payUrl);
+          setOrderId(response.data.momoOrderId);
+          console.log("response.data.payUrl", response.data.payUrl);
+
+          window.open(response.data.payUrl, "_blank");
           // } else {
           //   toast.error("Không nhận được thông tin thanh toán từ MoMo");
           // }
@@ -237,6 +237,7 @@ const PlaceOrder = () => {
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">Địa chỉ</label>
             <input
+              required
               onChange={onChangeHandler}
               name="address"
               value={formData.address}

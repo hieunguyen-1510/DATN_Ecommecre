@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema(
     subCategory: { type: String, required: true },
     sizes: { type: [String], default: [] }, 
     stock: { type: Number, default: 0 },
+    sold: { type: Number, default: 0, min: 0 },
     bestseller: { type: Boolean, default: false },
     rating: { type: Number, default: 0 },
     status: {

@@ -6,7 +6,8 @@ import {
   getDynamicReport,
   getOrderTimeStats,
   getInventoryStats,
-  getBestSellers
+  getBestSellers,
+  getTotalRevenue
 
 } from "../controllers/reportController.js";
 
@@ -18,5 +19,6 @@ reportRouter.get("/time-stats", getOrderTimeStats);
 reportRouter.get("/", getDynamicReport); 
 reportRouter.get("/inventory-stats", getInventoryStats);
 reportRouter.get("/best-sellers", getBestSellers);
+reportRouter.get("/total-revenue", getTotalRevenue);
 
 export default reportRouter;

@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   deliveryFee: { type: Number, default: 0 }, 
   status: { type: String, default: "Order Placed" }, 
-  cancelReason: { type: String }, // <-- THÊM DÒNG NÀY
+  cancelReason: { type: String }, 
   createdAt: { type: Date, default: Date.now },
 });
 

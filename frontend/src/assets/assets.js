@@ -108,13 +108,15 @@ import menFashion from "./menFashion.avif"
 import womenFashion from "./womenFashion.avif"
 import kidsFashion from "./kidsFashion.avif"
 import profile from "./profile.jpg"
-import story_img from "./story_img.jpg"
-import mission_img from "./mission_img.jpg"
+import our_story from "./our_story.jpg"
+import mission_img from "./mission.jpg"
 import community_img from "./community_img.jpg"
 import creative_img from "./creative_img.jpg"
 import quality_img from "./quality_img.jpg"
 import banner4 from "./banner4.avif"
 import vnpay from "./vnpay.png"
+import bst_banner from "./bst_banner.jpg"
+import about_us from "./about_us.webp"
 
 export const assets = {
   logo,
@@ -154,13 +156,15 @@ export const assets = {
   womenFashion,
   kidsFashion,
   profile,
-  story_img,
   mission_img,
   quality_img,
   creative_img,
   community_img,
   banner4,
-  vnpay
+  vnpay,
+  bst_banner,
+  about_us,
+  our_story
 };
 
 export const products = [

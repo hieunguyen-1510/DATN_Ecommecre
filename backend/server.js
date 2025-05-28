@@ -17,6 +17,7 @@ import inventoryRouter from './src/routes/inventoryRoutes.js';
 import discountRouter from './src/routes/discountRoutes.js';
 import reportRouter from './src/routes/reportRoutes.js';
 import bannerRouter from './src/routes/bannerRoutes.js';
+import messageRouter from './src/routes/messageRoutes.js';
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/inventory',inventoryRouter);
 app.use('/api/discounts',discountRouter);
 app.use('/api/banners',bannerRouter);
 app.use('/api/reports',reportRouter);
+app.use('/api/chat',messageRouter);
 app.get('/', (req, res) => {
     res.send('API Server working...');
 });

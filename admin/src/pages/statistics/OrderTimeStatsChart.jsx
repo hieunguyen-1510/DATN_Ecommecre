@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback} from 'react';
-import { Bar } from 'react-chartjs-2';
-import axios from 'axios';
-import { backendUrl } from '../../App';
+import React, { useEffect, useState, useCallback } from "react";
+import { Bar } from "react-chartjs-2";
+import axios from "axios";
+import { backendUrl } from "../../App";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,10 +10,10 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import moment from 'moment';
+} from "chart.js";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 ChartJS.register(
   CategoryScale,
@@ -29,27 +29,29 @@ const OrderTimeStatsChart = () => {
     labels: [],
     datasets: [
       {
-        label: 'Số đơn hàng',
+        label: "Số đơn hàng",
         data: [],
-        backgroundColor: 'rgba(75, 192, 192, 0.7)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: "rgba(75, 192, 192, 0.7)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
         borderRadius: 8,
-        yAxisID: 'y', 
+        yAxisID: "y",
       },
       {
-        label: 'Doanh thu (VND)',
+        label: "Doanh thu (VND)",
         data: [],
-        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: "rgba(54, 162, 235, 0.7)",
+        borderColor: "rgba(54, 162, 235, 1)",
         borderWidth: 1,
         borderRadius: 8,
-        yAxisID: 'y1', 
-      }
+        yAxisID: "y1",
+      },
     ],
   });
-  const [period, setPeriod] = useState('day');
-  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  const [period, setPeriod] = useState("day");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setMonth(new Date().getMonth() - 1))
+  );
   const [endDate, setEndDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -61,30 +63,36 @@ const OrderTimeStatsChart = () => {
     try {
       const params = {
         period,
-        startDate: moment(startDate).format('YYYY-MM-DD'),
-        endDate: moment(endDate).format('YYYY-MM-DD'),
+        startDate: moment(startDate).format("YYYY-MM-DD"),
+        endDate: moment(endDate).format("YYYY-MM-DD"),
       };
 
-      const res = await axios.get(`${backendUrl}/api/reports/time-stats`, { params });
+      const res = await axios.get(`${backendUrl}/api/reports/time-stats`, {
+        params,
+      });
       const data = res.data.data;
 
-      setChartData(prevData => ({
-        labels: data.map(item => item.date),
+      setChartData((prevData) => ({
+        labels: data.map((item) => item.date),
         datasets: [
           {
             ...prevData.datasets[0],
-            data: data.map(item => item.totalOrders),
+            data: data.map((item) => item.totalOrders || 0),
           },
           {
             ...prevData.datasets[1],
-            data: data.map(item => item.totalRevenue),
-          }
+            data: data.map((item) => item.totalRevenue || 0),
+          },
         ],
       }));
     } catch (err) {
-      console.error('Lỗi khi tải dữ liệu thống kê:', err);
-      setError('Không thể tải dữ liệu thống kê theo thời gian.');
-      setChartData(prevData => ({ ...prevData, labels: [], datasets: prevData.datasets.map(ds => ({ ...ds, data: [] })) }));
+      console.error("Lỗi khi tải dữ liệu thống kê:", err);
+      setError("Không thể tải dữ liệu thống kê theo thời gian.");
+      setChartData((prevData) => ({
+        ...prevData,
+        labels: [],
+        datasets: prevData.datasets.map((ds) => ({ ...ds, data: [] })),
+      }));
     } finally {
       setLoading(false);
     }
@@ -93,7 +101,7 @@ const OrderTimeStatsChart = () => {
   // Fetch data when component mounts or filters change
   useEffect(() => {
     fetchData();
-  }, [fetchData]); 
+  }, [fetchData]);
 
   // Chart options for responsiveness, dual Y-axes, and tooltips
   const options = {
@@ -101,38 +109,41 @@ const OrderTimeStatsChart = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
         labels: {
           font: {
-            size: 14
-          }
-        }
+            size: 14,
+          },
+        },
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
             if (label) {
-              label += ': ';
+              label += ": ";
             }
-            if (context.dataset.label.includes('Doanh thu')) {
-              label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.raw);
+            if (context.dataset.label.includes("Doanh thu")) {
+              label += new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(context.raw);
             } else {
               label += context.raw;
             }
             return label;
-          }
-        }
+          },
+        },
       },
       title: {
         display: true,
-        text: 'THỐNG KÊ ĐƠN HÀNG THEO THỜI GIAN',
+        text: "THỐNG KÊ ĐƠN HÀNG THEO THỜI GIAN",
         font: {
           size: 18,
-          weight: 'bold'
+          weight: "bold",
         },
-        color: '#333',
-      }
+        color: "#333",
+      },
     },
     scales: {
       x: {
@@ -140,44 +151,44 @@ const OrderTimeStatsChart = () => {
           autoSkip: true,
           maxRotation: 45,
           minRotation: 0,
-        }
+        },
       },
       y: {
-        type: 'linear',
+        type: "linear",
         display: true,
-        position: 'left',
+        position: "left",
         title: {
           display: true,
-          text: 'Số đơn hàng',
+          text: "Số đơn hàng",
           font: {
-            size: 14
-          }
+            size: 14,
+          },
         },
         beginAtZero: true,
         ticks: {
-          precision: 0
-        }
+          precision: 0,
+        },
       },
       y1: {
-        type: 'linear',
+        type: "linear",
         display: true,
-        position: 'right',
+        position: "right",
         title: {
           display: true,
-          text: 'Doanh thu (VND)',
+          text: "Doanh thu (VND)",
           font: {
-            size: 14
-          }
+            size: 14,
+          },
         },
         grid: {
-          drawOnChartArea: false, 
+          drawOnChartArea: false,
         },
         beginAtZero: true,
         ticks: {
-          callback: function(value) {
-            return new Intl.NumberFormat('vi-VN').format(value);
-          }
-        }
+          callback: function (value) {
+            return new Intl.NumberFormat("vi-VN").format(value);
+          },
+        },
       },
     },
   };
@@ -185,7 +196,9 @@ const OrderTimeStatsChart = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-2 md:mb-0">THỐNG KÊ ĐƠN HÀNG THEO THỜI GIAN</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2 md:mb-0">
+          THỐNG KÊ ĐƠN HÀNG THEO THỜI GIAN
+        </h3>
         <div className="flex flex-wrap items-center gap-3 md:gap-4">
           <select
             value={period}
@@ -236,13 +249,23 @@ const OrderTimeStatsChart = () => {
             <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
           </div>
         ) : error ? (
-          <p className="text-red-500 text-center">{error}</p>
+          <div className="text-center">
+            <p className="text-red-500 mb-2">{error}</p>
+            <button
+              onClick={fetchData}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out"
+            >
+              Thử lại
+            </button>
+          </div>
         ) : chartData.labels.length > 0 ? (
           <div className="w-full h-full">
             <Bar data={chartData} options={options} />
           </div>
         ) : (
-          <p className="text-gray-500 text-center">Không có dữ liệu để hiển thị cho khoảng thời gian này.</p>
+          <p className="text-gray-500 text-center">
+            Không có dữ liệu để hiển thị cho khoảng thời gian này.
+          </p>
         )}
       </div>
     </div>

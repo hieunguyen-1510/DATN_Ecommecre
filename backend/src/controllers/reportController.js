@@ -34,7 +34,10 @@ export const getOrderTimeStats = async (req, res) => {
     }
     
     const stats = await Order.aggregate([
-      { $match: { createdAt: { $gte: start, $lte: end } } },
+      { $match: { 
+        createdAt: { $gte: start, $lte: end },
+        status: "Delivered" 
+      } },
       { $group: { _id: groupId, totalOrders: { $sum: 1 }, totalRevenue: { $sum: "$totalAmount" }, date: { $first: "$createdAt" } } },
       { $sort: { _id: 1 } }
     ]);
@@ -55,7 +58,7 @@ export const getOrderTimeStats = async (req, res) => {
           dateLabel = date.format('DD/MM/YYYY');
       }
       
-     return { date: dateLabel, totalOrders: item.totalOrders, totalRevenue: item.totalRevenue, rawDate: item.date };
+      return { date: dateLabel, totalOrders: item.totalOrders, totalRevenue: item.totalRevenue || 0, rawDate: item.date };
     });
     
     res.status(200).json({ data: formattedStats });
@@ -169,7 +172,7 @@ export const generateStockStatusReport = async (req, res) => {
   }
 };
 
-// Báo cáo động theo type: product_status hoặc bestseller
+// Báo cáo động
 export const getDynamicReport = async (req, res) => {
   const { type } = req.query;
 
@@ -195,6 +198,17 @@ export const getDynamicReport = async (req, res) => {
     }
 
     res.status(400).json({ error: "Loại report không hợp lệ" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Lấy tổng doanh thu 
+export const getTotalRevenue = async (req, res) => {
+  try {
+    const revenueReport = await Report.findOne({ type: "total_revenue" });
+    const totalRevenue = revenueReport ? revenueReport.data.totalRevenue.total : 0;
+    res.status(200).json({ data: { total: totalRevenue } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
