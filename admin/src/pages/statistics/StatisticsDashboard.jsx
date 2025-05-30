@@ -59,7 +59,7 @@ const StatisticDashboard = () => {
 
   return (
     <div className="p-6 space-y-8 bg-gray-100 min-h-screen font-sans">
-      <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8 flex items-center justify-center">
+      <h2 className="text-4xl font-semibold text-center text-gray-900 mb-8 flex items-center justify-center">
         <span className="mr-3 text-blue-600">📊</span> THỐNG KÊ HỆ THỐNG
       </h2>
 

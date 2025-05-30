@@ -92,7 +92,7 @@ const Orders = () => {
         });
         const data = await response.json();
         if (data.success) {
-          const sortedOrders = data.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+          const sortedOrders = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setOrders(sortedOrders);
         } else {
           console.error(data.message);
@@ -172,7 +172,7 @@ const Orders = () => {
                   Mã đơn hàng: <span className="text-orange-600">{order._id.substring(0, 8).toUpperCase()}</span>
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Ngày đặt: <span className="font-semibold">{dayjs(order.date).format("DD [tháng] MM,YYYY")}</span> 
+                  Ngày đặt: <span className="font-semibold">{dayjs(order.createdAt).format("DD [tháng] MM,YYYY")}</span>
                 </p>
               </div>
 

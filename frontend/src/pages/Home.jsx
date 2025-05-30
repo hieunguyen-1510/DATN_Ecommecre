@@ -10,11 +10,11 @@ const Home = () => (
     <section className="mb-12">
       <BannerSlider />
     </section>
-    <section className="mb-12">
-      <BestSeller />
+     <section className="mb-12">
+      <LatestCollection />
     </section>
     <section className="mb-12">
-      <LatestCollection />
+      <BestSeller />
     </section>
     <section className="mb-12">
       <OurPolicy />

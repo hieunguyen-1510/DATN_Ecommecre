@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import Title from "./Title";
-import ProductCard from "./ProductCard";
-import { ShopContext } from "../context/ShopContext";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { assets } from "../assets/assets";
 
-// Animation
+// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -22,41 +21,42 @@ const itemVariants = {
 };
 
 const LatestCollection = () => {
-  const { products } = useContext(ShopContext);
-  const [latest, setLatest] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    // Sắp xếp sản phẩm theo thời gian tạo mới nhất
-    const filtered = [...products].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-    setLatest(filtered);
-  }, [products]);
-
-  // Hiển thị 4 sản phẩm mỗi lần
-  const visibleProducts = latest.slice(currentIndex, currentIndex + 4);
-
-  // Chức năng chuyển slide tiếp theo
-  const nextSlide = () => {
-    if (currentIndex + 4 < latest.length) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  // Chức năng chuyển slide trước đó
-  const prevSlide = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
+  const collections = [
+    {
+      name: "LIMITED EDITION",
+      subtitle: "Xu hướng thời trang SS'23",
+      image: assets.menFashion,
+      path: "/men",
+      theme: "dark",
+      badge: "Mới",
+      productCount: 12,
+    },
+    {
+      name: "EXCLUSIVE LINEN",
+      subtitle: "Bộ sưu tập mùa hè 2024",
+      image: assets.womenFashion,
+      path: "/women",
+      theme: "light",
+      badge: "Bán chạy",
+      productCount: 24,
+    },
+    {
+      name: "BAROQUE GLAM",
+      subtitle: "Phong cách cổ điển hiện đại",
+      image: assets.kidsFashion,
+      path: "/kids",
+      theme: "dark",
+      badge: "Giảm 30%",
+      productCount: 8,
+    },
+  ];
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden"
+      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl relative overflow-hidden"
     >
       {/* Tiêu đề */}
       <div className="text-center pb-12">
@@ -67,35 +67,8 @@ const LatestCollection = () => {
         </p>
       </div>
 
-      {/* Hiển thị sản phẩm với nút điều hướng */}
+      {/* Hiển thị bộ sưu tập */}
       <div className="container max-w-7xl mx-auto relative">
-        {/* Nút điều hướng trái */}
-        <button
-          onClick={prevSlide}
-          disabled={currentIndex === 0}
-          className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 ${
-            currentIndex === 0
-              ? "opacity-40 cursor-not-allowed"
-              : "text-yellow-500"
-          }`}
-          aria-label="Previous products"
-        >
-          <FiChevronLeft className="text-3xl" />
-        </button>
-        {/* Nút điều hướng phải */}
-        <button
-          onClick={nextSlide}
-          disabled={currentIndex + 4 >= latest.length}
-          className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 ${
-            currentIndex + 4 >= latest.length
-              ? "opacity-40 cursor-not-allowed"
-              : "text-yellow-500"
-          }`}
-          aria-label="Next products"
-        >
-          <FiChevronRight className="text-3xl" />
-        </button>
-
         <motion.div
           className="container max-w-7xl mx-auto px-4"
           variants={containerVariants}
@@ -103,34 +76,93 @@ const LatestCollection = () => {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
-            {visibleProducts.map((item, index) => (
+          {/* Change grid to display 3 items */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {collections.map((collection, index) => (
               <motion.div
-                key={item._id || index}
+                key={collection.name}
                 variants={itemVariants}
                 className="relative z-10"
               >
-                <ProductCard product={item} />
-
-                {/* Badge Mới - Đồng bộ style với tag Hot của BestSeller */}
-                <motion.span
-                  className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold px-4 py-1.5 text-xs rounded-full shadow-md pointer-events-none z-30 uppercase tracking-wider flex items-center gap-1" // Tăng z-index lên z-30
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 1.8,
-                    ease: "easeInOut",
-                  }}
+                <Link
+                  to={collection.path}
+                  className="relative block group overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
-                  🆕 Mới
-                </motion.span>
+                  {/* Badge */}
+                  {collection.badge && (
+                    <div
+                      className={`absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-xs font-bold ${
+                        collection.badge.includes("Giảm")
+                          ? "bg-red-600 text-white"
+                          : collection.theme === "dark"
+                          ? "bg-white text-gray-900"
+                          : "bg-gray-900 text-white"
+                      }`}
+                    >
+                      {collection.badge}
+                    </div>
+                  )}
+
+                  {/* Image Container */}
+                  <div className="relative aspect-[3/4] overflow-hidden">
+                    <img
+                      src={collection.image}
+                      alt={`Bộ sưu tập ${collection.name} - ${collection.subtitle}`}
+                      className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105`}
+                    />
+                  </div>
+
+                  {/* Gradient Overlay */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t ${
+                      collection.theme === "dark"
+                        ? "from-black/70 via-black/40 to-transparent"
+                        : "from-white/70 via-white/40 to-transparent"
+                    }`}
+                  />
+
+                  {/* Content */}
+                  <div
+                    className={`absolute bottom-0 left-0 right-0 p-6 ${
+                      collection.theme === "dark"
+                        ? "text-white"
+                        : "text-gray-900"
+                    }`}
+                  >
+                    <h3 className="text-2xl font-bold mb-1 group-hover:text-red-300 transition-colors duration-300">
+                      {collection.name}
+                    </h3>
+                    <p className="text-sm opacity-80 mb-2">
+                      {collection.subtitle}
+                    </p>
+                    <p className="text-sm">
+                      {collection.productCount} sản phẩm
+                    </p>
+                    <div className="mt-3 h-px w-0 bg-current transition-all duration-500 group-hover:w-16" />
+                  </div>
+                  {/* Hover CTA */}
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <span
+                      className={`inline-block border-2 ${
+                        collection.theme === "dark"
+                          ? "border-white hover:bg-white/20 text-white"
+                          : "border-gray-900 hover:bg-gray-900/10 text-gray-900"
+                      } px-6 py-2 text-sm font-medium rounded-full transition-all`}
+                    >
+                      KHÁM PHÁ NGAY
+                    </span>
+                  </motion.div>
+                </Link>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </div>
 
-      {/* Nút CTA - Đồng bộ style với BestSeller */}
+      {/* Nút CTA */}
       <div className="text-center mt-16 px-4">
         <motion.div
           whileHover={{

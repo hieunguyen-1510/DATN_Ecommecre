@@ -85,6 +85,7 @@ const PlaceOrder = () => {
                 quantity,
                 size,
                 price: product.price,
+                purchasePriceAtOrder: product.purchasePrice
               });
             }
           }

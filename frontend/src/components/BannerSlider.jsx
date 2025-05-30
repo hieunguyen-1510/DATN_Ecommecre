@@ -17,7 +17,9 @@ const BannerSlider = () => {
       setError("");
       try {
         const res = await axios.get(`${backendUrl}/api/banners/public`);
-        setBanners(res.data);
+
+        const validBanners = res.data.filter((banner) => banner.imageUrl);
+        setBanners(validBanners);
       } catch (err) {
         setError("Không thể tải banner. Vui lòng thử lại sau.");
         console.error("Error fetching public banners:", err);
@@ -29,21 +31,48 @@ const BannerSlider = () => {
     fetchBanners();
   }, []);
 
-  // Cấu hình slider react-slick
+  // Cấu hình slider
   const settings = {
-    dots: true, // Hiển thị chấm tròn chuyển slide
-    arrows: true, // Hiển thị mũi tên chuyển slide
+    dots: true,
+    arrows: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 1, // Chỉ hiện 1 banner/lần
+    slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
+    pauseOnHover: true,
+
+    responsive: [
+      {
+        breakpoint: 1024, // Áp dụng khi chiều rộng màn hình <= 1024px (desktop nhỏ, tablet ngang)
+        settings: {
+          arrows: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 768, // Áp dụng khi chiều rộng màn hình <= 768px (tablet dọc, điện thoại ngang)
+        settings: {
+          arrows: false,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 480, // Áp dụng khi chiều rộng màn hình <= 480px (điện thoại dọc)
+        settings: {
+          arrows: false,
+          dots: true,
+        },
+      },
+    ],
   };
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">Đang tải banner...</div>
+      <div className="text-center py-20 text-gray-500">
+        <div className="animate-pulse">Đang tải banner...</div>
+      </div>
     );
   }
 
@@ -51,6 +80,12 @@ const BannerSlider = () => {
     return (
       <div className="text-center py-20 text-red-600 font-semibold">
         {error}
+        <button
+          onClick={() => window.location.reload()}
+          className="ml-4 px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200"
+        >
+          Thử lại
+        </button>
       </div>
     );
   }
@@ -64,15 +99,18 @@ const BannerSlider = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <Slider {...settings}>
         {banners.map((banner) => (
-          <div key={banner._id} className="relative h-[600px]">
-            <img
-              src={banner.imageUrl}
-              alt={banner.title || "Banner"}
-              className="w-full h-full object-cover rounded-xl shadow-lg"
-            />
+          <div key={banner._id} className="relative">
+            <div className="w-full aspect-[21/9] sm:aspect-video lg:aspect-[21/9] relative">
+              <img
+                src={banner.imageUrl}
+                alt={banner.title || "Banner"}
+                className="absolute inset-0 w-full h-full object-cover rounded-xl shadow-lg"
+                loading="lazy"
+              />
+            </div>
           </div>
         ))}
       </Slider>

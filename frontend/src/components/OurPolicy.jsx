@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaExchangeAlt, FaCheckCircle, FaHeadset } from "react-icons/fa"; 
-import Title from "./Title"; 
+import { FaExchangeAlt, FaCheckCircle, FaHeadset } from "react-icons/fa";
+import Title from "./Title";
 
-// Hiệu ứng stagger cho các mục chính sách
+// Hiệu ứng stagger
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -15,8 +15,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 }, 
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }, 
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 const OurPolicy = () => {
@@ -39,14 +39,13 @@ const OurPolicy = () => {
   ];
 
   return (
-    <div className="py-16 bg-gray-50"> 
-      {/* Sử dụng Title component để đồng bộ tiêu đề */}
-      <div className="text-center pb-12"> 
+    <div className="py-16 bg-gray-50">
+      <div className="text-center pb-12">
         <Title text1="TẠI SAO" text2="CHỌN CHÚNG TÔI" />
       </div>
 
       <motion.div
-        className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4" 
+        className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -56,24 +55,22 @@ const OurPolicy = () => {
           <motion.div
             key={index}
             variants={itemVariants}
-            // Áp dụng style card đồng bộ với sản phẩm
-            className="flex flex-col items-center text-center bg-white p-8 rounded-2xl shadow-xl 
-                       transform hover:-translate-y-2 transition-all duration-300 ease-in-out" 
+            className="flex flex-col items-center text-center bg-white p-8 rounded-2xl
+                       transform hover:-translate-y-2 transition-all duration-300 ease-in-out"
           >
             <motion.div
-             
-              className="text-4xl mb-6 text-blue-500" 
+              className="text-4xl mb-6 text-blue-500"
               whileHover={{
-                scale: 1.1, 
+                scale: 1.1,
                 transition: { duration: 0.3 },
               }}
             >
               {policy.icon}
             </motion.div>
-            <p className="text-base font-bold text-gray-900 mb-3"> 
+            <p className="text-lg font-bold text-gray-900 mb-3">
               {policy.title}
             </p>
-            <p className="text-gray-700 leading-relaxed text-sm"> 
+            <p className="text-gray-700 leading-relaxed text-sm">
               {policy.desc}
             </p>
           </motion.div>

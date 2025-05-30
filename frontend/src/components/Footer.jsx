@@ -123,7 +123,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="mt-16 pt-8 border-t border-gray-200 text-center">
+        <div className="mt-8 pt-4 border-t border-gray-200 text-center">
           <p className="text-gray-600 text-sm">
             © 2025 STREET STYLE – Giấy chứng nhận Đăng ký kinh doanh số
             0989908100.
