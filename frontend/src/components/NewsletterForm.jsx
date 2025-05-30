@@ -27,7 +27,7 @@ const NewsletterForm = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       
-      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden" 
+      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl relative overflow-hidden" 
     >
       <div className="max-w-4xl mx-auto"> 
         <motion.div

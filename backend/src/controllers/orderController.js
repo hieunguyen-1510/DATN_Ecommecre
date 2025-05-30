@@ -47,8 +47,9 @@ const placeOrder = async (req, res) => {
     }
 
     let calculatedSubtotal = 0;
+    // let totalCostOfOrder = 0;
     const processedItems = [];
-
+    // Kiểm tra ton kho va lay chi tiet san pham
     for (const item of items) {
       const product = await Product.findById(item.productId);
 
@@ -73,6 +74,7 @@ const placeOrder = async (req, res) => {
         quantity: item.quantity,
         price: product.price,
         size: item.size,
+        purchasePriceAtOrder: product.purchasePrice
       });
     }
 
@@ -94,6 +96,7 @@ const placeOrder = async (req, res) => {
       address,
       paymentMethod: methodUpper,
       status: methodUpper === "COD" ? "Order Placed" : "pending",
+      // totalCost: totalCostOfOrder, // lưu tổng giá vốn của đơn hàng
     });
 
     const savedOrder = await newOrder.save();
@@ -113,6 +116,20 @@ const placeOrder = async (req, res) => {
     await newPayment.save();
     savedOrder.paymentId = newPayment._id;
     await savedOrder.save();
+
+    // Cập nhật tồn kho và số lượng đã bán
+    for (const item of processedItems) {
+      await Product.findByIdAndUpdate(
+        item.productId,
+        {
+          $inc: {
+            stock: -item.quantity,
+            sold: item.quantity,
+          },
+        },
+        { new: true, runValidators: true }
+      );
+    }
 
     // MOMO Payment
     if (methodUpper === "MOMO") {
@@ -343,6 +360,14 @@ const cancelOrder = async (req, res) => {
     order.status = "Cancelled";
     order.cancelReason = cancelReason;
     await order.save();
+    // Hoàn lại số lượng sản phẩm vào kho
+    for (const item of order.items) {
+      await Product.findByIdAndUpdate(
+        item.productId,
+        { $inc: { stock: item.quantity, sold: -item.quantity } },
+        { new: true, runValidators: true }
+      );
+    }
 
     res.json({ success: true, message: "Hủy đơn hàng thành công.", order });
   } catch (error) {

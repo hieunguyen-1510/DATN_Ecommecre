@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import { backendUrl } from '../../App';
@@ -11,6 +11,9 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
 
 ChartJS.register(
   CategoryScale,
@@ -23,40 +26,50 @@ ChartJS.register(
 
 const BestSellersChart = () => {
   const [labels, setLabels] = useState([]);
-  const [soldData, setSoldData] = useState([]);
+  const [soldData, setSoldData] = useState([]); // Sẽ chứa giá trị từ trường 'value'
   const [stockData, setStockData] = useState([]);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [startDate, setStartDate] = useState(moment().subtract(1, 'month').toDate()); // Mặc định 1 tháng trước
+  const [endDate, setEndDate] = useState(new Date()); // Mặc định hôm nay
 
   // Callback function to fetch data for best sellers
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${backendUrl}/api/reports/best-sellers`, {
-        params: { limit }
+      const params = {
+        limit,
+        startDate: moment(startDate).format("YYYY-MM-DD"),
+        endDate: moment(endDate).format("YYYY-MM-DD"),
+      };
+
+      // Gọi API mới cho sản phẩm bán chạy theo số lượng
+      const res = await axios.get(`${backendUrl}/api/reports/best-sellers/quantity`, {
+        params
       });
       const data = res.data.data;
 
       setLabels(data.map(item => item.name));
-      setSoldData(data.map(item => item.sold));
+      setSoldData(data.map(item => item.value)); // Lấy dữ liệu từ trường 'value'
       setStockData(data.map(item => item.stock));
     } catch (err) {
       console.error('Lỗi khi tải sản phẩm bán chạy:', err);
-      setError('Không thể tải sản phẩm bán chạy.');
+      setError('Không thể tải sản phẩm bán chạy. Vui lòng thử lại.');
       setLabels([]);
       setSoldData([]);
       setStockData([]);
     } finally {
       setLoading(false);
     }
-  }, [limit]); 
+  }, [limit, startDate, endDate]); // Thêm startDate, endDate vào dependencies
 
-  // Fetch data 
+  // Fetch data when component mounts or filters change
   useEffect(() => {
     fetchData();
-  }, [fetchData]); 
+  }, [fetchData]);
+
   // Chart data structure
   const chartData = {
     labels,
@@ -64,7 +77,7 @@ const BestSellersChart = () => {
       {
         label: 'Đã bán',
         data: soldData,
-        backgroundColor: 'rgba(75, 192, 192, 0.7)', 
+        backgroundColor: 'rgba(75, 192, 192, 0.7)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
         borderRadius: 8,
@@ -72,7 +85,7 @@ const BestSellersChart = () => {
       {
         label: 'Tồn kho',
         data: stockData,
-        backgroundColor: 'rgba(255, 99, 132, 0.7)', 
+        backgroundColor: 'rgba(255, 99, 132, 0.7)',
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
         borderRadius: 8,
@@ -101,7 +114,7 @@ const BestSellersChart = () => {
       },
       title: {
         display: true,
-        text: 'Sản phẩm bán chạy',
+        text: 'Sản phẩm bán chạy theo số lượng', // Cập nhật tiêu đề
         font: {
           size: 18,
           weight: 'bold'
@@ -120,7 +133,7 @@ const BestSellersChart = () => {
           }
         },
         ticks: {
-          precision: 0 
+          precision: 0
         }
       }
     }
@@ -130,7 +143,7 @@ const BestSellersChart = () => {
     <div className="bg-white p-6 rounded-lg shadow-lg h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
         <h3 className="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">SẢN PHẨM BÁN CHẠY</h3>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center space-x-3">
           <span className="text-gray-700 font-medium">Hiển thị:</span>
           <select
             value={limit}
@@ -142,11 +155,35 @@ const BestSellersChart = () => {
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
+
+          <div className="flex items-center space-x-2">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              dateFormat="dd/MM/yyyy"
+              className="border border-gray-300 rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-gray-700">đến</span>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              dateFormat="dd/MM/yyyy"
+              className="border border-gray-300 rounded-md px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <button
             onClick={fetchData}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out shadow-md"
           >
-            Tải lại
+            Lọc
           </button>
         </div>
       </div>

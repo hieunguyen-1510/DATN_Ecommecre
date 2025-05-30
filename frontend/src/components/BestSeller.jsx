@@ -28,15 +28,15 @@ const BestSeller = () => {
 
   // Lọc sản phẩm bán chạy
   useEffect(() => {
-    const filtered = products.filter((item) => item.bestseller === true);
+    const filtered = products.filter((item) => item.bestseller === false);
     setBestSeller(filtered);
   }, [products]);
 
-  // Hiển thị 3 sản phẩm mỗi lần
-  const visibleProducts = bestseller.slice(currentIndex, currentIndex + 3);
+  // Hiển thị 4 sản phẩm mỗi lần
+  const visibleProducts = bestseller.slice(currentIndex, currentIndex + 4);
 
   const nextSlide = () => {
-    if (currentIndex + 3 < bestseller.length) {
+    if (currentIndex + 4 < bestseller.length) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -53,7 +53,7 @@ const BestSeller = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       
-      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden" 
+      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl relative overflow-hidden" 
     >
       {/* Tiêu đề */}
       <div className="text-center pb-12"> 
@@ -76,9 +76,9 @@ const BestSeller = () => {
         </button>
         <button
           onClick={nextSlide}
-          disabled={currentIndex + 3 >= bestseller.length}
+          disabled={currentIndex + 4 >= bestseller.length}
           className={`p-3 rounded-full bg-white shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-110 ${
-            currentIndex + 3 >= bestseller.length
+            currentIndex + 4 >= bestseller.length
               ? "opacity-40 cursor-not-allowed"
               : "text-yellow-500" 
           }`}
@@ -96,7 +96,7 @@ const BestSeller = () => {
         viewport={{ once: true }}
         ref={carouselRef}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
           {visibleProducts.map((item, index) => (
             <motion.div
               key={item._id || index}

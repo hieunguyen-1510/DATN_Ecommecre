@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
-import { backendUrl } from "../../App";
+import { backendUrl } from "../../App"; 
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -49,10 +49,11 @@ const OrderTimeStatsChart = () => {
     ],
   });
   const [period, setPeriod] = useState("day");
+  // Khởi tạo startDate và endDate để khớp với logic mặc định của backend
   const [startDate, setStartDate] = useState(
-    new Date(new Date().setMonth(new Date().getMonth() - 1))
+    moment().subtract(1, 'month').toDate() // Mặc định 1 tháng trước
   );
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date()); // Mặc định hôm nay
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -63,6 +64,7 @@ const OrderTimeStatsChart = () => {
     try {
       const params = {
         period,
+        // Format ngày tháng gửi lên backend theo YYYY-MM-DD
         startDate: moment(startDate).format("YYYY-MM-DD"),
         endDate: moment(endDate).format("YYYY-MM-DD"),
       };
@@ -87,7 +89,7 @@ const OrderTimeStatsChart = () => {
       }));
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu thống kê:", err);
-      setError("Không thể tải dữ liệu thống kê theo thời gian.");
+      setError("Không thể tải dữ liệu thống kê theo thời gian. Vui lòng thử lại.");
       setChartData((prevData) => ({
         ...prevData,
         labels: [],
@@ -96,7 +98,7 @@ const OrderTimeStatsChart = () => {
     } finally {
       setLoading(false);
     }
-  }, [period, startDate, endDate]);
+  }, [period, startDate, endDate]); // Thêm startDate, endDate vào dependencies
 
   // Fetch data when component mounts or filters change
   useEffect(() => {

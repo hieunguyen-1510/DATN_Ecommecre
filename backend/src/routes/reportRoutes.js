@@ -6,9 +6,9 @@ import {
   getDynamicReport,
   getOrderTimeStats,
   getInventoryStats,
-  getBestSellers,
-  getTotalRevenue
-
+  getBestSellersByQuantity,
+  getBestSellersByRevenue,
+  getTotalRevenue,
 } from "../controllers/reportController.js";
 
 const reportRouter = express.Router();
@@ -16,9 +16,13 @@ const reportRouter = express.Router();
 reportRouter.get("/order-stats", generateOrderStatsReport);
 reportRouter.get("/stock-status", generateStockStatusReport);
 reportRouter.get("/time-stats", getOrderTimeStats);
-reportRouter.get("/", getDynamicReport); 
 reportRouter.get("/inventory-stats", getInventoryStats);
-reportRouter.get("/best-sellers", getBestSellers);
 reportRouter.get("/total-revenue", getTotalRevenue);
+
+reportRouter.get("/", getDynamicReport);
+
+reportRouter.get("/best-sellers/quantity", getBestSellersByQuantity);
+
+reportRouter.get("/best-sellers/revenue", getBestSellersByRevenue);
 
 export default reportRouter;

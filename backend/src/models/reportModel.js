@@ -4,7 +4,7 @@ const reportSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["product_status", "order_stats", "bestseller", "stock_status", "inventory_alert","total_revenue"],
+    enum: ["product_status", "order_stats", "bestseller", "stock_status", "inventory_alert","total_revenue","bestseller_revenue"],
   },
   data: {
     inventoryStats: {
@@ -24,7 +24,7 @@ const reportSchema = new mongoose.Schema({
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         name: String,
-        sold: Number,
+        value: Number,
         stock: Number,
       },
     ],
@@ -53,7 +53,7 @@ const reportSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: "1d", 
+    // expires: "1d",
   },
 }, { versionKey: false });
 

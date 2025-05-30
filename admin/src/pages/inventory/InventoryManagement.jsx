@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import useInventory from "../../hooks/useInventory";
-import InventoryStats from "../../components/InventoryStats";
-import InventoryFilters from "../../components/InventoryFilters";
-import InventoryTable from "../../components/InventoryTable";
-import DiscountModal from "../../components/DiscountModal";
+import InventoryStats from "./InventoryStats";
+import InventoryFilters from "./InventoryFilters";
+import InventoryTable from "./InventoryTable";
+import DiscountModal from "./DiscountModal";
 import { Form, message } from "antd";
 import axios from "axios";
 import { backendUrl } from "../../App";
@@ -34,11 +34,16 @@ const InventoryManagement = () => {
   const [createDiscountForm] = Form.useForm();
   const token = localStorage.getItem("token");
 
-  // Fetch data on mount & when dependencies change
   useEffect(() => {
     fetchProducts({ pagination, search, statusFilter });
     fetchStats();
-  }, [pagination.current, pagination.pageSize, search, statusFilter, fetchProducts]);
+  }, [
+    pagination.current,
+    pagination.pageSize,
+    search,
+    statusFilter,
+    fetchProducts,
+  ]);
 
   // Discount handlers
   const showDiscountModal = (product) => {
@@ -71,7 +76,9 @@ const InventoryManagement = () => {
       handleCancelModal();
       fetchProducts({ pagination, search, statusFilter });
     } catch (error) {
-      message.error(error.response?.data?.message || "Áp dụng giảm giá thất bại");
+      message.error(
+        error.response?.data?.message || "Áp dụng giảm giá thất bại"
+      );
     }
   };
 
@@ -92,7 +99,9 @@ const InventoryManagement = () => {
       setDiscountCode(response.data.data.code);
       setActiveDiscountTab("applyCode");
     } catch (error) {
-      message.error(error.response?.data?.message || "Tạo mã giảm giá thất bại!");
+      message.error(
+        error.response?.data?.message || "Tạo mã giảm giá thất bại!"
+      );
     }
   };
 
