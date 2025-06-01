@@ -49,6 +49,15 @@ const listProducts = async (req, res) => {
 
     if (search) query.name = { $regex: search, $options: "i" };
     if (category) query.category = category;
+    // Xử lý guest và user/admin
+    if (!req.user || (req.user && req.user.role !== 'admin')) {
+      // neu la guest or user hien thi san pham
+      query.status = 'active';
+    } else if (req.user && req.user.role === 'admin') {
+      if (req.query.status) {
+        query.status = req.query.status;
+      }
+    }
     if (req.query.status) query.status = req.query.status;
 
     let sortOptions = {}; // khoi tap sap xep
@@ -65,7 +74,8 @@ const listProducts = async (req, res) => {
     const products = await productModel.find(query).sort(sortOptions).select('-__v'); 
     const productList = products.map(product => ({
         ...product.toObject(),
-        purchasePrice: product.purchasePrice || null,
+        // Chỉ hiển thị purchasePrice cho admin
+        purchasePrice: (req.user && req.user.role === 'admin') ? product.purchasePrice || null : undefined,
     }));
     res.json({ success: true, products: productList, total: products.length });
   } catch (error) {
@@ -100,13 +110,23 @@ const removeProduct = async (req, res) => {
 // Lấy thông tin sản phẩm
 const singleProduct = async (req, res) => {
   try {
-    const product = await productModel.findById(req.params.id).select('-__v'); 
+    const {id} = req.params;
+    let product;
+    // Xử lý guest và user/admin
+    if (!req.user || (req.user.role !== 'admin')) {
+      // Chỉ tìm sản phẩm có status là 'active'
+      product = await productModel.findOne({ _id: id, status: 'active' }).select('-__v');
+    } else {
+      // Nếu là admin, có thể xem sản phẩm ở mọi trạng thái
+      product = await productModel.findById(req.params.id).select('-__v'); 
+    }
     if (!product) {
       return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
     }
     const productData = {
         ...product.toObject(),
-        purchasePrice: product.purchasePrice || null,
+        // Chỉ hiển thị purchasePrice cho admin
+        purchasePrice: (req.user && req.user.role === 'admin') ? product.purchasePrice || null : undefined,
     };
     res.json({ success: true, product: productData });
   } catch (error) {

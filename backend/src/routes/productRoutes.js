@@ -4,6 +4,7 @@ import upload from '../middleware/multer.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
 import authAccess from '../middleware/authAccess.js';
+import optionalAuth from '../middleware/optionalAuth.js';
 
 const productRouter = express.Router();
 
@@ -39,9 +40,9 @@ productRouter.put(
 productRouter.delete('/:id',authUser,adminAuth, removeProduct);
 
 // Lấy danh sách sản phẩm
-productRouter.get('/list',authUser,authAccess,listProducts);
+productRouter.get('/list',optionalAuth,listProducts);
 
 // Lấy chi tiết sản phẩm
-productRouter.get('/:id',authUser,authAccess,singleProduct);
+productRouter.get('/:id',optionalAuth,singleProduct);
 
 export default productRouter;
