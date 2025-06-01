@@ -21,6 +21,7 @@ import ResetPassword from "./pages/ResetPassword";
 import MenProductsPage from "./pages/MenProductsPage";
 import WomenProductsPage from "./pages/WomenProductsPage";
 import KidsProductsPage from "./pages/KidsProductsPage";
+import Chatbot from "./components/ChatBot";
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
       </Routes>
       <Footer />
       <BackToTop/>
+      <Chatbot/>
     </div>
   );
 };
