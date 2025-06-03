@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 
 const faqSchema = new mongoose.Schema({
-    question: { // Câu hỏi thường gặp
+    question: { 
         type: String,
         required: true,
         unique: true
     },
-    answer: { // Câu trả lời tương ứng
+    answer: { 
         type: String,
         required: true
     },
-    keywords: [String] // Các từ khóa liên quan để tìm kiếm FAQ
+    keywords: [String] 
 }, { timestamps: true });
 
 const FAQ = mongoose.model('FAQ', faqSchema);

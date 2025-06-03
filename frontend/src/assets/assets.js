@@ -118,6 +118,7 @@ import vnpay from "./vnpay.png"
 import bst_banner from "./bst_banner.jpg"
 import about_us from "./about_us.webp"
 import notification_icon from "./notification_icon.png"
+import close_icon from "./close_icon.png"
 
 export const assets = {
   logo,
@@ -166,7 +167,8 @@ export const assets = {
   bst_banner,
   about_us,
   our_story,
-  notification_icon
+  notification_icon,
+  close_icon
 };
 
 export const products = [

@@ -56,7 +56,7 @@ const LatestCollection = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl relative overflow-hidden"
+      className="my-16 py-16 px-4 rounded-2xl relative overflow-hidden"
     >
       {/* Tiêu đề */}
       <div className="text-center pb-12">

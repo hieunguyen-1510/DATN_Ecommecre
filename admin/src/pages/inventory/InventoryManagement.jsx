@@ -60,6 +60,7 @@ const InventoryManagement = () => {
     createDiscountForm.resetFields();
   };
 
+  // components/InventoryManagement.js
   const handleApplyDiscount = async () => {
     if (!selectedProduct) return;
     if (!discountCode) {

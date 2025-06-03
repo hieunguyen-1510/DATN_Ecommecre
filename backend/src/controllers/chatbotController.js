@@ -1,5 +1,5 @@
-import getGeminiResponse  from "../services/gemini.Service.js";
-import { buildKnowledgeBaseString } from "../services/knowledgeBase.Service.js";
+import getGeminiResponse from "../services/gemini.service.js";
+import { buildKnowledgeBaseString } from "../services/knowledgeBase.service.js";
 import ChatMessage from "../models/chatMessageModel.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,18 +23,30 @@ const handleChatMessage = async (req, res) => {
 
     const knowledgeBaseData = await buildKnowledgeBaseString(message, userId);
 
-    const prompt = `Bạn là một trợ lý ảo thân thiện và hữu ích cho một cửa hàng thời trang trực tuyến.
-        Nhiệm vụ của bạn là trả lời các câu hỏi của khách hàng một cách chính xác, ngắn gọn và hữu ích.
-        Sử dụng thông tin được cung cấp trong phần "Knowledge Base" dưới đây để trả lời.
-        Nếu câu hỏi của người dùng nằm ngoài phạm vi kiến thức được cung cấp, hãy lịch sự gợi ý họ liên hệ với nhân viên hỗ trợ trực tiếp.
+    const prompt = `Bạn là một trợ lý ảo tên là Street Style, một người bạn đồng hành thân thiện và am hiểu về thời trang của cửa hàng Street Style trực tuyến.
+        Nhiệm vụ của bạn là:
+        1. Trả lời các câu hỏi của khách hàng một cách **chính xác, ngắn gọn, súc tích và hữu ích**.
+        2. Luôn giữ thái độ nhiệt tình, thân thiện, và phong cách "Street Style" (hiện đại, năng động).
+        3. Sử dụng **tối đa thông tin được cung cấp** trong phần "Cơ sở tri thức" bên dưới để trả lời.
+        4. Nếu thông tin cụ thể không có trong "Cơ sở tri thức", hãy trả lời một cách lịch sự rằng bạn không có thông tin đó và **gợi ý khách hàng liên hệ trực tiếp với bộ phận chăm sóc khách hàng qua hotline 0912345678 hoặc email support@streetstyle.vn** để được hỗ trợ chi tiết hơn (ví dụ: "Tôi rất tiếc, tôi chưa có thông tin này trong dữ liệu của mình. Bạn vui lòng liên hệ hotline... để được hỗ trợ nhanh nhất nhé!").
 
-        **Knowledge Base:**
-        ${knowledgeBaseData}
+        ---
 
-        **Câu hỏi của người dùng:**
+        **Cơ sở tri thức của Street Style (Knowledge Base):**
+        ${
+          knowledgeBaseData.trim()
+            ? knowledgeBaseData
+            : "Không có thông tin liên quan cụ thể cho câu hỏi này trong cơ sở tri thức hiện tại."
+        }
+
+        ---
+
+        **Câu hỏi hiện tại của người dùng:**
         ${message}
 
-        **Trả lời:**`;
+        ---
+
+        **Trả lời của bạn (ngắn gọn và đúng trọng tâm):**`;
 
     const botResponse = await getGeminiResponse(prompt);
 
@@ -51,12 +63,10 @@ const handleChatMessage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in chatbot controller:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại sau.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại sau.",
+    });
   }
 };
 

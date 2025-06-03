@@ -5,7 +5,7 @@ const chatMessageSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: false, // Có thể là khách vãng lai (null)
+      required: false, 
     },
     sessionId: {
       // Để nhóm các tin nhắn trong cùng một cuộc hội thoại

@@ -41,14 +41,14 @@ export const getOrderTimeStats = async (req, res) => {
       case "month":
         groupId = {
           year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" }, 
+          month: { $month: "$createdAt" },
         };
         break;
       default: // day
         groupId = {
           year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" }, 
-          day: { $dayOfMonth: "$createdAt" }, 
+          month: { $month: "$createdAt" },
+          day: { $dayOfMonth: "$createdAt" },
         };
     }
     const stats = await Order.aggregate([
@@ -89,7 +89,7 @@ export const getOrderTimeStats = async (req, res) => {
     // Format the response
     const formattedStats = stats.map((item) => {
       let dateLabel;
-      let actualDate; 
+      let actualDate;
       if (period === "year") {
         actualDate = moment().year(item._id.year).startOf("year");
       } else if (period === "month") {
@@ -121,7 +121,7 @@ export const getOrderTimeStats = async (req, res) => {
         date: dateLabel,
         totalOrders: item.totalOrders,
         totalRevenue: item.totalRevenue || 0,
-        rawDate: actualDate.toDate(), 
+        rawDate: actualDate.toDate(),
       };
     });
 
@@ -192,29 +192,38 @@ export const getBestSellersByQuantity = async (req, res) => {
   try {
     const { limit = 5, startDate, endDate } = req.query;
 
-    // Time loc don hang
-    const start = startDate
-      ? new Date(startDate)
-      : moment().subtract(1, "month").toDate();
-    // Default 1 month not startDate
-    const end = endDate ? new Date(endDate) : new Date(); // mac dinh den ngay hien tai
+    let start, end;
+
+    // Xử lý startDate để bao gồm từ đầu ngày
+    if (startDate) {
+      start = moment(startDate).startOf("day").toDate();
+    } else {
+      start = moment().subtract(1, "month").startOf("day").toDate(); // Mặc định từ đầu ngày của 1 tháng trước
+    }
+
+    // Xử lý endDate để bao gồm đến cuối ngày
+    if (endDate) {
+      end = moment(endDate).endOf("day").toDate();
+    } else {
+      end = moment().endOf("day").toDate(); // Mặc định đến cuối ngày hiện tại
+    }
 
     const bestSellers = await Order.aggregate([
       {
         $match: {
-          createdAt: { $gte: start, $lte: end },
+          createdAt: { $gte: start, $lte: end }, // Lọc chính xác từ đầu ngày đến cuối ngày
           status: "Delivered",
         },
       },
-      { $unwind: "$items" }, // tach tung san pham trong don hang
+      { $unwind: "$items" },
       {
         $group: {
-          _id: "$items.productId", // Nhom theo ID
-          totalSold: { $sum: "$items.quantity" }, //tong sp ban duoc
+          _id: "$items.productId",
+          totalSold: { $sum: "$items.quantity" },
         },
       },
-      { $sort: { totalSold: -1 } }, // sap xep giam dan
-      { $limit: parseInt(limit) }, // gioi han sluong sp
+      { $sort: { totalSold: -1 } },
+      { $limit: parseInt(limit) },
       {
         $lookup: {
           from: "products",
@@ -223,27 +232,27 @@ export const getBestSellersByQuantity = async (req, res) => {
           as: "productDetails",
         },
       },
-      { $unwind: "$productDetails" }, // Giai nen kq lookup
+      { $unwind: "$productDetails" },
       {
         $project: {
           _id: 0,
           product: "$_id",
           name: "$productDetails.name",
-          sold: "$totalSold", // So luong ban dc
-          stock: "$productDetails.stock", // ton kho htai cua sp
+          value: "$totalSold",
+          stock: "$productDetails.stock",
         },
       },
     ]);
     // update report bestseller
     await Report.findOneAndUpdate(
-      { type: "bestseller" }, 
+      { type: "bestseller" },
       {
         type: "bestseller",
         data: {
           bestSellers: bestSellers.map((p) => ({
             product: p.product,
             name: p.name,
-            value: p.sold, 
+            value: p.sold,
             stock: p.stock,
           })),
         },
@@ -315,7 +324,7 @@ export const getBestSellersByRevenue = async (req, res) => {
           bestSellers: bestSellers.map((p) => ({
             product: p.product,
             name: p.name,
-            value: p.revenue, 
+            value: p.revenue,
             stock: p.stock,
           })),
         },

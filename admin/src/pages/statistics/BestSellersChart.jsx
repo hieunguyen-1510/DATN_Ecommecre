@@ -26,13 +26,13 @@ ChartJS.register(
 
 const BestSellersChart = () => {
   const [labels, setLabels] = useState([]);
-  const [soldData, setSoldData] = useState([]); // Sẽ chứa giá trị từ trường 'value'
+  const [soldData, setSoldData] = useState([]); 
   const [stockData, setStockData] = useState([]);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [startDate, setStartDate] = useState(moment().subtract(1, 'month').toDate()); // Mặc định 1 tháng trước
-  const [endDate, setEndDate] = useState(new Date()); // Mặc định hôm nay
+  const [startDate, setStartDate] = useState(moment().subtract(1, 'month').toDate());
+  const [endDate, setEndDate] = useState(new Date()); 
 
   // Callback function to fetch data for best sellers
   const fetchData = useCallback(async () => {
@@ -52,7 +52,7 @@ const BestSellersChart = () => {
       const data = res.data.data;
 
       setLabels(data.map(item => item.name));
-      setSoldData(data.map(item => item.value)); // Lấy dữ liệu từ trường 'value'
+      setSoldData(data.map(item => item.value));
       setStockData(data.map(item => item.stock));
     } catch (err) {
       console.error('Lỗi khi tải sản phẩm bán chạy:', err);
@@ -63,7 +63,7 @@ const BestSellersChart = () => {
     } finally {
       setLoading(false);
     }
-  }, [limit, startDate, endDate]); // Thêm startDate, endDate vào dependencies
+  }, [limit, startDate, endDate]); 
 
   // Fetch data when component mounts or filters change
   useEffect(() => {
@@ -114,7 +114,7 @@ const BestSellersChart = () => {
       },
       title: {
         display: true,
-        text: 'Sản phẩm bán chạy theo số lượng', // Cập nhật tiêu đề
+        text: 'Sản phẩm bán chạy theo số lượng',
         font: {
           size: 18,
           weight: 'bold'

@@ -4,8 +4,13 @@ const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    price: { type: Number, required: true },
-    purchasePrice: { type: Number, required: true, min: 0 }, // Giá mua/Giá vốn
+    price: { type: Number, required: true }, // Giá bán
+    purchasePrice: { type: Number, required: true, min: 0 }, // Giá mua
+    discountPercentage: { type: Number, min: 0, max: 100 },
+    discountAmount: { type: Number, min: 0 },
+    discountExpiry: Date,
+    discountCode: String,
+    finalPrice: { type: Number, min: 0 }, // Giá sau khi áp dụng giảm giá
     image: { type: [String], default: [] }, 
     category: { type: String, required: true },
     subCategory: { type: String, required: true },
@@ -68,8 +73,19 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Thêm pre-save hook để tự động cập nhật trạng thái
+// Cập nhật pre-save hook để tính finalPrice
 productSchema.pre('save', function(next) {
+  if (this.isModified('price') || this.isModified('discountPercentage') || this.isModified('discountAmount')) {
+    if (this.discountPercentage) {
+      this.finalPrice = this.price * (1 - this.discountPercentage / 100);
+    } else if (this.discountAmount) {
+      this.finalPrice = this.price - this.discountAmount;
+    } else {
+      this.finalPrice = this.price;
+    }
+  }
+
+  // Cập nhật stockStatus như hiện tại
   if (this.isModified('stock')) {
     if (this.stock <= 0) {
       this.stockStatus = "critical";

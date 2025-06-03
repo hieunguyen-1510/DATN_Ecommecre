@@ -232,16 +232,31 @@ export const applyProductDiscount = async (req, res) => {
       });
     }
 
-    // Apply discount
-    const product = await Product.findByIdAndUpdate(
+    // Tính finalPrice
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy sản phẩm"
+      });
+    }
+
+    let finalPrice = product.price;
+    if (discount.discountType === "percentage") {
+      finalPrice = product.price * (1 - discount.value / 100);
+    } else if (discount.discountType === "fixed_amount") {
+      finalPrice = product.price - discount.value;
+    }
+
+   // Cập nhật sản phẩm
+    const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
-        discountPercentage:
-          discount.discountType === "percentage" ? discount.value : null,
-        discountAmount:
-          discount.discountType === "fixed_amount" ? discount.value : null,
+        discountPercentage: discount.discountType === "percentage" ? discount.value : null,
+        discountAmount: discount.discountType === "fixed_amount" ? discount.value : null,
         discountExpiry: discount.endDate,
         discountCode: discount.code,
+        finalPrice: finalPrice >= 0 ? finalPrice : 0, // Đảm bảo finalPrice không âm
       },
       { new: true }
     );
@@ -253,9 +268,23 @@ export const applyProductDiscount = async (req, res) => {
     }
     await discount.save();
 
+    // Ghi lại giao dịch giảm giá vào InventoryTransaction
+    await InventoryTransaction.create({
+      product: productId,
+      sku: product.sku,
+      transactionType: "adjustment",
+      quantity: 0, // Không thay đổi số lượng tồn kho
+      previousStock: product.stock,
+      newStock: product.stock,
+      source: "discount_application",
+      sourceId: discount._id,
+      note: `Áp dụng mã giảm giá ${discount.code} (${discount.discountType === "percentage" ? `${discount.value}%` : `$${discount.value}`})`,
+      createdBy: req.user._id,
+    });
+
     res.json({
       success: true,
-      data: product,
+      data: updatedProduct,
       message: `Áp dụng giảm giá thành công (${
         discount.discountType === "percentage"
           ? `${discount.value}%`

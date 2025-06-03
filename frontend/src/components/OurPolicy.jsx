@@ -39,7 +39,7 @@ const OurPolicy = () => {
   ];
 
   return (
-    <div className="py-16 bg-gray-50">
+    <div className="py-16">
       <div className="text-center pb-12">
         <Title text1="TẠI SAO" text2="CHỌN CHÚNG TÔI" />
       </div>
