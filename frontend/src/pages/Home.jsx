@@ -6,11 +6,11 @@ import NewsletterForm from "../components/NewsletterForm";
 import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
-  <div className="bg-[#fafbfc]">
+  <div>
     <section className="mb-12">
       <BannerSlider />
     </section>
-     <section className="mb-12">
+    <section className="mb-12">
       <LatestCollection />
     </section>
     <section className="mb-12">

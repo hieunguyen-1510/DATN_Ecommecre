@@ -60,11 +60,12 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      product.sold += item.quantity;
-      product.stock -= item.quantity;
-
-      // Lưu lại sản phẩm với số lượng đã cập nhật
-      await product.save();
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Sản phẩm "${product.name}" không đủ số lượng trong kho. Chỉ còn ${product.stock} sản phẩm.`,
+        });
+      }
 
       const itemTotal = product.price * item.quantity;
       calculatedSubtotal += itemTotal;
@@ -74,7 +75,7 @@ const placeOrder = async (req, res) => {
         quantity: item.quantity,
         price: product.price,
         size: item.size,
-        purchasePriceAtOrder: product.purchasePrice
+        purchasePriceAtOrder: product.purchasePrice,
       });
     }
 
@@ -173,6 +174,8 @@ const placeOrder = async (req, res) => {
       try {
         const ipAddr = req.ip || req.connection.remoteAddress;
         const orderInfo = `Thanh toán đơn hàng ${savedOrder._id}`;
+
+        const bankCode = req.body.bankCode || "";
 
         const vnpayResult = await createVnpayPayment({
           amount: finalAmount,
@@ -402,29 +405,73 @@ const updateStatus = async (req, res) => {
       });
     }
 
-    const order = await Order.findById(orderId);
+    // Populate userId để lấy thông tin người dùng
+    const order = await Order.findById(orderId).populate(
+      "userId",
+      "name email"
+    );
     if (!order) {
       return res.status(404).json({
         success: false,
         message: "Không tìm thấy đơn hàng.",
       });
     }
+    const oldStatus = order.status;
 
-    if (
-      order.status === "Delivered" &&
-      ["Cancelled", "Refunded"].includes(status)
-    ) {
+    // Logic kiểm tra chuyển đổi trạng thái hợp lệ
+    if (oldStatus === "Delivered" && status !== "Refunded") {
       return res.status(400).json({
         success: false,
-        message: "Không thể hủy hoặc hoàn tiền đơn đã giao",
+        message:
+          "Không thể thay đổi trạng thái từ 'Đã giao' trừ khi là 'Hoàn tiền'",
       });
+    }
+    if (oldStatus === "Cancelled" && status !== "Refunded") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Không thể thay đổi trạng thái từ 'Đã hủy' trừ khi là 'Hoàn tiền'",
+      });
+    }
+
+    // Cập nhật tồn kho và số lượng đã bán
+    if (
+      ["Delivered", "Processing", "Shipped", "Order Placed"].includes(
+        oldStatus
+      ) &&
+      ["Cancelled", "Refunded"].includes(status)
+    ) {
+      for (const item of order.items) {
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { stock: item.quantity, sold: -item.quantity } },
+          { new: true, runValidators: true }
+        );
+      }
+    } else if (
+      oldStatus === "pending" &&
+      status === "Order Placed" &&
+      order.paymentMethod !== "COD"
+    ) {
+      // Trường hợp từ pending cho thanh toán online
+      for (const item of order.items) {
+        await Product.findByIdAndUpdate(
+          item.productId,
+          {
+            $inc: {
+              stock: -item.quantity,
+              sold: item.quantity,
+            },
+          },
+          { new: true, runValidators: true }
+        );
+      }
     }
 
     // Cập nhật Order
     order.status = status;
     await order.save();
 
-    // Cập nhật Payment status tương ứng
     let paymentStatus;
     if (status === "Delivered") {
       paymentStatus = "completed";
@@ -447,7 +494,6 @@ const updateStatus = async (req, res) => {
     }
 
     await Payment.findOneAndUpdate({ orderId }, { status: paymentStatus });
-
     res.json({
       success: true,
       message: "Cập nhật trạng thái thành công",

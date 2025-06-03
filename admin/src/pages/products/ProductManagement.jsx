@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { backendUrl, currency } from "../../App"; 
+import { backendUrl, currency } from "../../App";
 import { toast } from "react-toastify";
 import {
   EditOutlined,
@@ -200,26 +200,48 @@ const ProductManagement = ({ token }) => {
     },
     {
       title: "Giá mua",
-      dataIndex: "purchasePrice", 
+      dataIndex: "purchasePrice",
       key: "purchasePrice",
       width: 150,
       align: "right",
       render: (purchasePrice) => (
         <Text className="text-gray-600">
-          {purchasePrice ? `${purchasePrice.toLocaleString()} ${currency}` : "N/A"}
+          {purchasePrice
+            ? `${purchasePrice.toLocaleString()} ${currency}`
+            : "N/A"}
         </Text>
       ),
     },
-      {
+    {
       title: "Giá bán",
       dataIndex: "price",
       key: "price",
       width: 150,
       align: "right",
-      render: (price) => (
-        <Text strong className="text-green-600">
-          {price?.toLocaleString()} {currency}
-        </Text>
+      render: (price, record) => (
+        <div>
+          {record.discountPercentage || record.discountAmount ? (
+            <div>
+              <Text delete className="text-gray-500">
+                {price?.toLocaleString()} {currency}
+              </Text>
+              <br />
+              <Text strong className="text-green-600">
+                {record.finalPrice?.toLocaleString()} {currency}
+              </Text>
+              <br />
+              <Text type="secondary">
+                {record.discountPercentage
+                  ? `Giảm ${record.discountPercentage}%`
+                  : `Giảm ${record.discountAmount?.toLocaleString()} ${currency}`}
+              </Text>
+            </div>
+          ) : (
+            <Text strong className="text-green-600">
+              {price?.toLocaleString()} {currency}
+            </Text>
+          )}
+        </div>
       ),
     },
     {
@@ -348,16 +370,35 @@ const ProductManagement = ({ token }) => {
                 <p className="text-gray-800">{selectedProduct.category}</p>
               </div>
               <div>
-                <Text strong>Giá mua:</Text> {/* Thêm vào chi tiết sản phẩm */}
+                <Text strong>Giá mua:</Text>
                 <p className="text-gray-600 font-medium">
                   {selectedProduct.purchasePrice?.toLocaleString()} {currency}
                 </p>
               </div>
               <div>
                 <Text strong>Giá bán:</Text>
-                <p className="text-green-600 font-medium">
-                  {selectedProduct.price?.toLocaleString()} {currency}
-                </p>
+                {selectedProduct.discountPercentage ||
+                selectedProduct.discountAmount ? (
+                  <div>
+                    <Text delete className="text-gray-500">
+                      {selectedProduct.price?.toLocaleString()} {currency}
+                    </Text>
+                    <br />
+                    <Text strong className="text-green-600">
+                      {selectedProduct.finalPrice?.toLocaleString()} {currency}
+                    </Text>
+                    <br />
+                    <Text type="secondary">
+                      {selectedProduct.discountPercentage
+                        ? `Giảm ${selectedProduct.discountPercentage}%`
+                        : `Giảm ${selectedProduct.discountAmount?.toLocaleString()} ${currency}`}
+                    </Text>
+                  </div>
+                ) : (
+                  <p className="text-green-600 font-medium">
+                    {selectedProduct.price?.toLocaleString()} {currency}
+                  </p>
+                )}
               </div>
               <div>
                 <Text strong>Tồn kho:</Text>

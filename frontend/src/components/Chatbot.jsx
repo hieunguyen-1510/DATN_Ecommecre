@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { AiOutlineMessage, AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineMessage,
+  AiOutlineClose,
+  AiOutlineSend,
+} from "react-icons/ai";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -131,12 +135,43 @@ const Chatbot = () => {
       )}
 
       {isOpen && (
-        <div className="w-80 h-96 bg-white rounded-lg shadow-xl flex flex-col border border-gray-200 animate-fadeIn">
-          <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-blue-600 text-white rounded-t-lg">
-            <h3 className="text-lg font-semibold">Chatbot hỗ trợ</h3>
+        <div className="relative w-96 h-[480px] bg-white rounded-xl shadow-xl flex flex-col border border-gray-200 animate-fadeIn">
+          {/* Mũi tên dưới cùng bên trái, trỏ về nút chatbot */}
+          <div className="absolute left-6 -bottom-2 w-4 h-4 bg-white transform rotate-45 border-b border-l border-gray-200 z-[99]"></div>
+
+          <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-xl shadow-inner">
+            {/* Các nút điều hướng và tiêu đề */}
+            <div className="flex items-center space-x-2">
+              {/* Nút quay lại */}
+              {messages.length > 0 && (
+                <button
+                  onClick={() => setMessages(messages.slice(0, -1))}
+                  className="text-white hover:text-gray-200 p-1 rounded-full hover:bg-blue-500 transition-colors"
+                  aria-label="Quay lại"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                  </svg>
+                </button>
+              )}
+              <h3 className="text-lg font-semibold">Trợ lý ảo AI</h3>
+            </div>
+
+            {/* Nút đóng */}
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200"
+              className="text-white hover:text-gray-200 p-1 rounded-full hover:bg-blue-500 transition-colors"
               aria-label="Đóng chatbot"
             >
               <AiOutlineClose className="w-4 h-4" />
@@ -144,7 +179,7 @@ const Chatbot = () => {
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2 text-sm custom-scrollbar">
             {messages.length === 0 && (
-              <p className="text-gray-500 text-center italic">
+              <p className="text-gray-500 text-center italic mt-4">
                 Xin chào! Tôi có thể giúp gì cho bạn?
               </p>
             )}
@@ -183,7 +218,7 @@ const Chatbot = () => {
               type="submit"
               className="ml-2 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Gửi
+              <AiOutlineSend className="w-5 h-5" />
             </button>
           </form>
         </div>

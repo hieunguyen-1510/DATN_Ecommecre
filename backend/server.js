@@ -18,6 +18,7 @@ import discountRouter from './src/routes/discountRoutes.js';
 import reportRouter from './src/routes/reportRoutes.js';
 import bannerRouter from './src/routes/bannerRoutes.js';
 import chatbotRouter from './src/routes/chatbotRoutes.js';
+import './src/utils/cronJobs.js'; 
 
 const app = express();
 

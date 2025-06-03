@@ -49,11 +49,11 @@ const OrderTimeStatsChart = () => {
     ],
   });
   const [period, setPeriod] = useState("day");
-  // Khởi tạo startDate và endDate để khớp với logic mặc định của backend
+  // Khởi tạo startDate và endDate
   const [startDate, setStartDate] = useState(
-    moment().subtract(1, 'month').toDate() // Mặc định 1 tháng trước
+    moment().subtract(1, 'month').toDate()
   );
-  const [endDate, setEndDate] = useState(new Date()); // Mặc định hôm nay
+  const [endDate, setEndDate] = useState(new Date()); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -64,7 +64,7 @@ const OrderTimeStatsChart = () => {
     try {
       const params = {
         period,
-        // Format ngày tháng gửi lên backend theo YYYY-MM-DD
+        // Format ngày tháng
         startDate: moment(startDate).format("YYYY-MM-DD"),
         endDate: moment(endDate).format("YYYY-MM-DD"),
       };
