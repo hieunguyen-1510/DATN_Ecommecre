@@ -14,13 +14,35 @@ import Order from "../models/orderModel.js";
 import Report from "../models/reportModel.js";
 
 const paymentController = {
+
+  createMomoPayment: async (req, res) => {
+    try {
+      const { orderId, amount, orderInfo, orderData } = req.body;
+
+      if (!orderId || !amount || !orderInfo) {
+        return res.status(400).json({ message: "Thiếu thông tin đầu vào" });
+      }
+
+      const result = await momoServiceCreate({
+        orderId,
+        amount,
+        orderInfo,
+        orderData,
+      });
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
   handleMomoIPN: async (req, res) => {
     try {
       const data = req.body;
       const result = await momoServiceIPN(data);
 
       // Kiểm tra kết quả từ MoMo
-      if (result.resultCode === 0) { // Thanh toán thành công
+      if (result.resultCode === 0) {
         const { orderId } = data;
 
         // Tìm Payment và Order
@@ -39,7 +61,7 @@ const paymentController = {
         payment.momoResponse = result;
         await payment.save();
 
-        order.status = "Delivered"; // Hoặc "Shipped" tùy logic của bạn
+        order.status = "Delivered"; 
         order.paymentStatus = "completed";
         await order.save();
 
@@ -53,27 +75,6 @@ const paymentController = {
         await revenueReport.save();
       }
       res.status(200).json({ message: "IPN processed successfully", result });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
-  createMomoPayment: async (req, res) => {
-    try {
-      const { orderId, amount, orderInfo, orderData } = req.body;
-
-      if (!orderId || !amount || !orderInfo) {
-        return res.status(400).json({ message: "Thiếu thông tin đầu vào" });
-      }
-
-      const result = await momoServiceCreate({
-        orderId,
-        amount,
-        orderInfo,
-        orderData,
-      });
-
-      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -175,7 +176,7 @@ const paymentController = {
     }
   },
 
- // Triển khai createVnpayPayment
+ // create VnpayPayment
   createVnpayPayment: async (req, res) => {
     try {
       const { amount, orderInfo, bankCode } = req.body;
@@ -199,11 +200,15 @@ const paymentController = {
     }
   },
 
- // Triển khai handleVnpayIPN
+ // handle VnpayIPN
   handleVnpayIPN: async (req, res) => {
     try {
-      const query = req.query; // VNPay gửi thông tin qua query string
+      const query = req.query;
       const result = await vnpayServiceIPN(query);
+
+      if (!result) {
+        return res.status(404).json({ message: "Không tìm thấy thông tin giao dịch" });
+      }
 
       if (result.RspCode === "00") { // Thanh toán thành công
         const orderId = query.vnp_TxnRef;
@@ -239,6 +244,49 @@ const paymentController = {
       res.status(200).json({ message: "IPN processed successfully", result });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  },
+
+  // checkVnpayPaymentStatus
+  checkVnpayPaymentStatus: async (req, res) => {
+    try {
+      const {vnp_TxnRef} = req.params;
+      const payment = await Payment.findOne({transactionId: vnp_TxnRef});
+
+      if (!payment) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy giao dịch."
+        });
+      }
+
+      if (payment.status === "completed") {
+        const order = await Order.findById(payment.orderId);
+        if (order) {
+          order.status = "Delivered";
+          order.paymentStatus = "completed";
+          order.save();
+
+          let revenueReport = await Report.findOne({ type: "total_revenue" });
+          if (!revenueReport) {
+          revenueReport = new Report({ type: "total_revenue", data: { totalRevenue: { total: 0, lastUpdated: new Date() } } });
+          }
+          revenueReport.data.totalRevenue.total += order.totalAmount;
+          revenueReport.data.totalRevenue.lastUpdated = new Date();
+          await revenueReport.save();
+        }
+      }
+      res.json({
+        success: true,
+        status: payment.status,
+        orderId: payment.orderId
+      })
+    } catch (error) {
+      console.error("Lỗi kiểm tra trạng thái VNPay:", error);
+      res.status(500).json({
+        success: false,
+        message: `Lỗi kiểm tra trạng thái VNPay: ${error.message}`,
+    });
     }
   },
 

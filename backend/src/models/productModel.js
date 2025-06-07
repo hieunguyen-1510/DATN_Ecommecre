@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
       default: 100,
       min: 0
     },
-    averageDailySales: {  // Trung bình bán hàng ngày (tính toán tự động)
+    averageDailySales: {  // Trung bình bán hàng ngày 
       type: Number,
       default: 0
     },

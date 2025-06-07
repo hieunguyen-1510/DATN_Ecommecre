@@ -27,7 +27,7 @@ const Collection = () => {
       productCount: 24,
     },
     {
-      name: "BAROQUE GLAM",
+      name: "MINI STYLE",
       subtitle: "Phong cách cổ điển hiện đại",
       image: assets.kidsFashion,
       path: "/kids",

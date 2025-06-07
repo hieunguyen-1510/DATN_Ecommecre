@@ -17,7 +17,6 @@ const BannerSlider = () => {
       setError("");
       try {
         const res = await axios.get(`${backendUrl}/api/banners/public`);
-
         const validBanners = res.data.filter((banner) => banner.imageUrl);
         setBanners(validBanners);
       } catch (err) {
@@ -31,7 +30,6 @@ const BannerSlider = () => {
     fetchBanners();
   }, []);
 
-  // Cấu hình slider
   const settings = {
     dots: true,
     arrows: true,
@@ -42,24 +40,23 @@ const BannerSlider = () => {
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnHover: true,
-
     responsive: [
       {
-        breakpoint: 1024, // Áp dụng khi chiều rộng màn hình <= 1024px (desktop nhỏ, tablet ngang)
+        breakpoint: 1024,
         settings: {
           arrows: true,
           dots: true,
         },
       },
       {
-        breakpoint: 768, // Áp dụng khi chiều rộng màn hình <= 768px (tablet dọc, điện thoại ngang)
+        breakpoint: 768,
         settings: {
           arrows: false,
           dots: true,
         },
       },
       {
-        breakpoint: 480, // Áp dụng khi chiều rộng màn hình <= 480px (điện thoại dọc)
+        breakpoint: 480,
         settings: {
           arrows: false,
           dots: true,
@@ -99,15 +96,15 @@ const BannerSlider = () => {
   }
 
   return (
-    <div className="w-full ">
+    <div className="w-full overflow-hidden">
       <Slider {...settings}>
         {banners.map((banner) => (
           <div key={banner._id} className="relative">
-            <div className="w-full aspect-[21/9] sm:aspect-video lg:aspect-[21/9] relative">
+            <div className="w-full h-[400px] md:h-[500px] lg:h-[630px] relative">
               <img
                 src={banner.imageUrl}
                 alt={banner.title || "Banner"}
-                className="absolute inset-0 w-full h-full object-cover rounded-xl shadow-lg"
+                className="absolute inset-0 w-full h-full object-cover object-center"
                 loading="lazy"
               />
             </div>

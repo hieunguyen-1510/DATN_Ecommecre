@@ -28,7 +28,7 @@ const BestSeller = () => {
 
   // Lọc sản phẩm bán chạy
   useEffect(() => {
-    const filtered = products.filter((item) => item.bestseller === false);
+    const filtered = products.filter((item) => item.bestseller === true);
     setBestSeller(filtered);
   }, [products]);
 

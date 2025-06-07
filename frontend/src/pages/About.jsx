@@ -203,7 +203,7 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-center"
+        className="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-center mb-8"
       >
         <div className="container max-w-4xl mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">

@@ -8,62 +8,39 @@ import { ShopContext } from "../context/ShopContext";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const WomenProductsPage = () => {
-  const { search, token } = useContext(ShopContext);
-  const [products, setProducts] = useState([]);
+  const { products, filteredProducts, search } = useContext(ShopContext);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState("relavent");
   const navigate = useNavigate();
+  const [displayProducts, setDisplayProducts] = useState([]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
+    setLoading(true);
+    // Loc theo category 'Women'
+    let categoryFiltered = products.filter(
+      (product) => product.category === "Women"
+    );
 
-        if (!token) {
-          setError("Bạn chưa đăng nhập hoặc phiên đăng nhập không hợp lệ.");
-          setLoading(false);
-          return;
-        }
+    // Tìm kiếm
+    if (search) {
+      categoryFiltered = categoryFiltered.filter((product) =>
+        product.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    // Sắp xếp
+    let sortedProducts = [...categoryFiltered]; // Tạo bản sao để sắp xếp
+    if (sortBy === "thấp-cao") {
+      sortedProducts.sort((a, b) => a.finalPrice - b.finalPrice);
+    } else if (sortBy === "cao-thấp") {
+      sortedProducts.sort((a, b) => b.finalPrice - a.finalPrice);
+    }
 
-        let apiUrl = `${backendUrl}/api/product/list?category=Women`;
-
-        if (search) {
-          apiUrl += `&search=${search}`;
-        }
-
-        if (sortBy === "thấp-cao") {
-          apiUrl += `&sortBy=priceAsc`;
-        } else if (sortBy === "cao-thấp") {
-          apiUrl += `&sortBy=priceDesc`;
-        }
-
-        const response = await axios.get(apiUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.data.success) {
-          setProducts(response.data.products);
-        } else {
-          setError(
-            response.data.message || "Không thể tải danh sách sản phẩm."
-          );
-        }
-      } catch (err) {
-        if (err.response && err.response.status === 401) {
-          setError(
-            "Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại."
-          );
-        } else {
-          setError(err.message || "Đã xảy ra lỗi khi tải sản phẩm.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [sortBy, search, token]);
+    setDisplayProducts(sortedProducts);
+    setLoading(false);
+    setError(null);
+  }, [products, search, sortBy]);
 
   // Animation variants
   const gridVariants = {
@@ -95,12 +72,9 @@ const WomenProductsPage = () => {
 
       {/* Hero Banner */}
       <section
-        className="relative h-64 sm:h-80 bg-cover bg-center flex items-center justify-center text-white"
+        className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${
-            assets.bst_banner ||
-            "https://images.unsplash.com/photo-1582719500649-064106517a10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-          })`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.bst_banner})`,
         }}
       >
         <div className="container px-4 text-center z-10">
@@ -165,14 +139,14 @@ const WomenProductsPage = () => {
           <p className="text-center py-10">Đang tải sản phẩm...</p>
         ) : error ? (
           <p className="text-center py-10 text-red-500">Lỗi: {error}</p>
-        ) : products.length > 0 ? (
+        ) : displayProducts.length > 0 ? (
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
             variants={gridVariants}
             initial="hidden"
             animate="visible"
           >
-            {products.map((product) => (
+            {displayProducts.map((product) => (
               <motion.div key={product._id} variants={cardVariants}>
                 <ProductCard product={product} />
               </motion.div>

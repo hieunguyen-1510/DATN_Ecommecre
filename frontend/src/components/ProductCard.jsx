@@ -29,6 +29,10 @@ const ProductCard = ({ product }) => {
     setShowSizes(!showSizes);
   };
 
+  // Giá và phần trăm giảm giá
+  const isDiscounted = product.discountPercentage && product.discountPercentage > 0;
+  const displayPrice = isDiscounted ? product.finalPrice : product.price;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -48,6 +52,14 @@ const ProductCard = ({ product }) => {
             alt={product.name || "Product Image"}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
+
+          {/* HIỂN THỊ BADGE GIẢM GIÁ (SALE) */}
+          {isDiscounted && (
+            <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+              -{product.discountPercentage}%
+            </span>
+          )}
+          
         </div>
       </Link>
 
@@ -68,9 +80,20 @@ const ProductCard = ({ product }) => {
             <FiShoppingCart className="h-5 w-5" />
           </button>
         </h3>
-        <p className="text-orange-500 text-base font-bold">
-          {product.price.toLocaleString("vi-VN")} {currency}
+        {/* --- HIỂN THỊ GIÁ CŨ VÀ GIÁ MỚI --- */}
+        <p className="text-base font-bold">
+          {isDiscounted && (
+            <span className="text-gray-500 line-through mr-2">
+              {product.price.toLocaleString("vi-VN")} {currency}
+            </span>
+          )}
+          <span className="text-orange-500">
+            {displayPrice.toLocaleString("vi-VN")} {currency}
+          </span>
         </p>
+        {/* <p className="text-orange-500 text-base font-bold">
+          {product.price.toLocaleString("vi-VN")} {currency}
+        </p> */}
 
         {showSizes && (
           <div className="absolute right-5 bottom-20 bg-white border border-gray-200 rounded-md shadow-lg z-20 py-1 min-w-[100px]">
