@@ -1,4 +1,4 @@
-/* Định nghĩa font Be Vietnam Pro Regular */
+/* font Be Vietnam Pro Regular */
 @font-face {
   font-family: "Be Vietnam Pro";
   src: url("/fonts/be-vietnam-pro-v11-vietnamese-regular.woff2") format("woff2");
@@ -7,7 +7,7 @@
   font-display: swap;
 }
 
-/* Định nghĩa font viết tay SVN-DancingScript */
+/* font viết tay SVN-DancingScript */
 @font-face {
   font-family: "SVN-DancingScript";
   src: url("/fonts/SVN-DancingScript-Regular.woff2") format("woff2"),
@@ -17,7 +17,7 @@
   font-display: swap;
 }
 
-/* Định nghĩa font Lexend (giữ lại để dùng cho mô tả dài nếu cần) */
+/* font Lexend */
 @font-face {
   font-family: "Lexend";
   src: url("/fonts/Lexend-Thin.woff2") format("woff2"),
@@ -40,8 +40,13 @@
 @tailwind utilities;
 
 /* Custom styles */
-html {
-  font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+@layer base {
+  html {
+    font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-gray-50; 
+  }
 }
 
 /* Font và kích thước cho banner */
@@ -90,7 +95,7 @@ a.group:hover hr {
   @apply block;
 }
 
-/* Class font-dancing nếu cần dùng ở nơi khác */
+/* Class font-dancing */
 .font-dancing {
   font-family: "SVN-DancingScript", cursive;
 }

@@ -13,7 +13,7 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
   const [products, setProducts] = useState([]);
-  // trang thai cho san pham da loc
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
 
@@ -24,6 +24,7 @@ const ShopContextProvider = (props) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setToken(userToken);
     setUser(userData);
+
   };
 
   const updateUser = (newUserData) => {
@@ -34,6 +35,12 @@ const ShopContextProvider = (props) => {
   const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error("Vui lòng chọn kích thước!");
+      return;
+    }
+    // chỉ thêm vào giỏ khi có token
+    if (!token) {
+      toast.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
+      navigate('/login');
       return;
     }
 
@@ -58,7 +65,7 @@ const ShopContextProvider = (props) => {
           { itemId, size },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // Refresh cart and products after adding
+        
         await getUserCart();
         await getProductsData();
         // toast.success("Thêm vào giỏ hàng thành công!");
@@ -84,6 +91,12 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, size, quantity) => {
+    if (!token) {
+      toast.error("Vui lòng đăng nhập để cập nhật giỏ hàng!");
+      navigate('/login');
+      return;
+    }
+
     let cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
     setCartItems(cartData);
@@ -103,12 +116,16 @@ const ShopContextProvider = (props) => {
 
   // clear cart 
  const clearCart = async () => {
+  if (!token) {
+    toast.error("Vui lòng đăng nhập để xóa giỏ hàng!");
+    navigate('/login');
+    return;
+  }
   try {
-    if (token) {
-      await axios.delete(`${backendUrl}/api/cart/clear`, {
+    await axios.delete(`${backendUrl}/api/cart/clear`, {
         headers: { Authorization: `Bearer ${token}` }
-      });
-    }
+    });
+
     setCartItems({});
     // toast.success("Đã xóa giỏ hàng thành công!");
   } catch (error) {
@@ -121,12 +138,15 @@ const ShopContextProvider = (props) => {
     let totalAmount = 0;
     for (const items in cartItems) {
       let itemInfo = products.find((product) => product._id === items);
-      for (const item in cartItems[items]) {
+      for (const size in cartItems[items]) {
         try {
-          if (cartItems[items][item] > 0 && itemInfo) {
-            totalAmount += itemInfo.price * cartItems[items][item];
+          if (cartItems[items][size] > 0 && itemInfo) {
+            totalAmount += (itemInfo.finalPrice || itemInfo.price) * cartItems[items][size];
+            // totalAmount += itemInfo.price * cartItems[items][item];
           }
-        } catch (error) {}
+        } catch (error) {
+          console.error("Lỗi khi tính tổng giỏ hàng:", error); 
+        }
       }
     }
     return totalAmount;
@@ -189,6 +209,7 @@ const ShopContextProvider = (props) => {
     if (savedToken && !token) {
       setToken(savedToken);
     }
+    // getProductsData();
   }, []);
 
   useEffect(() => {

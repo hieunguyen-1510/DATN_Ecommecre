@@ -6,17 +6,17 @@ import NewsletterForm from "../components/NewsletterForm";
 import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
-  <div>
-    <section className="mb-12">
+  <div className="container mx-auto px-4">
+    <section className="mb-8">
       <BannerSlider />
     </section>
-    <section className="mb-12">
+    <section className="mb-8">
       <LatestCollection />
     </section>
-    <section className="mb-12">
+    <section className="mb-8">
       <BestSeller />
     </section>
-    <section className="mb-12">
+    <section className="mb-8">
       <OurPolicy />
     </section>
     <section>

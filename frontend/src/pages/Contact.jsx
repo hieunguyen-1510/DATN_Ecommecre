@@ -66,10 +66,7 @@ const Contact = () => {
         transition={{ duration: 0.5 }}
         className="relative h-[32rem] bg-cover bg-center flex items-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${
-            assets.contact_img ||
-            "https://images.unsplash.com/photo-1596556534575-b82967675e47?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
-          })`, // Fallback image for contact hero
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${assets.contact_img})`, // Fallback image for contact hero
           backgroundPosition: "center 30%",
         }}
       >
@@ -111,7 +108,7 @@ const Contact = () => {
             </h2>
 
             <div className="space-y-6">
-              {/* Địa chỉ với Google Maps - Cập nhật thành địa chỉ thực tế và iframe chính xác */}
+              {/* Địa chỉ với Google Maps */}
               <div className="flex items-start">
                 <FaMapMarkerAlt className="text-red-600 mt-1 mr-4 text-xl" />{" "}
                 {/* Consistent red-600 */}

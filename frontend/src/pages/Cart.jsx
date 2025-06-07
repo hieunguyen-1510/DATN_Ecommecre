@@ -7,8 +7,7 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } =
-    useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, navigate } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
@@ -79,8 +78,13 @@ const Cart = () => {
                   return null;
                 }
 
-                const itemTotalPrice = productData.price * item.quantity;
+                // Logic xu ly ma giam gia
+                const isDiscounted = productData.discountPercentage && productData.discountPercentage > 0;
+                const priceToUse = isDiscounted ? productData.finalPrice : productData.price;
+                const itemTotalPrice = priceToUse * item.quantity;
 
+                // const itemTotalPrice = productData.price * item.quantity;
+                
                 return (
                   <div
                     key={`${item._id}-${item.size}`}
@@ -108,8 +112,15 @@ const Cart = () => {
                         <p className="text-gray-600 text-xs">
                           Size: {item.size}
                         </p>
-                        <p className="text-orange-500 font-bold text-sm mt-1">
-                          {productData.price.toLocaleString("vi-VN")} {currency}
+                        <p className="text-sm mt-1">
+                          {isDiscounted && (
+                            <span className="text-gray-500 line-through mr-2 font-normal">
+                              {productData.price.toLocaleString("vi-VN")} {currency}
+                            </span>
+                          )}
+                            <span className="text-orange-500 font-bold">
+                              {priceToUse.toLocaleString("vi-VN")} {currency}
+                            </span>
                         </p>
                       </div>
                     </div>
@@ -167,7 +178,7 @@ const Cart = () => {
               })}
             </div>
 
-            {/* Cart Total Section (Sidebar) */}
+            {/* Cart Total */}
             <div className="w-full lg:w-1/3">
               <CartTotal />
               <div className="w-full text-center mt-6">

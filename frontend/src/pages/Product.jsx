@@ -139,9 +139,9 @@ const Product = () => {
                     onClick={() => setSelectedSize(size)}
                     className={`py-3 px-2 rounded-lg border-2 text-base font-semibold transition-all duration-200 
                     ${
-                    selectedSize === size
-                    ? "border-yellow-500 bg-yellow-100 text-yellow-800 shadow-md"
-                    : "border-gray-300 text-gray-700 hover:border-yellow-400 hover:bg-gray-100"
+                      selectedSize === size
+                        ? "border-yellow-500 bg-yellow-100 text-yellow-800 shadow-md"
+                        : "border-gray-300 text-gray-700 hover:border-yellow-400 hover:bg-gray-100"
                     }`}
                   >
                     {size}

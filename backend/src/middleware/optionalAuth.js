@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-// import User from "../models/userModel.js"; // Nếu muốn lấy đầy đủ thông tin user vào req.user
+
 
 const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     let token;
-
+    req.user = null; 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }

@@ -195,12 +195,19 @@ const AddProduct = ({ token }) => {
         >
           <Select>
             <Select.Option value="Street Tops">Áo đường phố</Select.Option>
-            <Select.Option value="Street Bottoms">Quần đường phố</Select.Option>
+            <Select.Option value="Sweater">Áo Sweater</Select.Option>
+            <Select.Option value="Long sleeve shirt">
+              Áo sơ mi dài tay
+            </Select.Option>
             <Select.Option value="Hoodies">Hoodies</Select.Option>
-            <Select.Option value="Outerwear">Áo Khoác</Select.Option>
+            <Select.Option value="Outerwear">Áo khoác</Select.Option>
+            <Select.Option value="Street Bottoms">Quần đường phố</Select.Option>
+            <Select.Option value="Shorts">Quần short</Select.Option>
+            <Select.Option value="Jeans">Quần jeans</Select.Option>
+            <Select.Option value="Short skirt">Chân váy</Select.Option>
           </Select>
         </Form.Item>
-        {/* Thêm trường "Giá mua" */}
+        {/* "Giá mua" */}
         <Form.Item name="purchasePrice" label="Giá mua sản phẩm">
           <InputNumber
             min={0}

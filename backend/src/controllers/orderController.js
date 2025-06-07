@@ -174,7 +174,6 @@ const placeOrder = async (req, res) => {
       try {
         const ipAddr = req.ip || req.connection.remoteAddress;
         const orderInfo = `Thanh toán đơn hàng ${savedOrder._id}`;
-
         const bankCode = req.body.bankCode || "";
 
         const vnpayResult = await createVnpayPayment({
@@ -182,8 +181,9 @@ const placeOrder = async (req, res) => {
           orderInfo,
           bankCode,
           ipAddr,
+          orderId: savedOrder._id
         });
-
+        
         console.log("VNPay Result:", vnpayResult);
         // Cập nhật thông tin thanh toán
         newPayment.vnpayResponse = vnpayResult;

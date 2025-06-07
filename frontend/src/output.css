@@ -1,4 +1,4 @@
-/* Định nghĩa font Be Vietnam Pro Regular */
+/* font Be Vietnam Pro Regular */
 
 @font-face {
   font-family: "Be Vietnam Pro";
@@ -12,7 +12,7 @@
   font-display: swap;
 }
 
-/* Định nghĩa font viết tay SVN-DancingScript */
+/* font viết tay SVN-DancingScript */
 
 @font-face {
   font-family: "SVN-DancingScript";
@@ -27,7 +27,7 @@
   font-display: swap;
 }
 
-/* Định nghĩa font Lexend (giữ lại để dùng cho mô tả dài nếu cần) */
+/* font Lexend */
 
 @font-face {
   font-family: "Lexend";
@@ -607,6 +607,15 @@ video {
   display: none;
 }
 
+html {
+  font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+
 .container {
   width: 100%;
 }
@@ -965,10 +974,6 @@ video {
   display: none;
 }
 
-.aspect-\[21\/9\] {
-  aspect-ratio: 21/9;
-}
-
 .aspect-\[3\/4\] {
   aspect-ratio: 3/4;
 }
@@ -1047,6 +1052,10 @@ video {
 
 .h-\[32rem\] {
   height: 32rem;
+}
+
+.h-\[400px\] {
+  height: 400px;
 }
 
 .h-\[480px\] {
@@ -1775,6 +1784,11 @@ video {
      object-fit: cover;
 }
 
+.object-center {
+  -o-object-position: center;
+     object-position: center;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
@@ -2404,10 +2418,6 @@ video {
 
 /* Custom styles */
 
-html {
-  font-family: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
-}
-
 /* Font và kích thước cho banner */
 
 .banner-title {
@@ -2589,7 +2599,7 @@ a.group:hover hr {
   display: block;
 }
 
-/* Class font-dancing nếu cần dùng ở nơi khác */
+/* Class font-dancing */
 
 .font-dancing {
   font-family: "SVN-DancingScript", cursive;
@@ -2957,10 +2967,6 @@ a.group:hover hr {
     display: none;
   }
 
-  .sm\:aspect-video {
-    aspect-ratio: 16 / 9;
-  }
-
   .sm\:h-80 {
     height: 20rem;
   }
@@ -3032,6 +3038,10 @@ a.group:hover hr {
 }
 
 @media (min-width: 768px) {
+  .md\:h-\[500px\] {
+    height: 500px;
+  }
+
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3094,12 +3104,12 @@ a.group:hover hr {
     margin-bottom: 1rem;
   }
 
-  .lg\:aspect-\[21\/9\] {
-    aspect-ratio: 21/9;
-  }
-
   .lg\:h-96 {
     height: 24rem;
+  }
+
+  .lg\:h-\[630px\] {
+    height: 630px;
   }
 
   .lg\:w-1\/3 {

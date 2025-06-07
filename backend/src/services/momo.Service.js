@@ -118,9 +118,9 @@ export const handleMomoIPN = async (data) => {
       await Order.findByIdAndUpdate(
         payment.orderId,
         {
-          status: "paid",
+          status: "pending",
           paymentStatus: "completed",
-          $set: { "paymentId.status": "completed" }, 
+          // $set: { "paymentId.status": "completed" }, 
         },
         { new: true }
       );
