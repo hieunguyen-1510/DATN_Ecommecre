@@ -8,8 +8,7 @@ import { ShopContext } from "../context/ShopContext";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const MenProductsPage = () => {
-  const { products, filteredProducts, search } = useContext(ShopContext);
-
+  const { products, search } = useContext(ShopContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState("relavent");
@@ -18,19 +17,17 @@ const MenProductsPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    // Loc theo category 'Men'
     let categoryFiltered = products.filter(
       (product) => product.category === "Men"
     );
 
-    // Tìm kiếm
     if (search) {
       categoryFiltered = categoryFiltered.filter((product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
       );
     }
-    // Sắp xếp
-    let sortedProducts = [...categoryFiltered]; // Tạo bản sao để sắp xếp
+
+    let sortedProducts = [...categoryFiltered];
     if (sortBy === "thấp-cao") {
       sortedProducts.sort((a, b) => a.finalPrice - b.finalPrice);
     } else if (sortBy === "cao-thấp") {
@@ -42,7 +39,6 @@ const MenProductsPage = () => {
     setError(null);
   }, [products, search, sortBy]);
 
-  // Animation variants
   const gridVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: {
@@ -59,7 +55,6 @@ const MenProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* Breadcrumbs */}
       <nav className="bg-gray-50 py-3 px-4">
         <div className="container max-w-7xl mx-auto text-sm">
           <a href="/" className="text-gray-600 hover:text-red-600">
@@ -70,7 +65,6 @@ const MenProductsPage = () => {
         </div>
       </nav>
 
-      {/* Hero Banner */}
       <section
         className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white"
         style={{
@@ -88,8 +82,7 @@ const MenProductsPage = () => {
         </div>
       </section>
 
-      {/* Filter & Sort Bar */}
-      <div className="container max-w-7xl mx-auto flex flex-wrap justify-between items-center my-6 px-4">
+      <div className="container max-w-7xl mx-auto flex flex-wrap justify-between items-center my-6 px-4 gap-y-4">
         <div className="flex gap-2">
           <button
             onClick={() => navigate("/men")}
@@ -110,12 +103,12 @@ const MenProductsPage = () => {
             Trẻ em
           </button>
         </div>
-        <div className="relative inline-block text-left">
+        <div className="relative inline-block text-left w-full sm:w-auto">
           <select
             id="sort-by"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border-2 border-gray-200 bg-white text-sm px-4 py-2 pr-8 rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-none appearance-none"
+            className="w-full border-2 border-gray-200 bg-white text-sm px-4 py-2 pr-8 rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-none appearance-none"
           >
             <option value="relavent">Sắp xếp theo: Phù hợp</option>
             <option value="thấp-cao">Sắp xếp theo: Giá thấp đến cao</option>
@@ -133,7 +126,6 @@ const MenProductsPage = () => {
         </div>
       </div>
 
-      {/* Product Grid */}
       <div className="container max-w-7xl mx-auto px-4 pb-16">
         {loading ? (
           <p className="text-center py-10">Đang tải sản phẩm...</p>
@@ -141,7 +133,7 @@ const MenProductsPage = () => {
           <p className="text-center py-10 text-red-500">Lỗi: {error}</p>
         ) : displayProducts.length > 0 ? (
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8"
             variants={gridVariants}
             initial="hidden"
             animate="visible"

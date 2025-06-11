@@ -39,13 +39,13 @@ const OurPolicy = () => {
   ];
 
   return (
-    <div className="py-16">
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="text-center pb-12">
         <Title text1="TẠI SAO" text2="CHỌN CHÚNG TÔI" />
       </div>
 
       <motion.div
-        className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4"
+        className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 px-2 sm:px-4"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -55,11 +55,11 @@ const OurPolicy = () => {
           <motion.div
             key={index}
             variants={itemVariants}
-            className="flex flex-col items-center text-center bg-white p-8 rounded-2xl
-                       transform hover:-translate-y-2 transition-all duration-300 ease-in-out"
+            className="flex flex-col items-center text-center bg-white p-6 sm:p-8 rounded-2xl shadow-md
+                  transform hover:-translate-y-2 transition-all duration-300 ease-in-out"
           >
             <motion.div
-              className="text-4xl mb-6 text-blue-500"
+              className="text-3xl sm:text-4xl mb-4 sm:mb-6 text-blue-500"
               whileHover={{
                 scale: 1.1,
                 transition: { duration: 0.3 },
@@ -67,10 +67,10 @@ const OurPolicy = () => {
             >
               {policy.icon}
             </motion.div>
-            <p className="text-lg font-bold text-gray-900 mb-3">
+            <p className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
               {policy.title}
             </p>
-            <p className="text-gray-700 leading-relaxed text-sm">
+            <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
               {policy.desc}
             </p>
           </motion.div>

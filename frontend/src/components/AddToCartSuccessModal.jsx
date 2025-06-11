@@ -3,17 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const AddToCartSuccessModal = ({ show, onClose }) => {
   useEffect(() => {
-    // set thoi gian
     let timer;
     if (show) {
       timer = setTimeout(() => {
         onClose();
-      }, 2000); // Modal sẽ tự động đóng sau 2 giây
+      }, 2000);
     }
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, [show, onClose]);
 
-  // Ngăn chặn sự kiện click lan truyền ra ngoài modal và đóng modal
   const handleModalContentClick = (e) => {
     e.stopPropagation();
   };
@@ -22,21 +20,20 @@ const AddToCartSuccessModal = ({ show, onClose }) => {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose} // Đóng modal khi click ra ngoài
+          onClick={onClose}
         >
           <motion.div
-            className="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full relative"
+            className="bg-white rounded-2xl shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6 md:p-8 relative"
             initial={{ scale: 0.9, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 50 }}
-            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            onClick={handleModalContentClick} // Ngăn chặn đóng khi click vào nội dung modal
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            onClick={handleModalContentClick}
           >
-            {/* Nút đóng */}
             <button
               onClick={onClose}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition-colors"
@@ -54,22 +51,21 @@ const AddToCartSuccessModal = ({ show, onClose }) => {
               </svg>
             </button>
 
-            {/* Icon giỏ hàng và dấu tick */}
             <div className="flex flex-col items-center justify-center mb-6">
               <div className="relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-24 w-24 text-gray-800" 
+                  className="h-20 w-20 sm:h-24 sm:w-24 text-gray-800"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={1} // Độ dày nét vẽ cho biểu tượng giỏ hàng
+                  strokeWidth={1}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 <motion.svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="absolute bottom-0 right-0 h-10 w-10 text-green-500" // Dấu tick
+                  className="absolute bottom-0 right-0 h-8 w-8 sm:h-10 sm:w-10 text-green-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -83,9 +79,8 @@ const AddToCartSuccessModal = ({ show, onClose }) => {
               </div>
             </div>
 
-            {/* Thông báo */}
-            <p className="text-xl font-bold text-gray-800 text-center uppercase tracking-wide">
-              Thêm vào giỏ hàng thành công !
+            <p className="text-base sm:text-lg font-bold text-gray-800 text-center uppercase tracking-wide">
+              Thêm vào giỏ hàng thành công!
             </p>
           </motion.div>
         </motion.div>

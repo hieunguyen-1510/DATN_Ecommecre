@@ -178,8 +178,12 @@ const ShopContextProvider = (props) => {
     });
 
     if (response.data.success) {
+      const rawCartData = response.data.cartData;
+      // Lấy mảng items từ rawCartData
+      const cartItemsArray = rawCartData && Array.isArray(rawCartData.items) ? rawCartData.items: [];
+      // console.log("Dữ liệu cartData từ API:", response.data.cartData);
       const transformedCart = {};
-      response.data.cartData.forEach(item => {
+      cartItemsArray.forEach(item => {
         if (!transformedCart[item.productId._id]) {
           transformedCart[item.productId._id] = {};
         }

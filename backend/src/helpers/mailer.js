@@ -29,7 +29,7 @@ const sendContactEmail = async (name, email, message) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Contact email sent to ${process.env.USER_MAIL} from ${email}`);
+    // console.log(`Contact email sent to ${process.env.USER_MAIL} from ${email}`);
   } catch (error) {
     console.error(`Error sending contact email from ${email}:`, error);
     throw new Error("Failed to send contact email");

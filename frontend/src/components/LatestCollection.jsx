@@ -61,7 +61,7 @@ const LatestCollection = () => {
       {/* Tiêu đề */}
       <div className="text-center pb-12">
         <Title text1="BỘ SƯU TẬP" text2="MỚI NHẤT" />
-        <p className="w-3/4 sm:w-1/2 m-auto text-base md:text-base text-gray-700 mt-4 font-light leading-relaxed">
+        <p className="w-full sm:w-3/4 md:w-1/2 m-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed text-center">
           Khám phá những thiết kế mới và nổi bật nhất được cập nhật liên tục từ
           shop, mang đậm dấu ấn Street Style.
         </p>
@@ -77,7 +77,7 @@ const LatestCollection = () => {
           viewport={{ once: true }}
         >
           {/* Change grid to display 3 items */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
             {collections.map((collection, index) => (
               <motion.div
                 key={collection.name}
@@ -123,34 +123,33 @@ const LatestCollection = () => {
 
                   {/* Content */}
                   <div
-                    className={`absolute bottom-0 left-0 right-0 p-6 ${
-                      collection.theme === "dark"
-                        ? "text-white"
-                        : "text-gray-900"
+                    className={`absolute bottom-0 left-0 right-0 p-4 sm:p-6 ${
+                      collection.theme === "dark"? "text-white" : "text-gray-900"
                     }`}
                   >
-                    <h3 className="text-2xl font-bold mb-1 group-hover:text-red-300 transition-colors duration-300">
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1 group-hover:text-red-300 transition-colors duration-300">
                       {collection.name}
                     </h3>
-                    <p className="text-sm opacity-80 mb-2">
+                    <p className="text-xs sm:text-sm opacity-80 mb-2">
                       {collection.subtitle}
                     </p>
-                    <p className="text-sm">
+                    <p className="text-xs sm:text-sm">
                       {collection.productCount} sản phẩm
                     </p>
-                    <div className="mt-3 h-px w-0 bg-current transition-all duration-500 group-hover:w-16" />
+                    <div className="mt-2 sm:mt-3 h-px w-0 bg-current transition-all duration-500 group-hover:w-16" />
                   </div>
+
                   {/* Hover CTA */}
                   <motion.div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     whileHover={{ scale: 1.05 }}
                   >
                     <span
-                      className={`inline-block border-2 ${
+                      className={`inline-block border-2 text-xs sm:text-sm px-4 sm:px-6 py-1.5 sm:py-2 font-medium rounded-full transition-all ${
                         collection.theme === "dark"
                           ? "border-white hover:bg-white/20 text-white"
                           : "border-gray-900 hover:bg-gray-900/10 text-gray-900"
-                      } px-6 py-2 text-sm font-medium rounded-full transition-all`}
+                      }`}
                     >
                       KHÁM PHÁ NGAY
                     </span>
@@ -175,7 +174,7 @@ const LatestCollection = () => {
         >
           <a
             href="/collection"
-            className="inline-block px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            className="inline-block px-6 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
           >
             Xem tất cả
           </a>

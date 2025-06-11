@@ -65,7 +65,7 @@ const Collection = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white p-4"
+        className="relative h-72 sm:h-[28rem] bg-cover bg-center flex items-center justify-center text-white p-4"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url(${assets.bst_banner})`,
         }}
@@ -74,32 +74,32 @@ const Collection = () => {
       {/* ===== Main Content Container ===== */}
       <div className="container max-w-7xl mx-auto px-4 sm:px-8 lg:px-14">
         {/* ===== Filter Bar ===== */}
-        <div className="flex flex-wrap justify-center sm:justify-start items-center my-8 gap-2">
-          <button className="px-6 py-2 bg-gray-900 text-white rounded-full text-sm">
+        <div className="flex flex-wrap justify-center sm:justify-start items-center my-6 gap-3 text-sm">
+          <button className="px-5 py-2 bg-gray-900 text-white rounded-full">
             Tất cả
           </button>
           <button
             onClick={() => navigate("/men")}
-            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+            className="px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100"
           >
             Nam
           </button>
           <button
             onClick={() => navigate("/women")}
-            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+            className="px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100"
           >
             Nữ
           </button>
           <button
             onClick={() => navigate("/kids")}
-            className="px-4 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100"
+            className="px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100"
           >
             Trẻ em
           </button>
         </div>
 
         {/* ===== Collection Grid ===== */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pb-12">
           {collections.map((collection, index) => (
             <motion.div
               key={collection.name}
@@ -127,7 +127,7 @@ const Collection = () => {
                 )}
 
                 {/* Image Container */}
-                <div className="relative aspect-[3/4] overflow-hidden">
+                <div className="relative aspect-[3/4] w-full overflow-hidden">
                   {loading && (
                     <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
                   )}
@@ -187,10 +187,10 @@ const Collection = () => {
       </div>
 
       {/* ===== Load More ===== */}
-      <div className="mt-16 text-center pb-12">
+      <div className="mt-12 text-center pb-12">
         <button
           onClick={() => navigate("/")}
-          className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3 rounded-full font-medium transition-all duration-300"
+          className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all duration-300"
         >
           Xem thêm bộ sưu tập
         </button>

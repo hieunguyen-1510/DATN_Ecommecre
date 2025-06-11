@@ -6,7 +6,7 @@ import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
 import Report from "../models/reportModel.js";
 import { createMomoPayment } from "../services/momo.Service.js";
-import { createVnpayPayment } from "../services/vnpay.Service.js";
+import { createVnpayPayment } from "../services/vnpay.service.js";
 
 const generateTransactionId = () => {
   return `COD${Date.now()}`;
@@ -67,13 +67,13 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      const itemTotal = product.price * item.quantity;
+      const itemTotal = (product.finalPrice || product.price) * item.quantity;
       calculatedSubtotal += itemTotal;
 
       processedItems.push({
         productId: item.productId,
         quantity: item.quantity,
-        price: product.price,
+        price: product.finalPrice || product.price,
         size: item.size,
         purchasePriceAtOrder: product.purchasePrice,
       });
@@ -171,20 +171,19 @@ const placeOrder = async (req, res) => {
 
     // Xử lý thanh toán VNPAY
     if (methodUpper === "VNPAY") {
-      try {
-        const ipAddr = req.ip || req.connection.remoteAddress;
-        const orderInfo = `Thanh toán đơn hàng ${savedOrder._id}`;
-        const bankCode = req.body.bankCode || "";
-
-        const vnpayResult = await createVnpayPayment({
-          amount: finalAmount,
-          orderInfo,
-          bankCode,
-          ipAddr,
-          orderId: savedOrder._id
-        });
-        
-        console.log("VNPay Result:", vnpayResult);
+    try {
+      const ipAddr = req.ip || req.connection.remoteAddress;
+      console.log("IP Address used for VNPay:", ipAddr);
+      
+      const vnpayResult = await createVnpayPayment({
+        amount: finalAmount,
+        orderInfo: `Thanh toán đơn hàng ${savedOrder._id}`,
+        bankCode: req.body.bankCode || "",
+        ipAddr,
+        orderId: savedOrder._id
+      });
+    
+      console.log("VNPay Full Response:", JSON.stringify(vnpayResult, null, 2));
         // Cập nhật thông tin thanh toán
         newPayment.vnpayResponse = vnpayResult;
         await newPayment.save();
@@ -195,7 +194,11 @@ const placeOrder = async (req, res) => {
           orderId: savedOrder._id,
         };
       } catch (vnpayError) {
-        console.error("Lỗi gọi VNPay API:", vnpayError);
+        console.error("Chi tiết lỗi VNPay:", {
+          message: vnpayError.message,
+          stack: vnpayError.stack,
+          response: vnpayError.response?.data
+        });
         return res.status(500).json({
           success: false,
           message: "Không thể tạo thanh toán VNPay: " + vnpayError.message,

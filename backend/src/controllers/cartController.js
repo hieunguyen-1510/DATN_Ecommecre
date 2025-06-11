@@ -5,12 +5,10 @@ const getUserCart = async (req, res) => {
   try {
     const userId = req.user.id;
     if (!userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không tìm thấy thông tin người dùng.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin người dùng.",
+      });
     }
     const cart = await cartModel
       .findOne({ userId })
@@ -32,22 +30,18 @@ const addToCart = async (req, res) => {
   try {
     const userId = req.user.id;
     if (!userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không tìm thấy thông tin người dùng.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin người dùng.",
+      });
     }
 
     const { itemId, size, quantity = 1 } = req.body;
     if (!itemId || !size) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Thiếu thông tin sản phẩm (itemId, size).",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin sản phẩm (itemId, size).",
+      });
     }
 
     let cart = await cartModel.findOne({ userId });
@@ -71,13 +65,11 @@ const addToCart = async (req, res) => {
   } catch (error) {
     console.error("Lỗi thêm vào giỏ hàng:", error);
     if (error.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Dữ liệu không hợp lệ.",
-          errors: error.errors,
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Dữ liệu không hợp lệ.",
+        errors: error.errors,
+      });
     }
     res.status(500).json({ success: false, message: "Lỗi server!" });
   }
@@ -88,23 +80,19 @@ const updateCart = async (req, res) => {
   try {
     const userId = req.user.id;
     if (!userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không tìm thấy thông tin người dùng.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin người dùng.",
+      });
     }
 
     const { itemId, size, quantity } = req.body;
 
     if (!itemId || !size || quantity === undefined) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Thiếu thông tin sản phẩm (itemId, size, quantity).",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin sản phẩm (itemId, size, quantity).",
+      });
     }
     if (typeof quantity !== "number" || quantity < 0) {
       return res
@@ -124,12 +112,10 @@ const updateCart = async (req, res) => {
     );
 
     if (itemIndex === -1) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Sản phẩm không tồn tại trong giỏ hàng!",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Sản phẩm không tồn tại trong giỏ hàng!",
+      });
     }
 
     if (quantity === 0) {
@@ -158,12 +144,10 @@ const clearCart = async (req, res) => {
   try {
     const userId = req.user.id;
     if (!userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không tìm thấy thông tin người dùng.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin người dùng.",
+      });
     }
 
     const cart = await cartModel.findOneAndDelete({ userId });
@@ -189,98 +173,4 @@ const clearCart = async (req, res) => {
   }
 };
 
-const mergeGuestCart = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    if (!userId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Không tìm thấy thông tin người dùng.",
-        });
-    }
-
-    const { guestCartItems } = req.body;
-    if (!guestCartItems || !Array.isArray(guestCartItems)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Dữ liệu giỏ hàng của guest không hợp lệ.",
-        });
-    }
-
-    if (guestCartItems.length === 0) {
-      // Nếu giỏ của guest rỗng, vẫn lấy giỏ hàng hiện tại của user trả về
-      const currentUserCart = await cartModel
-        .findOne({ userId })
-        .populate("items.productId");
-      res.json({
-        success: true,
-        message: "Không có sản phẩm nào ở giỏ hàng guest để đồng bộ.",
-        cartData: currentUserCart || { items: [] },
-      });
-    }
-
-    let userCart = await cartModel.findOne({ userId });
-
-    if (!userCart) {
-      userCart = new cartModel({ userId, items: [] });
-    }
-
-    for (const guestItem of guestCartItems) {
-      if (
-        !guestItem.productId ||
-        guestItem.size ||
-        typeof guestItem.quantity !== "number" ||
-        guestItem.quantity <= 0
-      ) {
-        console.warn("Bỏ qua guest item không hợp lệ:", guestItem);
-        continue; // Bỏ qua item không hợp lệ
-      }
-
-      const existingItemIndex = userCart.items.findIndex(
-        (item) =>
-          item.productId.toString() === guestItem.productId &&
-          item.size === guestItem.size
-      );
-
-      if (existingItemIndex > -1) {
-        userCart.items[existingItemIndex].quantity += guestItem.quantity; // Cộng dồn số lượng
-      } else {
-        userCart.items.push({
-          productId: guestItem.productId,
-          size: guestItem.size,
-          quantity: guestItem.quantity,
-        });
-      }
-    }
-
-    await userCart.save();
-    const populatedCart = await cartModel
-      .findOne({ userId })
-      .populate("items.productId");
-    res.json({
-      success: true,
-      message: "Đồng bộ giỏ hàng thành công.",
-      cartData: populatedCart,
-    });
-  } catch (error) {
-    console.error("Lỗi đồng bộ giỏ hàng guest:", error);
-    if (error.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Dữ liệu không hợp lệ khi đồng bộ.",
-          errors: error.errors,
-        });
-    }
-    res
-      .status(500)
-      .json({ success: false, message: "Lỗi server khi đồng bộ giỏ hàng!" });
-  }
-};
-
-export { getUserCart, addToCart, updateCart, clearCart, mergeGuestCart };
+export { getUserCart, addToCart, updateCart, clearCart };

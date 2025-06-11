@@ -56,15 +56,15 @@ const BestSeller = () => {
       className="my-16 py-16 px-4 rounded-2xl relative overflow-hidden" 
     >
       {/* Tiêu đề */}
-      <div className="text-center pb-12"> 
+      <div className="text-center pb-12 px-4 sm:px-6 lg:px-0"> 
         <Title text1="SẢN PHẨM" text2="BÁN CHẠY" /> 
-        <p className="w-3/4 sm:w-1/2 m-auto text-base md:text-base text-gray-700 mt-4 font-light leading-relaxed"> 
+        <p className="w-full sm:w-3/4 md:w-1/2 mx-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed"> 
           Khám phá những mặt hàng độc đáo, thể hiện cá tính riêng, và luôn dẫn đầu xu hướng từ cộng đồng Street Style.
         </p>
       </div>
 
       {/* Nút điều hướng */}
-      <div className="flex justify-between items-center absolute top-1/2 left-0 right-0 z-20 px-6 transform -translate-y-1/2"> 
+      <div className="flex justify-between items-center absolute top-1/2 left-0 right-0 z-20 px-4 sm:px-6 lg:px-0 transform -translate-y-1/2 pointer-events-none"> 
         <button
           onClick={prevSlide}
           disabled={currentIndex === 0}
@@ -96,7 +96,7 @@ const BestSeller = () => {
         viewport={{ once: true }}
         ref={carouselRef}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
           {visibleProducts.map((item, index) => (
             <motion.div
               key={item._id || index}
@@ -108,7 +108,7 @@ const BestSeller = () => {
               
               {/* Badge Hot - Đảm bảo hiển thị trên cùng */}
               <motion.span
-                className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold px-4 py-1.5 text-xs rounded-full shadow-md pointer-events-none z-30 uppercase tracking-wider" // Tăng z-index lên z-30
+                className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold px-3 sm:px-4 py-1.5 text-xs sm:text-sm rounded-full shadow-md pointer-events-none z-30 uppercase tracking-wider" 
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }} 
               >
@@ -120,7 +120,7 @@ const BestSeller = () => {
       </motion.div>
 
       {/* Nút CTA */}
-      <div className="text-center mt-16 px-4">
+      <div className="text-center mt-16 px-4 sm:px-6 lg:px-0">
         <motion.div
           whileHover={{
             scale: 1.05, 
@@ -132,7 +132,7 @@ const BestSeller = () => {
         >
           <a
             href="/collection"
-            className="inline-block px-10 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" 
+            className="inline-block px-6 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" 
           >
             Xem thêm
           </a>

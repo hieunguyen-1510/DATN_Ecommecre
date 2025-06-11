@@ -19,7 +19,6 @@ const About = () => {
     },
   };
 
-  // Variants for individual items to stagger animation
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -71,7 +70,7 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="relative h-[28rem] bg-cover bg-center flex items-center"
+        className="relative h-[28rem] sm:h-72 md:h-96 bg-cover bg-center flex items-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.about_us})`,
         }}
@@ -85,13 +84,13 @@ const About = () => {
         className="py-14 bg-gray-50"
       >
         <div className="container max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <motion.div variants={itemVariants} className="order-2 lg:order-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 <span className="text-red-600">Câu Chuyện</span> Của Chúng Tôi
               </h2>
 
-              <p className="text-base text-gray-700 mb-4 leading-relaxed">
+              <p className="text-sm md:text-base lg:text-lg text-gray-700 mb-4 leading-relaxed">
                 Năm 2020, từ một cửa hàng nhỏ tại Sài Gòn, Street Style ra đời
                 với sứ mệnh mang
                 <strong> văn hóa đường phố Việt Nam</strong> đến với thế giới.
@@ -131,7 +130,7 @@ const About = () => {
                   "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80"
                 }
                 alt="Hình ảnh cửa hàng Street Style với các mẫu quần áo treo trên giá"
-                className="w-full h-auto rounded-xl shadow-xl"
+                className="w-full max-w-lg mx-auto h-auto rounded-xl shadow-xl"
                 loading="lazy"
               />
             </motion.div>
@@ -148,7 +147,7 @@ const About = () => {
         className="py-14 bg-white"
       >
         <div className="container max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <motion.div variants={itemVariants} className="relative">
               <div className="relative w-full h-80 lg:h-96 rounded-xl overflow-hidden shadow-xl">
                 <img
@@ -172,7 +171,7 @@ const About = () => {
                   </div>
                   <div className="max-w-prose">
                     <h3 className="font-semibold text-lg mb-1">Sứ Mệnh</h3>
-                    <p className="text-gray-700">
+                    <p className="text-sm md:text-base lg:text-lg text-gray-700">
                       Truyền cảm hứng để bạn tự tin thể hiện cá tính thông qua
                       phong cách streetwear đậm chất Việt.
                     </p>
@@ -185,7 +184,7 @@ const About = () => {
                   </div>
                   <div className="max-w-prose">
                     <h3 className="font-semibold text-lg mb-1">Tầm Nhìn</h3>
-                    <p className="text-gray-700">
+                    <p className="text-sm md:text-base lg:text-lg text-gray-700">
                       Trở thành thương hiệu streetwear hàng đầu Đông Nam Á, góp
                       phần quảng bá văn hóa Việt ra thế giới.
                     </p>
