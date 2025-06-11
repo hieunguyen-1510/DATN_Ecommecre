@@ -6,7 +6,7 @@ import NewsletterForm from "../components/NewsletterForm";
 import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
-  <div className="container mx-auto px-4">
+  <div className="w-full">
     <section className="mb-8">
       <BannerSlider />
     </section>

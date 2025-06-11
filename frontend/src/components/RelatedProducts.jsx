@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ShopContext } from '../context/ShopContext';
-import Title from './Title';
-import ProductCard from './ProductCard'; 
+import React, { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ShopContext } from "../context/ShopContext";
+import Title from "./Title";
+import ProductCard from "./ProductCard";
 
 const RelatedProducts = ({ category, subCategory }) => {
   const { products } = useContext(ShopContext);
@@ -12,10 +12,13 @@ const RelatedProducts = ({ category, subCategory }) => {
     // Lọc sản phẩm theo danh mục và danh mục con
     if (products.length > 0) {
       const filteredProducts = products.filter(
-        (item) => item.category === category && item.subCategory === subCategory && item._id
+        (item) =>
+          item.category === category &&
+          item.subCategory === subCategory &&
+          item._id
       );
       // Lấy tối đa 4 sản phẩm liên quan để hiển thị trong grid 4 cột
-      setRelated(filteredProducts.slice(0, 4)); 
+      setRelated(filteredProducts.slice(0, 4));
     }
   }, [products, category, subCategory]);
 
@@ -30,26 +33,24 @@ const RelatedProducts = ({ category, subCategory }) => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-     
-      className="my-16 py-16 px-4 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden" 
+      className="my-16 py-10 px-4 sm:px-6 md:px-8 bg-gray-50 rounded-2xl shadow-xl relative overflow-hidden"
     >
-      <div className="container max-w-7xl mx-auto px-4">
+      <div className="container max-w-7xl mx-auto">
         {/* Tiêu đề */}
-        <div className="text-center pb-12"> {/* Đồng bộ padding bottom */}
+        <div className="text-center pb-8">
           <Title text1="SẢN PHẨM" text2="LIÊN QUAN" />
         </div>
-        
+
         {/* Danh sách sản phẩm liên quan */}
         {related.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10"> 
-            {related.map((item) => ( 
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
+            {related.map((item) => (
               <motion.div
-                key={item._id} 
+                key={item._id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-              
-                className="relative z-10" 
+                className="relative z-10"
               >
                 <ProductCard product={item} />
               </motion.div>

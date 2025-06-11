@@ -7,7 +7,8 @@ import { FaTrashAlt, FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, navigate } =
+    useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
@@ -57,11 +58,11 @@ const Cart = () => {
             </button>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col-reverse lg:flex-row gap-8">
             {/* Cart Items Section */}
             <div className="flex-1 bg-white rounded-2xl shadow-xl p-6">
               {/* Header của bảng */}
-              <div className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] sm:grid-cols-[2.5fr_1fr_1fr_0.5fr] md:grid-cols-[3fr_1fr_1fr_0.5fr] gap-4 py-4 px-6 border-b-2 border-gray-200 font-semibold text-gray-700 uppercase text-sm md:text-base">
+              <div className="hidden md:grid grid-cols-[3fr_1fr_1fr_0.5fr] gap-4 py-4 px-6 border-b-2 border-gray-200 font-semibold text-gray-700 uppercase text-sm md:text-base">
                 <p>Tên sản phẩm</p>
                 <p className="text-center">Số lượng</p>
                 <p className="text-right">Tổng tiền</p>
@@ -79,16 +80,24 @@ const Cart = () => {
                 }
 
                 // Logic xu ly ma giam gia
-                const isDiscounted = productData.discountPercentage && productData.discountPercentage > 0;
-                const priceToUse = isDiscounted ? productData.finalPrice : productData.price;
+                const isDiscounted =
+                  productData.discountPercentage > 0 ||
+                  productData.discountAmount > 0;
+                const priceToUse =
+                  productData.discountPercentage > 0
+                    ? productData.finalPrice
+                    : productData.discountAmount > 0
+                    ? productData.price - productData.discountAmount
+                    : productData.price;
+
                 const itemTotalPrice = priceToUse * item.quantity;
 
                 // const itemTotalPrice = productData.price * item.quantity;
-                
+
                 return (
                   <div
                     key={`${item._id}-${item.size}`}
-                    className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] sm:grid-cols-[2.5fr_1fr_1fr_0.5fr] md:grid-cols-[3fr_1fr_1fr_0.5fr] items-center gap-4 py-4 px-6 border-b border-gray-100 text-gray-800 text-sm md:text-base"
+                    className="flex flex-col md:grid md:grid-cols-[3fr_1fr_1fr_0.5fr] gap-4 py-4 px-6 border-b border-gray-100 text-gray-800 text-sm md:text-base"
                   >
                     {/* Product Info */}
                     <div className="flex items-center gap-4">
@@ -112,15 +121,21 @@ const Cart = () => {
                         <p className="text-gray-600 text-xs">
                           Size: {item.size}
                         </p>
+                        <p className="text-gray-500 text-xs md:hidden mt-1">
+                          Số lượng: {item.quantity} | Tổng:{" "}
+                          {itemTotalPrice.toLocaleString("vi-VN")} {currency}
+                        </p>
+
                         <p className="text-sm mt-1">
                           {isDiscounted && (
                             <span className="text-gray-500 line-through mr-2 font-normal">
-                              {productData.price.toLocaleString("vi-VN")} {currency}
+                              {productData.price.toLocaleString("vi-VN")}{" "}
+                              {currency}
                             </span>
                           )}
-                            <span className="text-orange-500 font-bold">
-                              {priceToUse.toLocaleString("vi-VN")} {currency}
-                            </span>
+                          <span className="text-orange-500 font-bold">
+                            {priceToUse.toLocaleString("vi-VN")} {currency}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -146,7 +161,7 @@ const Cart = () => {
                         type="number"
                         min={1}
                         value={item.quantity}
-                        className="border border-gray-300 px-2 py-1 text-center w-12 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        className="border border-gray-300 px-2 py-1 text-center w-14 sm:w-16 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                       />
                       <button
                         onClick={() =>

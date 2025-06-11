@@ -79,8 +79,8 @@ const Navbar = () => {
               src={assets.notification_icon}
               alt="Thông báo"
             /> */}
-            {/* Số lượng thông báo chưa đọc */}
-            {/* {unreadNotificationsCount > 0 && (
+          {/* Số lượng thông báo chưa đọc */}
+          {/* {unreadNotificationsCount > 0 && (
               <p className="absolute right-[-5px] top-[-5px] w-4 text-center leading-4 bg-red-500 text-white aspect-square rounded-full text-[8px]">
                 {unreadNotificationsCount}
               </p>
@@ -144,10 +144,18 @@ const Navbar = () => {
             alt="Menu"
           />
         </div>
+        {/* Overlay đen mờ */}
+        {visible && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-40 sm:hidden"
+            onClick={() => setVisible(false)}
+          />
+        )}
+
+        {/* Sidebar trượt từ phải ra */}
         <div
-          className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${
-            visible ? "w-full" : "w-0"
-          }`}
+          className={`fixed top-0 right-0 h-full w-3/4 max-w-xs bg-white z-50 shadow-lg transform transition-transform duration-300 ease-in-out sm:hidden
+      ${visible ? "translate-x-0" : "translate-x-full"}`}
         >
           <div className="flex flex-col text-gray-600">
             <div

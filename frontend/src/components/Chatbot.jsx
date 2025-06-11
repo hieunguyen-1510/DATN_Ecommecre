@@ -123,7 +123,7 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-[100]">
+    <div className="fixed bottom-4 left-2 sm:left-4 z-[100]">
       {!isOpen && visible && (
         <button
           onClick={() => setIsOpen(true)}
@@ -135,8 +135,8 @@ const Chatbot = () => {
       )}
 
       {isOpen && (
-        <div className="relative w-96 h-[480px] bg-white rounded-xl shadow-xl flex flex-col border border-gray-200 animate-fadeIn">
-          {/* Mũi tên dưới cùng bên trái, trỏ về nút chatbot */}
+        <div className="relative w-full max-w-xs sm:w-96 h-[480px] bg-white rounded-xl shadow-xl flex flex-col border border-gray-200 animate-fadeIn">
+          {/* Mũi tên bên trái */}
           <div className="absolute left-6 -bottom-2 w-4 h-4 bg-white transform rotate-45 border-b border-l border-gray-200 z-[99]"></div>
 
           <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-xl shadow-inner">

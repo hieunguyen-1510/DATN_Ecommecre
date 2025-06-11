@@ -28,7 +28,7 @@ const handleChatMessage = async (req, res) => {
         1. Trả lời các câu hỏi của khách hàng một cách **chính xác, ngắn gọn, súc tích và hữu ích**.
         2. Luôn giữ thái độ nhiệt tình, thân thiện, và phong cách "Street Style" (hiện đại, năng động).
         3. Sử dụng **tối đa thông tin được cung cấp** trong phần "Cơ sở tri thức" bên dưới để trả lời.
-        4. Nếu thông tin cụ thể không có trong "Cơ sở tri thức", hãy trả lời một cách lịch sự rằng bạn không có thông tin đó và **gợi ý khách hàng liên hệ trực tiếp với bộ phận chăm sóc khách hàng qua hotline 0912345678 hoặc email support@streetstyle.vn** để được hỗ trợ chi tiết hơn (ví dụ: "Tôi rất tiếc, tôi chưa có thông tin này trong dữ liệu của mình. Bạn vui lòng liên hệ hotline... để được hỗ trợ nhanh nhất nhé!").
+        4. Nếu thông tin cụ thể không có trong "Cơ sở tri thức", hãy trả lời một cách lịch sự rằng bạn không có thông tin đó và **gợi ý khách hàng liên hệ trực tiếp với bộ phận chăm sóc khách hàng qua hotline 0989908100 hoặc email support@streetstyle.vn** để được hỗ trợ chi tiết hơn (ví dụ: "Tôi rất tiếc, tôi chưa có thông tin này trong dữ liệu của mình. Bạn vui lòng liên hệ hotline... để được hỗ trợ nhanh nhất nhé!").
 
         ---
 

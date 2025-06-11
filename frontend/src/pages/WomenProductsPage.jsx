@@ -8,8 +8,7 @@ import { ShopContext } from "../context/ShopContext";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const WomenProductsPage = () => {
-  const { products, filteredProducts, search } = useContext(ShopContext);
-
+  const { products, search } = useContext(ShopContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState("relavent");
@@ -18,19 +17,17 @@ const WomenProductsPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    // Loc theo category 'Women'
     let categoryFiltered = products.filter(
       (product) => product.category === "Women"
     );
 
-    // Tìm kiếm
     if (search) {
       categoryFiltered = categoryFiltered.filter((product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
       );
     }
-    // Sắp xếp
-    let sortedProducts = [...categoryFiltered]; // Tạo bản sao để sắp xếp
+
+    let sortedProducts = [...categoryFiltered];
     if (sortBy === "thấp-cao") {
       sortedProducts.sort((a, b) => a.finalPrice - b.finalPrice);
     } else if (sortBy === "cao-thấp") {
@@ -42,7 +39,6 @@ const WomenProductsPage = () => {
     setError(null);
   }, [products, search, sortBy]);
 
-  // Animation variants
   const gridVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: {
@@ -61,7 +57,7 @@ const WomenProductsPage = () => {
     <div className="min-h-screen bg-white text-gray-900">
       {/* Breadcrumbs */}
       <nav className="bg-gray-50 py-3 px-4">
-        <div className="container max-w-7xl mx-auto text-sm">
+        <div className="max-w-7xl mx-auto text-sm">
           <a href="/" className="text-gray-600 hover:text-red-600">
             Trang chủ
           </a>
@@ -72,16 +68,16 @@ const WomenProductsPage = () => {
 
       {/* Hero Banner */}
       <section
-        className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white"
+        className="relative h-[28rem] bg-cover bg-center flex items-center justify-center text-white text-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.bst_banner})`,
         }}
       >
-        <div className="container px-4 text-center z-10">
-          <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 drop-shadow-md">
+        <div className="px-4 z-10">
+          <h1 className="text-3xl sm:text-5xl font-extrabold mb-3 drop-shadow-md">
             BỘ SƯU TẬP NỮ
           </h1>
-          <p className="text-base sm:text-xl max-w-2xl mx-auto mb-4 drop-shadow-sm">
+          <p className="text-base sm:text-xl max-w-2xl mx-auto mb-4 drop-shadow-sm px-2">
             Khám phá xu hướng thời trang nữ mới nhất 2025. Nét đẹp thanh lịch,
             nữ tính và đầy cá tính đang chờ bạn!
           </p>
@@ -89,8 +85,8 @@ const WomenProductsPage = () => {
       </section>
 
       {/* Filter & Sort Bar */}
-      <div className="container max-w-7xl mx-auto flex flex-wrap justify-between items-center my-6 px-4">
-        <div className="flex gap-2">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 my-6 px-4">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => navigate("/men")}
             className="px-5 py-2 border border-gray-300 rounded-full text-sm hover:bg-gray-100 transition"
@@ -110,12 +106,12 @@ const WomenProductsPage = () => {
             Trẻ em
           </button>
         </div>
-        <div className="relative inline-block text-left">
+        <div className="relative w-full sm:w-auto">
           <select
             id="sort-by"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border-2 border-gray-200 bg-white text-sm px-4 py-2 pr-8 rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-none appearance-none"
+            className="w-full sm:w-auto border-2 border-gray-200 bg-white text-sm px-4 py-2 pr-8 rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-none appearance-none"
           >
             <option value="relavent">Sắp xếp theo: Phù hợp</option>
             <option value="thấp-cao">Sắp xếp theo: Giá thấp đến cao</option>
@@ -134,14 +130,14 @@ const WomenProductsPage = () => {
       </div>
 
       {/* Product Grid */}
-      <div className="container max-w-7xl mx-auto px-4 pb-16">
+      <div className="max-w-7xl mx-auto px-4 pb-16">
         {loading ? (
           <p className="text-center py-10">Đang tải sản phẩm...</p>
         ) : error ? (
           <p className="text-center py-10 text-red-500">Lỗi: {error}</p>
         ) : displayProducts.length > 0 ? (
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
             variants={gridVariants}
             initial="hidden"
             animate="visible"

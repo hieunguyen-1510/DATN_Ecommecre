@@ -1,5 +1,5 @@
 import express from "express";
-import {addToCart, clearCart, getUserCart, updateCart, mergeGuestCart} from "../controllers/cartController.js";
+import {addToCart, clearCart, getUserCart, updateCart} from "../controllers/cartController.js";
 import auth from '../middleware/auth.js';
 const cartRouter = express.Router();
 
@@ -15,7 +15,5 @@ cartRouter.post('/update',auth,updateCart);
 // Clear cart
 cartRouter.delete('/clear',auth, clearCart);
 
-// API mới để đồng bộ giỏ hàng từ guest sang user đã đăng nhập
-cartRouter.post('/merge', auth, mergeGuestCart);
 
 export default cartRouter;

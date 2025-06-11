@@ -21,7 +21,7 @@ const Product = () => {
       setMainImage(product.image[0]);
       document.title = `Street Style - ${product.name}`;
     } else {
-      console.error("Không tìm thấy sản phẩm với ID:", productId);
+      // console.error("Không tìm thấy sản phẩm với ID:", productId);
       setProductData(null);
     }
   }, [productId, products]);
@@ -39,7 +39,7 @@ const Product = () => {
       // Đồng bộ nền và padding với các section khác
       className="min-h-screen bg-gray-50 py-16"
     >
-      <div className="container max-w-7xl mx-auto px-4">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {" "}
         {/* Đồng bộ padding ngang */}
         <div className="flex flex-col-reverse lg:flex-row lg:gap-16 gap-8">
@@ -51,7 +51,6 @@ const Product = () => {
             {/* Thumbnail Images */}
             <div className="flex lg:flex-col overflow-x-auto lg:overflow-y-scroll justify-start lg:w-[18%] w-full gap-4 lg:gap-0">
               {" "}
-              {/* Thêm gap, justify-start */}
               {productData.image.map((img, index) => (
                 <img
                   key={index}
@@ -66,13 +65,13 @@ const Product = () => {
                                   ? "border-4 border-yellow-500 scale-105"
                                   : "border-2 border-gray-200 hover:border-yellow-300"
                               } 
-                              transition-all duration-200`} // Style cho thumbnail
+                              transition-all duration-200`}
                   onClick={() => setMainImage(img)}
                 />
               ))}
             </div>
             {/* Main Product Image */}
-            <div className="w-full lg:w-[80%] h-full">
+            <div className="w-full lg:w-[80%] h-full aspect-[3/4]">
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 src={
@@ -131,7 +130,7 @@ const Product = () => {
               <h3 className="font-bold text-gray-900 text-base mb-4">
                 Chọn kích cỡ
               </h3>{" "}
-              <div className="grid grid-cols-4 gap-3 md:gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
                 {" "}
                 {productData.sizes?.map((size) => (
                   <button
@@ -158,7 +157,7 @@ const Product = () => {
               }} // Hiệu ứng hover
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.3 }}
-              className="w-full mt-6 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" // Đồng bộ style nút
+              className="w-full mt-6 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" // Đồng bộ style nút
               onClick={() => addToCart(productData._id, selectedSize)}
               disabled={!selectedSize}
             >
@@ -168,12 +167,9 @@ const Product = () => {
             {/* Product Guarantees */}
             <div className="space-y-3 pt-6">
               {" "}
-              {/* Tăng space-y và padding top */}
               <div className="flex items-center gap-3 text-gray-700 text-base font-medium">
                 {" "}
-                {/* Tăng gap, màu chữ, kích thước, độ đậm */}
                 <FaCheck className="w-6 h-6 text-green-600" />{" "}
-                {/* Tăng kích thước icon, đổi màu xanh đậm hơn */}
                 <span>100% Sản phẩm chính hãng</span>
               </div>
               <div className="flex items-center gap-3 text-gray-700 text-base font-medium">
@@ -193,12 +189,10 @@ const Product = () => {
           // Đồng bộ bo góc, bóng và padding
           className="mt-20 bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
             {" "}
-            {/* Thêm border màu xám nhạt */}
             <button
               className={`px-8 py-4 font-semibold text-lg transition-colors duration-200 ${
-                // Tăng padding, font-size, font-weight
                 activeTab === "description"
                   ? "text-yellow-600 border-b-2 border-yellow-500"
                   : "text-gray-700 hover:text-yellow-500"
@@ -243,7 +237,7 @@ const Product = () => {
             )}
           </div>
         </motion.div>
-        {/* Related Products - Đã được cập nhật ở bước trước */}
+        {/* Related Products  */}
         <RelatedProducts
           category={productData.category}
           subCategory={productData.subCategory}

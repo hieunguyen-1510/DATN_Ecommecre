@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FaLock } from "react-icons/fa"; 
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -22,7 +23,10 @@ const ResetPassword = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(`${backendUrl}/api/user/reset-password`, { token, password });
+      const response = await axios.post(`${backendUrl}/api/user/reset-password`, {
+        token,
+        password,
+      });
       toast.success(response.data.message);
       setPassword("");
       setConfirmPassword("");
@@ -41,21 +45,23 @@ const ResetPassword = () => {
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">Đặt Lại Mật Khẩu</h2>
         <form onSubmit={onSubmitHandler} className="flex flex-col gap-5">
           <div className="relative">
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               type="password"
-              className="w-full py-3 pl-3 border border-gray-300 rounded-md focus:ring focus:ring-yellow-400 bg-gray-50"
+              className="w-full py-3 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-yellow-400 bg-gray-50"
               placeholder="Nhập mật khẩu mới"
               required
             />
           </div>
           <div className="relative">
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               onChange={(e) => setConfirmPassword(e.target.value)}
               value={confirmPassword}
               type="password"
-              className="w-full py-3 pl-3 border border-gray-300 rounded-md focus:ring focus:ring-yellow-400 bg-gray-50"
+              className="w-full py-3 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-yellow-400 bg-gray-50"
               placeholder="Xác nhận mật khẩu mới"
               required
             />

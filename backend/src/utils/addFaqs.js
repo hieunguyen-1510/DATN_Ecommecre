@@ -38,7 +38,7 @@ mongoose.connect(dbURI)
             },
             {
                 question: "Làm sao để liên hệ hỗ trợ khách hàng của Street Style?",
-                answer: "Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng 24/7 để giải đáp mọi thắc mắc và hỗ trợ bạn. Bạn có thể liên hệ qua hotline 0912345678 hoặc gửi email về support@streetstyle.vn.",
+                answer: "Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng 24/7 để giải đáp mọi thắc mắc và hỗ trợ bạn. Bạn có thể liên hệ qua hotline 0989908100 hoặc gửi email về support@streetstyle.vn.",
                 // Các từ khóa liên quan đến "hỗ trợ khách hàng"
                 keywords: ["hỗ trợ khách hàng", "liên hệ", "hotline", "số điện thoại", "email", "chăm sóc khách hàng", "liên lạc", "giúp đỡ"]
             },

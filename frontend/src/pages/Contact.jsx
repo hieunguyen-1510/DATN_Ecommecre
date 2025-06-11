@@ -49,7 +49,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* ===== Breadcrumbs ===== */}
-      <nav className="bg-gray-50 py-3 px-4">
+      <nav className="bg-gray-50 py-3 px-4 text-xs sm:text-sm">
         <div className="container max-w-7xl mx-auto text-sm">
           <Link to="/" className="text-gray-600 hover:text-red-600">
             Trang chủ
@@ -64,9 +64,9 @@ const Contact = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative h-[32rem] bg-cover bg-center flex items-center"
+        className="relative h-[24rem] sm:h-[28rem] md:h-[32rem] bg-cover bg-center flex items-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${assets.contact_img})`, // Fallback image for contact hero
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${assets.contact_img})`, 
           backgroundPosition: "center 30%",
         }}
       >
@@ -96,7 +96,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12"
         >
           {/* ===== Contact Info ===== */}
           <motion.div
@@ -120,7 +120,7 @@ const Contact = () => {
                     2 Đ. Trường Sa, Phường 17, Bình Thạnh, Hồ Chí Minh 70000,
                     Việt Nam
                   </p>
-                  <div className="mt-4 aspect-video bg-gray-200 rounded-lg overflow-hidden">
+                  <div className="mt-4 w-full aspect-[4/3] sm:aspect-video bg-gray-200 rounded-lg overflow-hidden">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.2426872763162!2d106.7014633796137!3d10.79271556191487!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175299a2a7aeb89%3A0xfe75f3431d8fd812!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBUaOG7p3kgbOG7o2kgLSBQaMOibiBoaeG7h3UgTWnhu4FuIE5hbQ!5e0!3m2!1svi!2sus!4v1748010359490!5m2!1svi!2sus"
                       width="100%"
@@ -206,7 +206,7 @@ const Contact = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ y: -3 }}
-                    className={`${social.color} text-white p-3 rounded-full text-lg`}
+                    className={`${social.color} text-white p-2 sm:p-3 rounded-full text-base sm:text-lg`}
                   >
                     {social.icon}
                   </motion.a>
@@ -224,7 +224,7 @@ const Contact = () => {
               Gửi Tin Nhắn Cho Chúng Tôi
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 text-sm md:text-base">
               <div>
                 <label
                   htmlFor="name"
@@ -289,9 +289,8 @@ const Contact = () => {
                   type="submit"
                   disabled={isSubmitting}
                   className={`w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-all ${
-                    // Consistent red-600
-                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                  isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                }`}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center">
@@ -342,7 +341,7 @@ const Contact = () => {
             Câu Hỏi Thường Gặp
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {[
               {
                 question: "Tôi có thể đổi trả sản phẩm trong bao lâu?",

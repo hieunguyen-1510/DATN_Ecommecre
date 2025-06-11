@@ -13,15 +13,15 @@ import {
 const Footer = () => {
   return (
     <footer className="bg-gray-300 text-gray-500 border-t border-gray-200 mt-12">
-      <div className="container max-w-6xl mx-auto px-4 py-10">
+      <div className="container w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
-          {/* Column 1: Dịch vụ */}
-          <div className="space-y-5">
-            <h4 className="font-extrabold text-lg text-gray-900 mb-6 uppercase tracking-wider">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-16">
+          {/* Dịch vụ */}
+          <div className="space-y-5 text-center md:text-left">
+            <h4 className="font-extrabold text-base md:text-lg text-gray-900 mb-4 md:mb-6 uppercase tracking-wider">
               Dịch vụ
             </h4>
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
               <div className="flex-shrink-0 mt-1">
                 <FaTruck className="text-lg text-blue-600" />
               </div>
@@ -45,7 +45,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Quick Links */}
           <div className="space-y-5">
             <h4 className="font-extrabold text-lg text-gray-900 mb-6 uppercase tracking-wider">
               Hỗ trợ khách hàng
@@ -78,7 +78,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3: Contact */}
+          {/* Contact */}
           <div className="space-y-5">
             <h4 className="font-extrabold text-lg text-gray-900 mb-6 uppercase tracking-wider">
               Liên hệ
@@ -99,7 +99,7 @@ const Footer = () => {
             </div>
 
             {/* Social Media Icons */}
-            <div className="flex items-center gap-6 mt-6">
+            <div className="flex items-center gap-6 mt-6 justify-center md:justify-start">
               <a
                 href="https://www.instagram.com/"
                 className="text-gray-600 hover:text-blue-600 transition-colors duration-300"
@@ -124,7 +124,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-8 pt-4 border-t border-gray-200 text-center">
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-xs sm:text-sm px-2">
             © 2025 STREET STYLE – Giấy chứng nhận Đăng ký kinh doanh số
             0989908100.
           </p>
