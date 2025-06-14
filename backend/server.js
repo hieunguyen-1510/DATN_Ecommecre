@@ -7,7 +7,6 @@ import userRouter from './src/routes/authRoutes.js';
 import productRouter from './src/routes/productRoutes.js';
 import contactRouter from './src/routes/contactRoutes.js';
 import cartRouter from './src/routes/cartRoutes.js';
-import passwordRouter from './src/routes/passwordRoutes.js';
 import paymentRouter from './src/routes/paymentRoutes.js';
 import userListRouter from './src/routes/userRoutes.js';
 import reviewsRouter from './src/routes/reviewsRoutes.js';
@@ -21,6 +20,7 @@ import chatbotRouter from './src/routes/chatbotRoutes.js';
 import clearanceRouter from './src/routes/clearanceGroupRoutes.js';
 import './src/utils/cronJobs.js'; 
 import customerRouter from './src/routes/customerRoutes.js';
+import passwordRouter from './src/routes/userPasswordRoutes.js';
 
 const app = express();
 
