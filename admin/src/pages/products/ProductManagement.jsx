@@ -4,7 +4,6 @@ import {
   Button,
   Modal,
   Input,
-  Select,
   Tooltip,
   Typography,
   Tag,
@@ -21,6 +20,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 const { Title, Text } = Typography;
+import dayjs from "dayjs";
 
 const ProductManagement = ({ token }) => {
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ const ProductManagement = ({ token }) => {
     pageSize: 10,
     total: 0,
   });
+
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -52,21 +53,12 @@ const ProductManagement = ({ token }) => {
           pageSize,
           total: response.data.total,
         });
-        if (response.data.products.length === 0) {
-          toast.info("Không có sản phẩm nào trong danh sách.");
-        }
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error(
-        "Error fetching products:",
-        error.response?.data || error.message
-      );
-      toast.error(
-        error.response?.data?.message ||
-          "Đã xảy ra lỗi khi tải danh sách sản phẩm."
-      );
+      console.error(error.response?.data || error.message);
+      toast.error("Error loading products.");
     } finally {
       setLoading(false);
     }
@@ -103,7 +95,7 @@ const ProductManagement = ({ token }) => {
     });
   };
 
-  const updateStatus = async (id, status) => {
+   const updateStatus = async (id, status) => {
     setLoading(true);
     try {
       const response = await axios.put(
@@ -131,17 +123,13 @@ const ProductManagement = ({ token }) => {
     }
   };
 
-  const handleTableChange = (newPagination) => {
-    fetchList(newPagination.current, newPagination.pageSize, searchText);
-  };
-
   const handleSearch = (value) => {
     setSearchText(value);
     fetchList(1, pagination.pageSize, value);
   };
 
-  const showDetail = (product) => {
-    setSelectedProduct(product);
+  const showProductDetail = (record) => {
+    setSelectedProduct(record);
     setIsDetailModalVisible(true);
   };
 
@@ -152,111 +140,103 @@ const ProductManagement = ({ token }) => {
 
   const columns = [
     {
+      title: "Ngày nhập",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      align: "center",
+      render: (createdAt) => (
+        <Text style={{ whiteSpace: "nowrap" }}>
+          {dayjs(createdAt).format("DD/MM/YYYY")}
+        </Text>
+      ),
+    },
+    {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
-      width: 150,
+      align: "center",
       render: (images) => (
-        <div className="flex justify-center">
-          {images?.length > 0 ? (
-            <Image
-              src={images[0]}
-              alt="product"
-              width={80}
-              height={80}
-              className="rounded-lg object-cover"
-            />
-          ) : (
-            <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Text type="secondary">No Image</Text>
-            </div>
-          )}
-        </div>
+        <Image
+          src={images?.[0] || ""}
+          alt="product"
+          width={70}
+          height={70}
+          style={{
+            objectFit: "cover",
+            borderRadius: "12px",
+            border: "1px solid #f0f0f0",
+          }}
+          fallback="https://via.placeholder.com/70"
+        />
       ),
     },
     {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      width: 250,
-      render: (text, record) => (
-        <Button
-          type="link"
-          className="p-0 text-left"
-          onClick={() => showDetail(record)}
-        >
-          <Text strong className="text-blue-600 hover:text-blue-800">
+      render: (text) => (
+        <Tooltip title={text}>
+          <Button
+            type="link"
+            style={{
+              padding: 0,
+              textAlign: "left",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "200px",
+            }}
+          >
             {text}
-          </Text>
-        </Button>
+          </Button>
+        </Tooltip>
       ),
     },
     {
       title: "Danh mục",
       dataIndex: "category",
       key: "category",
-      width: 150,
+      align: "center",
       render: (text) => <Tag color="blue">{text}</Tag>,
     },
     {
       title: "Giá mua",
       dataIndex: "purchasePrice",
       key: "purchasePrice",
-      width: 150,
       align: "right",
-      render: (purchasePrice) => (
-        <Text className="text-gray-600">
-          {purchasePrice
-            ? `${purchasePrice.toLocaleString()} ${currency}`
-            : "N/A"}
-        </Text>
+      render: (price) => (
+        <Text
+          style={{ whiteSpace: "nowrap" }}
+        >{`${price?.toLocaleString()} ${currency}`}</Text>
       ),
     },
     {
       title: "Giá bán",
-      dataIndex: "price",
-      key: "price",
-      width: 150,
+      dataIndex: "finalPrice",
+      key: "finalPrice",
       align: "right",
-      render: (price, record) => (
-        <div>
-          {record.discountPercentage || record.discountAmount ? (
-            <div>
-              <Text delete className="text-gray-500">
-                {price?.toLocaleString()} {currency}
-              </Text>
-              <br />
-              <Text strong className="text-green-600">
-                {record.finalPrice?.toLocaleString()} {currency}
-              </Text>
-              <br />
-              <Text type="secondary">
-                {record.discountPercentage
-                  ? `Giảm ${record.discountPercentage}%`
-                  : `Giảm ${record.discountAmount?.toLocaleString()} ${currency}`}
-              </Text>
-            </div>
-          ) : (
-            <Text strong className="text-green-600">
-              {price?.toLocaleString()} {currency}
-            </Text>
-          )}
-        </div>
+      render: (price) => (
+        <Text strong style={{ color: "#52c41a", whiteSpace: "nowrap" }}>
+          {`${price?.toLocaleString()} ${currency}`}
+        </Text>
       ),
     },
     {
       title: "Tồn kho",
       dataIndex: "stock",
       key: "stock",
-      width: 120,
       align: "center",
-      render: (stock) => <Tag color={stock > 0 ? "green" : "red"}>{stock}</Tag>,
+      render: (stock) => (
+        <Tag color={stock > 0 ? "green" : "red"}>
+          {stock > 0 ? stock : "Hết hàng"}
+        </Tag>
+      ),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      width: 150,
+      align: "center",
       render: (status) => (
         <Tag
           color={
@@ -267,11 +247,7 @@ const ProductManagement = ({ token }) => {
               : "orange"
           }
         >
-          {status === "active"
-            ? "Đang bán"
-            : status === "hidden"
-            ? "Ẩn"
-            : "Hết hàng"}
+          {status === "active" ? "Đang bán" : "Ẩn"}
         </Tag>
       ),
     },
@@ -279,14 +255,20 @@ const ProductManagement = ({ token }) => {
       title: "Hành động",
       key: "action",
       dataIndex: "action",
-      width: 150,
-      fixed: "right",
+      align: "center",
       render: (_, record) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-center">
+          <Tooltip title="Xem chi tiết">
+            <Button
+              shape="circle"
+              icon={<EyeOutlined />}
+              onClick={() => showProductDetail(record)}
+            />
+          </Tooltip>
           <Tooltip title="Chỉnh sửa">
             <Button
               shape="circle"
-              icon={<EditOutlined style={{ color: "#1890ff" }} />}
+              icon={<EditOutlined />}
               onClick={() => navigate(`/edit-product/${record._id}`)}
             />
           </Tooltip>
@@ -306,32 +288,25 @@ const ProductManagement = ({ token }) => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <Title level={3} className="!mb-0 text-gray-800">
+        <Title level={3} className="!mb-0">
           🛍️ Quản lý sản phẩm
         </Title>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => navigate("/add-product")}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
         >
           Thêm sản phẩm
         </Button>
       </div>
 
-      <div className="mb-6">
-        <Input.Search
-          placeholder="Tìm kiếm theo tên sản phẩm..."
-          allowClear
-          enterButton={
-            <Button type="primary" className="bg-gray-800 hover:bg-gray-700">
-              Tìm kiếm
-            </Button>
-          }
-          size="large"
-          onSearch={handleSearch}
-        />
-      </div>
+      <Input.Search
+        placeholder="Tìm kiếm sản phẩm..."
+        allowClear
+        enterButton="Tìm kiếm"
+        size="large"
+        onSearch={handleSearch}
+      />
 
       <Table
         columns={columns}
@@ -342,13 +317,13 @@ const ProductManagement = ({ token }) => {
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50"],
         }}
-        onChange={handleTableChange}
+        onChange={(newPagination) =>
+          fetchList(newPagination.current, newPagination.pageSize)
+        }
         loading={loading}
         bordered
-        scroll={{ x: 1200 }}
-        rowClassName="hover:bg-gray-50 transition-colors"
+        className="mt-4"
       />
-
       <Modal
         title={
           <span className="text-xl font-semibold">📦 Chi tiết sản phẩm</span>

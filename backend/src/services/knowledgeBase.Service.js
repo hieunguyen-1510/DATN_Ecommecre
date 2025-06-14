@@ -2,7 +2,7 @@ import FAQ from "../models/faqsModel.js";
 import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
 
-// Hàm lấy câu hỏi liên quan của người dùng
+// Hàm lấy câu hỏi liên quan
 export const getRelatedFAQs = async (query) => {
  const faqs = await FAQ.find({
     $or: [
@@ -28,7 +28,7 @@ export const getProductInfo = async (productName) => {
     return null;
 }
 
-// Hàm lấy trạng thái đơn hàng (userId)
+// Hàm lấy trạng thái đơn hàng
 export const getOderStatus = async (orderId, userId) => {
     const order = await Order.findOne({_id: orderId, userId: userId});
     if (order) {
@@ -37,7 +37,7 @@ export const getOderStatus = async (orderId, userId) => {
     return null;
 }
 
-// Hàm tổng hợp Knowledge Base String để đưa vào prompt cho AI
+// Hàm tổng hợp Knowledge
 export const buildKnowledgeBaseString = async (userMessage, userId = null) => {
     let kb = "";
 

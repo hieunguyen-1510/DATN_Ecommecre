@@ -190,7 +190,7 @@ const Collection = () => {
       <div className="mt-12 text-center pb-12">
         <button
           onClick={() => navigate("/")}
-          className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all duration-300"
+          className="inline-block px-6 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-bold rounded-full uppercase tracking-wide text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
         >
           Xem thêm bộ sưu tập
         </button>

@@ -27,6 +27,7 @@ const Profile = () => {
       phone: storedUser.phone || "03481349940",
       address: storedUser.address || "41,Đường Số 1, KP1, Hiệp Bình Chánh,Thủ Đức, TP.HCM",
       avatar: storedUser.avatar || "",
+      // rank: user?.rank || storedUser.rank || "Chưa mua hàng",
     });
   }, [token, user, navigate]);
 
@@ -98,6 +99,9 @@ const Profile = () => {
           <h2 className="text-lg sm:text-xl text-gray-800 mt-3 font-semibold text-center">
             {userInfo.name}
           </h2>
+          {/* <p className="mt-2 text-sm font-medium text-yellow-600">
+            Hạng người dùng: <span className="font-semibold">{userInfo.rank}</span>
+          </p> */}
         </div>
 
         <div className="space-y-4">

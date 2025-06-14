@@ -7,7 +7,7 @@ import Product from "../models/productModel.js";
 import Report from "../models/reportModel.js";
 import { createMomoPayment } from "../services/momo.Service.js";
 import { createVnpayPayment } from "../services/vnpay.service.js";
-
+import {updateUserRank} from "../controllers/customerController.js";
 const generateTransactionId = () => {
   return `COD${Date.now()}`;
 };
@@ -214,6 +214,9 @@ const placeOrder = async (req, res) => {
     if (!cart) {
       console.warn("Không tìm thấy giỏ hàng để cập nhật:", userId);
     }
+    
+    // cập nhật hạng khách hàng
+    await updateUserRank(userId);
 
     res.status(201).json(responseData);
   } catch (error) {

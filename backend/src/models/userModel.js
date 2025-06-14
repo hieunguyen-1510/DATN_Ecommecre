@@ -10,7 +10,13 @@ const userSchema = new mongoose.Schema(
     address: { type: String },
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
+    rank: {
+      type: String,
+      enum: ["Chưa mua hàng", "Bạc", "Vàng", "Bạch Kim", "Kim Cương"],
+      default: "Chưa mua hàng",
+    }
   },
+
   { timestamps: true }
 );
 

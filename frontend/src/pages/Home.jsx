@@ -7,16 +7,16 @@ import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
   <div className="w-full">
-    <section className="mb-8">
+    <section className="mb-4 max-h-[80vh] overflow-hidden">
       <BannerSlider />
     </section>
-    <section className="mb-8">
+    <section className="mb-4">
       <LatestCollection />
     </section>
-    <section className="mb-8">
+    <section className="mb-4">
       <BestSeller />
     </section>
-    <section className="mb-8">
+    <section className="mt-[-16px] mb-6">
       <OurPolicy />
     </section>
     <section>

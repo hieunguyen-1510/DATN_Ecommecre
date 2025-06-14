@@ -56,7 +56,7 @@ const LatestCollection = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="my-16 py-16 px-4 rounded-2xl relative overflow-hidden"
+      className="my-8 py-10 px-4 sm:px-6 md:px-8 lg:px-12"
     >
       {/* Tiêu đề */}
       <div className="text-center pb-12">
@@ -162,7 +162,7 @@ const LatestCollection = () => {
       </div>
 
       {/* Nút CTA */}
-      <div className="text-center mt-16 px-4">
+      <div className="text-center mt-8 px-2">
         <motion.div
           whileHover={{
             scale: 1.05,

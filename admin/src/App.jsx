@@ -20,6 +20,7 @@ import OrderDetail from "./pages/orders/OrderDetail";
 import BannerManagement from "./pages/banner/BannerManagement";
 import DiscountManagement from "./pages/discount/DiscountManagement";
 import StatisticDashboard from "./pages/statistics/StatisticsDashboard";
+import CustomerList from "./components/CustomerList";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "đ";
@@ -64,6 +65,7 @@ const App = () => {
         >
           <Route path="statistics" element={<StatisticDashboard token={token} />} />
           <Route path="add-product" element={<AddProduct token={token} />} />
+          <Route path="/customers" element={<CustomerList token={token}/>} />
           <Route path="edit-product/:id" element={<EditProduct token={token} />} />
           <Route path="products" element={<ProductManagement token={token} />} />
           <Route path="discounts" element={<DiscountManagement token={token} />} />

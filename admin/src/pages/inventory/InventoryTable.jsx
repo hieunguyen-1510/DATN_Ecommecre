@@ -8,7 +8,23 @@ const InventoryTable = ({
   onShowDiscountModal,
   pagination,
   onChangePagination,
+  rowSelection,
 }) => {
+  const colorMap = {
+    normal: "green",
+    critical: "red",
+    low: "orange",
+    overstock: "blue",
+    out_of_stock: "volcano",
+  };
+  const labelMap = {
+    normal: "Còn hàng",
+    critical: "Nguy cấp",
+    low: "Sắp hết",
+    overstock: "Tồn kho nhiều",
+    out_of_stock: "Hết hàng",
+  };
+
   const columns = [
     {
       title: "Tên sản phẩm",
@@ -89,30 +105,14 @@ const InventoryTable = ({
       dataIndex: "stockStatus",
       key: "stockStatus",
       width: 150,
-      filters: [
-        { text: "Bình thường", value: "normal" },
-        { text: "Thiếu nghiêm trọng", value: "critical" },
-        { text: "Sắp hết", value: "low" },
-        { text: "Dư thừa", value: "overstock" },
-        { text: "Hết hàng", value: "out_of_stock" },
-      ],
-      onFilter: (value, record) => record.stockStatus === value,
       render: (status) => {
-        const colorMap = {
-          normal: "green",
-          critical: "red",
-          low: "orange",
-          overstock: "blue",
-          out_of_stock: "volcano",
-        };
-        const labelMap = {
-          normal: "Bình thường",
-          critical: "Thiếu nghiêm trọng",
-          low: "Sắp hết",
-          overstock: "Dư thừa",
-          out_of_stock: "Hết hàng",
-        };
-        return <Tag color={colorMap[status]}>{labelMap[status]}</Tag>;
+        return (
+          <span
+            className="w-2 h-2 rounded-full inline-block"
+            style={{ backgroundColor: colorMap[status] }}
+            title={labelMap[status]}
+          ></span>
+        );
       },
     },
     {
@@ -153,6 +153,7 @@ const InventoryTable = ({
       }}
       onChange={onChangePagination}
       scroll={{ x: 1000 }}
+      rowSelection={rowSelection}
     />
   );
 };

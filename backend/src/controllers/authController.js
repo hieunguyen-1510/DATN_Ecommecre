@@ -42,6 +42,7 @@ const loginUser = async (req, res) => {
         role: user.role.name,
         name: user.name,
         email: user.email,
+        // rank: user.rank || "Chưa mua hàng"
       },
       message: "Login successful",
     });

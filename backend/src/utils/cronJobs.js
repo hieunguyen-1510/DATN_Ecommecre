@@ -7,7 +7,7 @@ cron.schedule("0 0 * * *", async () => {
   try {
     const now = dayjs();
 
-    // Cập nhật trạng thái mã giảm giá hết hạn
+    // Hết hạn các mã giảm giá
     await Discount.updateMany(
       {
         endDate: { $lt: now.toDate() },
@@ -16,25 +16,34 @@ cron.schedule("0 0 * * *", async () => {
       { $set: { status: "expired" } }
     );
 
-    // Xóa giảm giá hết hạn khỏi các sản phẩm
-    await Product.updateMany(
-      {
-        discountExpiry: { $lt: now.toDate() },
-        discountCode: { $exists: true },
-      },
-      {
-        $set: {
-          discountPercentage: null,
-          discountAmount: null,
-          discountCode: null,
-          discountExpiry: null,
-          finalPrice: "$price", // Reset về giá gốc
-        },
-      }
-    );
+    // Tìm các sản phẩm có giảm giá hết hạn
+    const expiredDiscountProducts = await Product.find({
+      discountExpiry: { $lt: now.toDate() },
+      discountCode: { $exists: true },
+      isClearance: { $ne: true }, // k reset xa kho
+    });
 
-    console.log("✅ Đã đồng bộ trạng thái mã giảm giá hết hạn");
+    const bulkResetOps = expiredDiscountProducts.map((product) => ({
+      updateOne: {
+        filter: { _id: product._id },
+        update: {
+          $set: {
+            discountPercentage: null,
+            discountAmount: null,
+            discountCode: null,
+            discountExpiry: null,
+            finalPrice: product.price, // Gán trực tiếp
+          },
+        },
+      },
+    }));
+
+    if (bulkResetOps.length > 0) {
+      await Product.bulkWrite(bulkResetOps);
+    }
+
+    console.log(`✅ Đã rest ${bulkResetOps.length} sản phẩm hết hạn giảm giá.`);
   } catch (error) {
-    console.error("❌ Lỗi cron job:", error);
+    console.error("❌ Lỗi cron job đồng bộ mã giảm giá:", error);
   }
 });

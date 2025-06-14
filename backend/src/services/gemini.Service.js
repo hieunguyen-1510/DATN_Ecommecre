@@ -14,7 +14,7 @@ const getGeminiResponse = async (prompt) => {
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text = response.text(); // Lấy nội dung phản hồi
+    const text = response.text(); 
     return text;
   } catch (error) {
     console.error("Error calling Gemini API:", error.message);

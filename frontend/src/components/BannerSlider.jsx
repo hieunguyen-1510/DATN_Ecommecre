@@ -101,7 +101,7 @@ const BannerSlider = () => {
       <Slider {...settings}>
         {banners.map((banner) => (
           <div key={banner._id} className="relative">
-            <div className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[630px] xl:h-[700px] 2xl:h-[800px] relative">
+            <div className="w-full relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] 2xl:h-[80vh] min-h-[300px]">
               <img
                 src={banner.imageUrl}
                 alt={banner.title || "Banner"}

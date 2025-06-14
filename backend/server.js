@@ -18,7 +18,9 @@ import discountRouter from './src/routes/discountRoutes.js';
 import reportRouter from './src/routes/reportRoutes.js';
 import bannerRouter from './src/routes/bannerRoutes.js';
 import chatbotRouter from './src/routes/chatbotRoutes.js';
+import clearanceRouter from './src/routes/clearanceGroupRoutes.js';
 import './src/utils/cronJobs.js'; 
+import customerRouter from './src/routes/customerRoutes.js';
 
 const app = express();
 
@@ -44,6 +46,8 @@ app.use('/api/discounts',discountRouter);
 app.use('/api/banners',bannerRouter);
 app.use('/api/reports',reportRouter);
 app.use('/api/chatbot', chatbotRouter);
+app.use('/api/clearance-groups', clearanceRouter);
+app.use('/api/admin', customerRouter);
 app.get('/', (req, res) => {
     res.send('API Server working...');
 });

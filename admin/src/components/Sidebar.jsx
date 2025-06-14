@@ -15,6 +15,7 @@ import {
   DatabaseOutlined,
   GiftOutlined,
   PictureOutlined,
+  TeamOutlined
 } from "@ant-design/icons";
 
 const Sidebar = ({ setToken }) => {
@@ -87,6 +88,7 @@ const Sidebar = ({ setToken }) => {
             {[
               { path: "/statistics", label: "Thống kê", icon: <BarChartOutlined /> },
               { path: "/users", label: "Người Dùng", icon: <UserOutlined /> },
+              { path: "/customers", label: "Khách hàng", icon: <TeamOutlined /> },
               { path: "/products", label: "Sản phẩm", icon: <AppstoreOutlined /> },
               { path: "/discounts", label: "Mã giảm giá", icon: <GiftOutlined /> },
               { path: "/banners", label: "Banner", icon: <PictureOutlined /> },

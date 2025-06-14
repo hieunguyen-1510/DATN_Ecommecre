@@ -47,13 +47,13 @@ const Login = () => {
           toast.success("Bạn đã đăng nhập thành công!");
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-          // Lấy user hiện tại từ localStorage để giữ name đã đăng ký
           const storedUser = JSON.parse(localStorage.getItem("user")) || {};
           // Neu api tra ve user dung luon cua api
           const userData = {
             name: response.data.user?.name || storedUser.name || "Người dùng",
             email: response.data.user?.email || email,
-            avatar: response.data.user?.avatar || storedUser.avatar || " ", // Luu avata
+            avatar: response.data.user?.avatar || storedUser.avatar || " ", 
+            // rank: response.data.user?.rank || "Chưa mua hàng", 
           };
           localStorage.setItem("user", JSON.stringify(userData));
           setUser(userData);

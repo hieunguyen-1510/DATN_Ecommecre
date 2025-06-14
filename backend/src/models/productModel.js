@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
     discountAmount: { type: Number, min: 0 },
     discountExpiry: Date,
     discountCode: String,
-    finalPrice: { type: Number, min: 0 }, // Giá sau khi áp dụng giảm giá
+    finalPrice: { type: Number, min: 0 }, 
     image: { type: [String], default: [] }, 
     category: { type: String, required: true },
     subCategory: { type: String, required: true },
@@ -51,8 +51,13 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    soldCount: { type: Number, default: 0 }, // Tổng số lượng đã bán
+    isClearance: { type: Boolean, default: false }, // Đánh dấu sản phẩm xả kho
+    discount: { type: Number, default: 0 }, // Giảm giá riêng cho xả kho
+    lastSoldAt: { type: Date }, // Ngày bán gần nhất
     lastSoldDate: Date,  // Ngày bán cuối cùng
-    stockStatus: {  // Trạng thái tự động
+    clearanceGroup: { type: mongoose.Schema.Types.ObjectId, ref: 'ClearanceGroup' },
+    stockStatus: {  
       type: String,
       enum: ["normal", "low", "critical", "overstock"],
       default: "normal"
@@ -69,7 +74,7 @@ const productSchema = new mongoose.Schema(
   discountExpiry: Date,
   discountCode: String,
   },
-  
+
   { timestamps: true }
 );
 
