@@ -54,6 +54,7 @@ const Login = () => {
             email: response.data.user?.email || email,
             avatar: response.data.user?.avatar || storedUser.avatar || " ", 
             // rank: response.data.user?.rank || "Chưa mua hàng", 
+            avatar: response.data.user?.avatar || storedUser.avatar || " ", // Luu avata
           };
           localStorage.setItem("user", JSON.stringify(userData));
           setUser(userData);

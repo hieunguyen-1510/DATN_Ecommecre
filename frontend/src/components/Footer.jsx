@@ -102,19 +102,19 @@ const Footer = () => {
             <div className="flex items-center gap-6 mt-6 justify-center md:justify-start">
               <a
                 href="https://www.instagram.com/"
-                className="text-gray-200 hover:text-blue-600 transition duration-300 transform hover:scale-110"
+                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
               >
                 <FaInstagram className="text-2xl" />
               </a>
               <a
                 href="https://www.facebook.com/"
-                className="text-gray-200 hover:text-blue-600 transition duration-300 transform hover:scale-110"
+                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
               >
                 <FaFacebookF className="text-2xl" />
               </a>
               <a
                 href="https://www.tiktok.com/"
-                className="text-gray-200 hover:text-blue-600 transition duration-300 transform hover:scale-110"
+                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
               >
                 <FaTiktok className="text-2xl" />
               </a>

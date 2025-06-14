@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema(
     discountExpiry: Date,
     discountCode: String,
     finalPrice: { type: Number, min: 0 }, 
+    finalPrice: { type: Number, min: 0 }, // Giá sau khi áp dụng giảm giá
     image: { type: [String], default: [] }, 
     category: { type: String, required: true },
     subCategory: { type: String, required: true },
@@ -58,6 +59,8 @@ const productSchema = new mongoose.Schema(
     lastSoldDate: Date,  // Ngày bán cuối cùng
     clearanceGroup: { type: mongoose.Schema.Types.ObjectId, ref: 'ClearanceGroup' },
     stockStatus: {  
+    lastSoldDate: Date,  // Ngày bán cuối cùng
+    stockStatus: {  // Trạng thái tự động
       type: String,
       enum: ["normal", "low", "critical", "overstock"],
       default: "normal"

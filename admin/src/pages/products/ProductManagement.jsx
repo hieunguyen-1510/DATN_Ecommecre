@@ -95,7 +95,7 @@ const ProductManagement = ({ token }) => {
     });
   };
 
-   const updateStatus = async (id, status) => {
+  const updateStatus = async (id, status) => {
     setLoading(true);
     try {
       const response = await axios.put(
@@ -174,10 +174,11 @@ const ProductManagement = ({ token }) => {
       title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
-      render: (text) => (
+      render: (text) => ( // <--- SỬA: Bỏ record khỏi render vì không dùng trong Button onClick nữa
         <Tooltip title={text}>
           <Button
             type="link"
+            // <--- ĐÃ BỎ: onClick={() => navigate(`/product-detail/${record._id}`)}
             style={{
               padding: 0,
               textAlign: "left",
@@ -205,9 +206,7 @@ const ProductManagement = ({ token }) => {
       key: "purchasePrice",
       align: "right",
       render: (price) => (
-        <Text
-          style={{ whiteSpace: "nowrap" }}
-        >{`${price?.toLocaleString()} ${currency}`}</Text>
+        <Text style={{ whiteSpace: "nowrap" }}>{`${price?.toLocaleString()} ${currency}`}</Text>
       ),
     },
     {

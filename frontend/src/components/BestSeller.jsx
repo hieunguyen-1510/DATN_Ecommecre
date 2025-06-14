@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Title from "./Title"; 
 import ProductCard from "./ProductCard"; 
@@ -25,8 +26,11 @@ const BestSeller = () => {
   const [bestseller, setBestSeller] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const carouselRef = useRef(null);
 
   useEffect(() => {
+    const filtered = products.filter((item) => item.bestseller === true);
     const filtered = products.filter((item) => item.bestseller === true);
     setBestSeller(filtered);
   }, [products]);
@@ -93,7 +97,10 @@ const BestSeller = () => {
         whileInView="visible"
         viewport={{ once: true }}
         ref={carouselRef}
+        ref={carouselRef}
       >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+          {visibleProducts.map((item, index) => (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
           {visibleProducts.map((item, index) => (
             <motion.div
@@ -118,12 +125,14 @@ const BestSeller = () => {
       </motion.div>
 
       {/* Nút CTA */}
+      <div className="text-center mt-16 px-4 sm:px-6 lg:px-0">
       <div className="text-center mt-8 px-2 sm:px-6 lg:px-0">
         <motion.div
           whileHover={{
             scale: 1.05, 
             boxShadow: "0px 10px 25px rgba(0,0,0,0.2)", 
           }}
+          whileTap={{ scale: 0.98 }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.3 }}
           className="inline-block rounded-full overflow-hidden" 

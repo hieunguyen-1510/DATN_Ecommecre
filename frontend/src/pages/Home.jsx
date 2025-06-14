@@ -4,6 +4,8 @@ import OurPolicy from "../components/OurPolicy";
 import LatestCollection from "../components/LatestCollection";
 import NewsletterForm from "../components/NewsletterForm";
 import BannerSlider from "../components/BannerSlider";
+import NewsletterForm from "../components/NewsletterForm";
+import BannerSlider from "../components/BannerSlider";
 
 const Home = () => (
   <div className="w-full">
@@ -26,3 +28,4 @@ const Home = () => (
 );
 
 export default Home;
+
