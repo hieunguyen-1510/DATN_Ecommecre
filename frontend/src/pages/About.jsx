@@ -60,7 +60,7 @@ const About = () => {
             Trang chủ
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-red-600 font-medium">Giới thiệu</span>
+          <span className="font-medium text-gray-900">Giới thiệu</span>
         </div>
       </nav>
 
@@ -70,7 +70,7 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="relative h-[28rem] sm:h-72 md:h-96 bg-cover bg-center flex items-center"
+        className="relative h-[24rem] sm:h-[28rem] md:h-[32rem]  bg-cover bg-center flex items-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.about_us})`,
         }}
@@ -202,13 +202,13 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-center mb-8"
+        className="py-16 bg-white text-center mb-8 shadow-lg rounded-lg mx-4 md:mx-auto"
       >
         <div className="container max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
-            Sẵn sàng <span className="text-red-500">thay đổi</span> phong cách?
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+            Sẵn sàng <span className="text-red-600">thay đổi</span> phong cách?
           </h2>
-          <p className="text-gray-300 mb-8 text-lg">
+          <p className="text-gray-600 mb-8 text-lg">
             {" "}
             {/* Increased font size slightly */}
             Đăng ký nhận ngay ưu đãi 10% cho đơn hàng đầu tiên
@@ -223,12 +223,12 @@ const About = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email của bạn"
-              className="flex-grow px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400 text-gray-900" // Đổi red-500 thành red-400 hoặc màu khác
+              className="flex-grow px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 border border-gray-300"
               required
             />
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-full font-medium transition-all hover:scale-105 hover:shadow-lg" // Thêm hover:shadow-lg
+              className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-full font-medium transition-all hover:scale-105 hover:shadow-lg" 
             >
               Đăng ký ngay
             </button>
@@ -240,7 +240,7 @@ const About = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className={`mt-4 text-sm flex items-center justify-center ${
-                messageType === "success" ? "text-green-400" : "text-red-400"
+                messageType === "success" ? "text-green-600" : "text-red-600"
               }`}
             >
               {messageType === "success" ? (
@@ -253,7 +253,7 @@ const About = () => {
           )}
 
           {!isSubmitted && (
-            <p className="text-gray-400 text-sm mt-4">
+            <p className="text-gray-500 text-sm mt-4">
               Chúng tôi cam kết không spam email của bạn
             </p>
           )}

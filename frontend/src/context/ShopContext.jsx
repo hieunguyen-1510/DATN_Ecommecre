@@ -15,7 +15,9 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user")) || null
+  );
 
   const navigate = useNavigate();
 
@@ -24,7 +26,6 @@ const ShopContextProvider = (props) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setToken(userToken);
     setUser(userData);
-
   };
 
   const updateUser = (newUserData) => {
@@ -37,10 +38,10 @@ const ShopContextProvider = (props) => {
       toast.error("Vui lòng chọn kích thước!");
       return;
     }
-    // chỉ thêm vào giỏ khi có token
+
     if (!token) {
       toast.error("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -65,7 +66,7 @@ const ShopContextProvider = (props) => {
           { itemId, size },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        
+
         await getUserCart();
         await getProductsData();
         // toast.success("Thêm vào giỏ hàng thành công!");
@@ -93,7 +94,7 @@ const ShopContextProvider = (props) => {
   const updateQuantity = async (itemId, size, quantity) => {
     if (!token) {
       toast.error("Vui lòng đăng nhập để cập nhật giỏ hàng!");
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -114,25 +115,25 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // clear cart 
- const clearCart = async () => {
-  if (!token) {
-    toast.error("Vui lòng đăng nhập để xóa giỏ hàng!");
-    navigate('/login');
-    return;
-  }
-  try {
-    await axios.delete(`${backendUrl}/api/cart/clear`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+  // clear cart
+  const clearCart = async () => {
+    if (!token) {
+      toast.error("Vui lòng đăng nhập để xóa giỏ hàng!");
+      navigate("/login");
+      return;
+    }
+    try {
+      await axios.delete(`${backendUrl}/api/cart/clear`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    setCartItems({});
-    // toast.success("Đã xóa giỏ hàng thành công!");
-  } catch (error) {
-    console.error("Lỗi khi xóa giỏ hàng:", error);
-    toast.error(error.response?.data?.message || "Không thể xóa giỏ hàng");
-  }
-};
+      setCartItems({});
+      // toast.success("Đã xóa giỏ hàng thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa giỏ hàng:", error);
+      toast.error(error.response?.data?.message || "Không thể xóa giỏ hàng");
+    }
+  };
 
   const getCartAmount = () => {
     let totalAmount = 0;
@@ -141,11 +142,12 @@ const ShopContextProvider = (props) => {
       for (const size in cartItems[items]) {
         try {
           if (cartItems[items][size] > 0 && itemInfo) {
-            totalAmount += (itemInfo.finalPrice || itemInfo.price) * cartItems[items][size];
+            totalAmount +=
+              (itemInfo.finalPrice || itemInfo.price) * cartItems[items][size];
             // totalAmount += itemInfo.price * cartItems[items][item];
           }
         } catch (error) {
-          console.error("Lỗi khi tính tổng giỏ hàng:", error); 
+          console.error("Lỗi khi tính tổng giỏ hàng:", error);
         }
       }
     }
@@ -172,34 +174,94 @@ const ShopContextProvider = (props) => {
   };
 
   const getUserCart = async () => {
-  try {
-    const response = await axios.get(`${backendUrl}/api/cart/get`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (response.data.success) {
-      const rawCartData = response.data.cartData;
-      // Lấy mảng items từ rawCartData
-      const cartItemsArray = rawCartData && Array.isArray(rawCartData.items) ? rawCartData.items: [];
-      // console.log("Dữ liệu cartData từ API:", response.data.cartData);
-      const transformedCart = {};
-      cartItemsArray.forEach(item => {
-        if (!transformedCart[item.productId._id]) {
-          transformedCart[item.productId._id] = {};
-        }
-        transformedCart[item.productId._id][item.size] = item.quantity;
+    try {
+      const response = await axios.get(`${backendUrl}/api/cart/get`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setCartItems(transformedCart);
-    }
-  } catch (error) {
-    console.error("Lỗi giỏ hàng:", error);
-  }
-};
 
-// search products
+      if (response.data.success) {
+        const rawCartData = response.data.cartData;
+        // Lấy mảng items từ rawCartData
+        const cartItemsArray =
+          rawCartData && Array.isArray(rawCartData.items)
+            ? rawCartData.items
+            : [];
+        // console.log("Dữ liệu cartData từ API:", response.data.cartData);
+        const transformedCart = {};
+        cartItemsArray.forEach((item) => {
+          if (!transformedCart[item.productId._id]) {
+            transformedCart[item.productId._id] = {};
+          }
+          transformedCart[item.productId._id][item.size] = item.quantity;
+        });
+        setCartItems(transformedCart);
+      }
+    } catch (error) {
+      console.error("Lỗi giỏ hàng:", error);
+    }
+  };
+
+  // Get profile
+  const fetchUserProfile = async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${backendUrl}/api/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.success) {
+        setUser(response.data.data);
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+      } else {
+        toast.error(
+          response.data.message || "Không thể lấy thông tin người dùng"
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin profile:", error);
+      toast.error("Lỗi khi lấy thông tin người dùng!");
+    }
+  };
+
+  // Update profile
+  const updateUserProfile = async (userInfoToUpdate) => {
+    if (!token) {
+      toast.error("Bạn chưa đăng nhập. Vui lòng đăng nhập lại!");
+      navigate("/login");
+      return false;
+    }
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/user/profile`,
+        userInfoToUpdate,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      if (response.data.success) {
+        setUser(response.data.data);
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        toast.success(response.data.message);
+        return true;
+      } else {
+        toast.error(response.data.message || "Không thể cập nhật hồ sơ");
+        return false;
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật profile:", error);
+      toast.error(error.response?.data?.message || "Lỗi khi cập nhật hồ sơ!");
+      return false;
+    }
+  };
+
+  // Search
   const searchProducts = (searchTerm) => {
     if (searchTerm) {
-      const filtered = products.filter(product =>
+      const filtered = products.filter((product) =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProducts(filtered);
@@ -226,7 +288,7 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     searchProducts(search);
-  }, [search, products]); 
+  }, [search, products]);
 
   const value = {
     products,
@@ -250,10 +312,14 @@ const ShopContextProvider = (props) => {
     setUser,
     handleLogin,
     updateUser,
-    clearCart
+    clearCart,
+    fetchUserProfile,
+    updateUserProfile,
   };
 
-  return <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>;
+  return (
+    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
+  );
 };
 
 export default ShopContextProvider;

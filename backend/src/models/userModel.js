@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true }, 
     address: { type: String },
+    phone: {type: String},
+    avatar: {type: String},
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
     rank: {

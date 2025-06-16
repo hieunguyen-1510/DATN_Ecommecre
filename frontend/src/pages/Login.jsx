@@ -31,10 +31,6 @@ const Login = () => {
         if (response.data.success) {
           toast.success("Đăng ký thành công! Hãy đăng nhập!");
           setCurrentState("Login");
-          // Lưu name và email
-          const userData = { name, email };
-          localStorage.setItem("user", JSON.stringify(userData));
-          setUser(userData);
         } else {
           toast.error(response.data.message);
         }
@@ -47,14 +43,16 @@ const Login = () => {
           toast.success("Bạn đã đăng nhập thành công!");
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-          const storedUser = JSON.parse(localStorage.getItem("user")) || {};
-          // Neu api tra ve user dung luon cua api
+          
           const userData = {
-            name: response.data.user?.name || storedUser.name || "Người dùng",
-            email: response.data.user?.email || email,
-            avatar: response.data.user?.avatar || storedUser.avatar || " ", 
-            // rank: response.data.user?.rank || "Chưa mua hàng", 
-            avatar: response.data.user?.avatar || storedUser.avatar || " ", // Luu avata
+            id: response.data.user?.id,
+            name: response.data.user?.name,
+            email: response.data.user?.email,
+            phone: response.data.user?.phone,
+            address: response.data.user?.address,
+            avatar: response.data.user?.avatar,
+            rank: response.data.user?.rank,
+            role: response.data.user?.role,
           };
           localStorage.setItem("user", JSON.stringify(userData));
           setUser(userData);
@@ -72,7 +70,7 @@ const Login = () => {
     if (token) {
       navigate("/");
     }
-  }, [token]);
+  }, [token, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

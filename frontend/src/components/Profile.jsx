@@ -5,7 +5,7 @@ import { assets } from "../assets/assets";
 import { FaTimes } from "react-icons/fa";
 
 const Profile = () => {
-  const { token, user, navigate, updateUser } = useContext(ShopContext);
+  const { token, user, navigate, updateUserProfile } = useContext(ShopContext);
   const [isEditing, setIsEditing] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -13,21 +13,22 @@ const Profile = () => {
     phone: "",
     address: "",
     avatar: "",
+    rank: ""
   });
 
   useEffect(() => {
     if (!token) {
       navigate("/login");
-      return;
+      
     }
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+     // Cập nhật userInfo
     setUserInfo({
-      name: user?.name || storedUser.name || "Người dùng",
-      email: user?.email || storedUser.email || "",
-      phone: storedUser.phone || "03481349940",
-      address: storedUser.address || "41,Đường Số 1, KP1, Hiệp Bình Chánh,Thủ Đức, TP.HCM",
-      avatar: storedUser.avatar || "",
-      // rank: user?.rank || storedUser.rank || "Chưa mua hàng",
+      name: user?.name || "Người dùng",
+      email: user?.email || "",
+      phone: user?.phone ?? "Chưa cập nhật", 
+      address: user?.address ?? "Chưa cập nhật",
+      avatar: user?.avatar || "",
+      rank: user?.rank || "Chưa mua hàng", 
     });
   }, [token, user, navigate]);
 
@@ -46,17 +47,18 @@ const Profile = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setUserInfo((prev) => ({ ...prev, avatar: reader.result }));
-        toast.success("Ảnh đại diện đã được cập nhật!");
+        // toast.success("Ảnh đại diện đã được cập nhật!");
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = () => {
-    toast.success("Thông tin đã được lưu!");
-    localStorage.setItem("user", JSON.stringify(userInfo));
-    updateUser(userInfo);
-    setIsEditing(false);
+  const handleSave = async () => {
+    // toast.success("Thông tin đã được lưu!");
+    const success = await updateUserProfile(userInfo);
+    if (success) {
+      setIsEditing(false);
+    }
   };
 
   const handleClose = () => {
@@ -99,9 +101,9 @@ const Profile = () => {
           <h2 className="text-lg sm:text-xl text-gray-800 mt-3 font-semibold text-center">
             {userInfo.name}
           </h2>
-          {/* <p className="mt-2 text-sm font-medium text-yellow-600">
-            Hạng người dùng: <span className="font-semibold">{userInfo.rank}</span>
-          </p> */}
+           <p className="mt-2 text-sm font-medium text-yellow-600">
+            Hạng người dùng: <span className="font-semibold">{userInfo.rank}</span> 
+          </p>
         </div>
 
         <div className="space-y-4">

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { ShopContext } from "../context/ShopContext";
 
 dayjs.extend(relativeTime);
 
@@ -14,6 +15,8 @@ const ReviewProduct = ({ productId }) => {
   const [allReviews, setAllReviews] = useState([]);
   const [totalRating, setTotalRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+
+  const { token, user } = useContext(ShopContext);
 
   // Tính toán rating summary
   useEffect(() => {
@@ -40,7 +43,13 @@ const ReviewProduct = ({ productId }) => {
   // Gửi đánh giá
   const handleSubmit = async () => {
     if (!review || rating === 0) {
-      alert("Vui lòng đánh giá và viết nhận xét!");
+      toast.error("Vui lòng đánh giá và viết nhận xét!");
+      return;
+    }
+
+    if (!token) {
+      toast.error("Vui lòng đăng nhập để gửi đánh giá!");
+
       return;
     }
 
@@ -49,10 +58,11 @@ const ReviewProduct = ({ productId }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           productId,
-          userId: "680de4f7920e55a8a3fe926d",
+
           rating,
           comment: review,
         }),
@@ -65,15 +75,17 @@ const ReviewProduct = ({ productId }) => {
 
       const newReview = await response.json();
 
-      setAllReviews([
+      setAllReviews((prevReviews) => [
         {
           id: newReview._id,
-          name: "Hiếu Nguyễn",
+
+          name: user?.name || "Bạn",
           rating: newReview.rating,
           comment: newReview.comment,
           time: dayjs(newReview.createdAt).fromNow(),
+          status: newReview.status,
         },
-        ...allReviews,
+        ...prevReviews,
       ]);
 
       setReview("");
@@ -81,7 +93,7 @@ const ReviewProduct = ({ productId }) => {
       toast.success("Cảm ơn bạn đã đánh giá sản phẩm!");
     } catch (error) {
       console.error(error);
-      toast.error("Đã xảy ra lỗi khi gửi đánh giá!");
+      toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá!");
     }
   };
 
@@ -92,23 +104,29 @@ const ReviewProduct = ({ productId }) => {
         const res = await fetch(
           `${backendUrl}/api/reviews?productId=${productId}`
         );
+        if (!res.ok) {
+          throw new Error("Failed to fetch reviews");
+        }
         const data = await res.json();
         setAllReviews(
           data.map((r) => ({
             id: r._id,
+
             name: r.userId?.name || "Ẩn danh",
             rating: r.rating,
             comment: r.comment,
             time: dayjs(r.createdAt).fromNow(),
+            status: r.status,
           }))
         );
       } catch (err) {
         console.error("Lỗi khi lấy đánh giá:", err);
+        toast.error("Đã xảy ra lỗi khi tải đánh giá!");
       }
     };
 
     if (productId) fetchReviews();
-  }, [productId]);
+  }, [productId, token]);
 
   // Lọc đánh giá
   const filteredReviews =
@@ -223,7 +241,7 @@ const ReviewProduct = ({ productId }) => {
             <div key={r.id} className="border-b pb-6 last:border-b-0">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center font-medium text-gray-700">
-                  {r.name[0]}
+                  {r.name ? r.name[0] : "?"}
                 </div>
                 <div>
                   <div className="font-semibold text-gray-800">{r.name}</div>

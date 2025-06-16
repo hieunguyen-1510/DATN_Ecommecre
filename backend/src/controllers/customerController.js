@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../models/userModel.js";
 import Order from "../models/orderModel.js";
 
@@ -42,16 +43,17 @@ export const getCustomerRanks = async (req, res) => {
 }
 
 export const updateUserRank = async (userId) => {
-
-    const orders = await Order.aggregate([
-        {$match: {userId: userId}},
-        {
-          $group: {
-            _id: "$userId",
-            totalSpent: {$sum: "$totalAmount"}
-          },
+  try {
+    // Tính tổng số tiền đã chi tiêu của người dùng
+     const orders = await Order.aggregate([
+          {$match: {userId: new mongoose.Types.ObjectId(userId)}}, 
+            {
+              $group: {
+                  _id: "$userId",
+                  totalSpent: {$sum: "$totalAmount"}
+            },
         },
-    ]);
+      ]);
 
     const totalSpent = orders[0]?.totalSpent || 0;
 
@@ -61,5 +63,22 @@ export const updateUserRank = async (userId) => {
     else if (totalSpent >= 2000000) rank = "Vàng";
     else if (totalSpent > 0) rank = "Bạc";
 
-    await User.findById(userId, {rank});
+    // Cập nhật rank vào db
+    const updatedUser = await User.findByIdAndUpdate(
+        userId, 
+        { rank: rank }, 
+        { new: true } 
+    );
+
+    if (!updatedUser) {
+            console.warn(`Không tìm thấy người dùng với ID ${userId} để cập nhật hạng.`);
+        } else {
+            console.log(`Hạng của người dùng ${updatedUser.name} (${userId}) đã được cập nhật thành: ${rank}`);
+        }
+
+        return updatedUser;
+    
+  } catch (error) {
+    console.error(`Lỗi khi cập nhật hạng người dùng ${userId}:`, error);
+  }  
 }

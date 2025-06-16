@@ -50,7 +50,7 @@ const Login = ({ setToken }) => {
     const savedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
     if(savedToken) {
       setToken(savedToken);
-      navigate("/statistics");
+      navigate("/login");
     }
   },[]);
 

@@ -36,12 +36,10 @@ const Product = () => {
       variants={sectionVariants}
       initial="hidden"
       animate="visible"
-      // Đồng bộ nền và padding với các section khác
       className="min-h-screen bg-gray-50 py-16"
     >
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {" "}
-        {/* Đồng bộ padding ngang */}
         <div className="flex flex-col-reverse lg:flex-row lg:gap-16 gap-8">
           {/* Product Images */}
           <motion.div
@@ -57,7 +55,7 @@ const Product = () => {
                   src={
                     img ||
                     "https://placehold.co/100x133/E0E0E0/6C6C6C?text=No+Image"
-                  } // Placeholder cho thumbnail
+                  }
                   alt={`${productData.name} - ${index + 1}`}
                   className={`w-24 h-32 object-cover rounded-xl shadow-md cursor-pointer mb-4 lg:mb-4 flex-shrink-0 
                               ${
@@ -88,7 +86,6 @@ const Product = () => {
           {/* Product Info */}
           <motion.div
             variants={sectionVariants}
-            // Đồng bộ padding, bo góc, bóng và khoảng cách giữa các phần
             className="flex-1 bg-white p-8 rounded-2xl shadow-xl space-y-6"
           >
             {/* Product Title */}
@@ -120,7 +117,6 @@ const Product = () => {
             {/* Description */}
             <p className="text-gray-700 leading-relaxed text-base">
               {" "}
-              {/* Đổi màu, tăng line-height, kích thước */}
               {productData.description ||
                 "Áo thun oversize giặt acid loang jổ, như bức tranh đường phố sống động. Thoải mái, nổi loạn - chuẩn gu Việt!"}
             </p>
@@ -215,7 +211,6 @@ const Product = () => {
 
           <div className="p-8 text-gray-700 leading-relaxed space-y-5">
             {" "}
-            {/* Tăng padding, line-height, space-y */}
             {activeTab === "description" ? (
               <div className="space-y-4">
                 <p>{productData.description}</p>
@@ -247,7 +242,6 @@ const Product = () => {
   ) : (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       {" "}
-      {/* Đồng bộ nền */}
       <p className="text-gray-600 text-lg">Không tìm thấy sản phẩm</p>
     </div>
   );

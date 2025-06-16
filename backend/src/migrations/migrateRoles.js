@@ -8,7 +8,7 @@ const migrateRoles = async () => {
     // Connect to DB
     await connectDB();
 
-    // Create roles if they don't exist
+    // Create roles
     const userRole = await Role.findOneAndUpdate(
       { name: "user" },
       { name: "user" },

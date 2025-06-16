@@ -42,7 +42,10 @@ const loginUser = async (req, res) => {
         role: user.role.name,
         name: user.name,
         email: user.email,
-        // rank: user.rank || "Chưa mua hàng"
+        phone: user.phone,
+        address: user.address,
+        avatar: user.avatar,
+        rank: user.rank
       },
       message: "Login successful",
     });

@@ -55,7 +55,7 @@ const Contact = () => {
             Trang chủ
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-red-600 font-medium">Liên hệ</span>
+          <span className="font-medium text-gray-900">Liên hệ</span>
         </div>
       </nav>
 

@@ -21,6 +21,7 @@ import clearanceRouter from './src/routes/clearanceGroupRoutes.js';
 import './src/utils/cronJobs.js'; 
 import customerRouter from './src/routes/customerRoutes.js';
 import passwordRouter from './src/routes/userPasswordRoutes.js';
+import userProfileRouter from './src/routes/userProfileRoutes.js';
 
 const app = express();
 
@@ -33,6 +34,7 @@ connectCloudinary();
 // API endpoints
 app.use('/api/user', userRouter);
 app.use('/api/user',passwordRouter);
+app.use('/api/user/profile', userProfileRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api',contactRouter);
