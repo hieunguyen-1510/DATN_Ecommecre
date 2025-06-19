@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { backendUrl } from "../../App";
 import { Link } from "react-router-dom";
-import OrderStatusConfirmModal from "./OrderStatusConfirmModal"; 
+import OrderStatusConfirmModal from "./OrderStatusConfirmModal";
 import { FaInfoCircle } from "react-icons/fa";
 
 const Order = () => {
@@ -36,7 +36,6 @@ const Order = () => {
     fetchOrders();
   }, [token, backendUrl]);
 
-  // Hàm mở modal xác nhận trạng thái
   const handleStatusChangeClick = (orderId, status, currentReason) => {
     setOrderToUpdateId(orderId);
     setNewStatusForModal(status);
@@ -44,13 +43,12 @@ const Order = () => {
     setShowStatusModal(true);
   };
 
-  // Hàm thực hiện cập nhật trạng thái
   const confirmUpdateOrderStatus = async (
     orderId,
     status,
     cancelReason = ""
   ) => {
-    setShowStatusModal(false); // Đóng modal
+    setShowStatusModal(false);
 
     try {
       const payload = { orderId, status };
@@ -69,18 +67,15 @@ const Order = () => {
           response.data.message || "Cập nhật trạng thái thành công!"
         );
         setOrders((prev) =>
-          prev.map(
-            (order) =>
-              order._id === orderId
-                ? {
-                    ...order,
-                    status,
-                    cancelReason:
-                      status === "Cancelled"
-                        ? cancelReason
-                        : order.cancelReason,
-                  }
-                : order 
+          prev.map((order) =>
+            order._id === orderId
+              ? {
+                  ...order,
+                  status,
+                  cancelReason:
+                    status === "Cancelled" ? cancelReason : order.cancelReason,
+                }
+              : order
           )
         );
       } else {
@@ -95,6 +90,25 @@ const Order = () => {
       setOrderToUpdateId(null);
       setNewStatusForModal("");
       setCurrentOrderCancelReason("");
+    }
+  };
+
+  const getStatusTextForDisplay = (status) => {
+    switch (status) {
+      case "Order Placed":
+      case "pending":
+      case "Processing":
+        return "Processing";
+      case "Shipped":
+        return "Shipped";
+      case "Delivered":
+        return "Delivered";
+      case "Cancelled":
+        return "Cancelled";
+      case "Refunded":
+        return "Refunded";
+      default:
+        return status;
     }
   };
 
@@ -178,7 +192,7 @@ const Order = () => {
                             }}
                           />
                           <Link
-                            to={`/orders/${order._id}`} 
+                            to={`/orders/${order._id}`}
                             className="text-sm text-blue-600 hover:underline truncate max-w-[150px]"
                           >
                             {item.productId?.name || "Sản phẩm đã xóa"}
@@ -195,21 +209,21 @@ const Order = () => {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        order.status === "Delivered"
+                        getStatusTextForDisplay(order.status) === "Delivered"
                           ? "bg-green-100 text-green-800"
-                          : order.status === "Cancelled"
+                          : getStatusTextForDisplay(order.status) ===
+                            "Cancelled"
                           ? "bg-red-100 text-red-800"
-                          : order.status === "Processing"
+                          : getStatusTextForDisplay(order.status) ===
+                            "Processing"
                           ? "bg-yellow-100 text-yellow-800"
-                          : order.status === "Shipped"
+                          : getStatusTextForDisplay(order.status) === "Shipped"
                           ? "bg-blue-100 text-blue-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {order.status === "Order Placed"
-                        ? "Đang chờ xử lý"
-                        : order.status}
-                      {/* Hiển thị icon info nếu có lý do hủy */}
+                      {getStatusTextForDisplay(order.status)}
+
                       {order.status === "Cancelled" && order.cancelReason && (
                         <div className="relative group ml-1">
                           <FaInfoCircle className="text-gray-500 cursor-pointer hover:text-gray-700" />
@@ -231,7 +245,6 @@ const Order = () => {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <select
                       onChange={(e) =>
-                        // Gọi hàm mở modal thay vì update trực tiếp
                         handleStatusChangeClick(
                           order._id,
                           e.target.value,

@@ -6,8 +6,8 @@ import Cart from "../models/cartModel.js";
 import Product from "../models/productModel.js";
 import Report from "../models/reportModel.js";
 import { createMomoPayment } from "../services/momo.Service.js";
-import { createVnpayPayment } from "../services/vnpay.service.js";
-import {updateUserRank} from "../controllers/customerController.js";
+import { updateUserRank } from "../controllers/customerController.js";
+import { createOrder as createPaypalOrder } from "../services/paypal.service.js";
 const generateTransactionId = () => {
   return `COD${Date.now()}`;
 };
@@ -103,7 +103,7 @@ const placeOrder = async (req, res) => {
     const savedOrder = await newOrder.save();
     let responseData = { success: true, orderId: savedOrder._id };
 
-    // Tạo transactionId duy nhất ngay từ đầu
+    // Tạo transactionId
     const transactionId = generateTransactionId(savedOrder._id);
 
     const newPayment = new Payment({
@@ -169,42 +169,50 @@ const placeOrder = async (req, res) => {
       }
     }
 
-    // Xử lý thanh toán VNPAY
-    if (methodUpper === "VNPAY") {
-    try {
-      const ipAddr = req.ip || req.connection.remoteAddress;
-      console.log("IP Address used for VNPay:", ipAddr);
-      
-      const vnpayResult = await createVnpayPayment({
-        amount: finalAmount,
-        orderInfo: `Thanh toán đơn hàng ${savedOrder._id}`,
-        bankCode: req.body.bankCode || "",
-        ipAddr,
-        orderId: savedOrder._id
-      });
-    
-      console.log("VNPay Full Response:", JSON.stringify(vnpayResult, null, 2));
-        // Cập nhật thông tin thanh toán
-        newPayment.vnpayResponse = vnpayResult;
+    // PAYPAL Payment
+    if (methodUpper === "PAYPAL") {
+      try {
+        const paypalResult = await createPaypalOrder(finalAmount, {
+          return_url: `${process.env.BACKEND_URL}/api/payment/success`,
+          cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+        });
+
+        if (!paypalResult.id || !paypalResult.links) {
+          throw new Error("Không thể tạo đơn hàng PayPal");
+        }
+
+        const approvalLink = paypalResult.links.find(
+          (link) => link.rel === "approve"
+        );
+
+        if (!approvalLink) {
+          throw new Error("Không tìm thấy đường dẫn approve từ PayPal");
+        }
+
+        // Lưu thông tin đơn thanh toán
+        newPayment.transactionId = paypalResult.id;
+        newPayment.paypalRequest = paypalResult;
         await newPayment.save();
 
         responseData = {
           success: true,
-          payUrl: vnpayResult,
+          payUrl: approvalLink.href,
           orderId: savedOrder._id,
+          orderIdFromPaypal: paypalResult.id,
         };
-      } catch (vnpayError) {
-        console.error("Chi tiết lỗi VNPay:", {
-          message: vnpayError.message,
-          stack: vnpayError.stack,
-          response: vnpayError.response?.data
-        });
+      } catch (paypalError) {
+        console.error("Lỗi tạo đơn hàng PayPal:", paypalError);
+        // Hủy đơn hàng
+        await savedOrder.remove();
+        await newPayment.remove();
+
         return res.status(500).json({
           success: false,
-          message: "Không thể tạo thanh toán VNPay: " + vnpayError.message,
+          message: "Không thể tạo thanh toán PayPal: " + paypalError.message,
         });
       }
     }
+
     // delete cart
     const cart = await Cart.findOneAndUpdate(
       { userId },
@@ -214,7 +222,7 @@ const placeOrder = async (req, res) => {
     if (!cart) {
       console.warn("Không tìm thấy giỏ hàng để cập nhật:", userId);
     }
-    
+
     // cập nhật hạng khách hàng
     await updateUserRank(userId);
 

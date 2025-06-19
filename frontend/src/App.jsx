@@ -22,6 +22,7 @@ import MenProductsPage from "./pages/MenProductsPage";
 import WomenProductsPage from "./pages/WomenProductsPage";
 import KidsProductsPage from "./pages/KidsProductsPage";
 import Chatbot from "./components/ChatBot";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
       </Routes>

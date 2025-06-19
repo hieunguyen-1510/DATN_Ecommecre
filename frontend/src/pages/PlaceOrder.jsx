@@ -137,8 +137,8 @@ const PlaceOrder = () => {
       );
 
       if (response.data && response.data.success) {
-        toast.success("Đặt hàng thành công!");
-        await clearCart();
+        setOrderId(response.data.orderId);
+        // await clearCart();
 
         setFormData({
           fullname: "",
@@ -151,20 +151,44 @@ const PlaceOrder = () => {
         });
 
         if (method === "COD") {
+          toast.success("Đặt hàng thành công!");
+          clearCart();
           navigate("/orders");
         } else if (method === "MOMO") {
-          // console.log("Response từ backend:", response.data);
-
           setPayUrl(response.data.payUrl);
-          setOrderId(response.data.momoOrderId);
-          console.log("response.data.payUrl", response.data.payUrl);
-
+          setOrderId(response.data.orderId);
           window.open(response.data.payUrl, "_blank");
-        } else if (method === "VNPAY") {
-          window.location.href = response.data.redirectUrl || "#";
+          // } else if (method === "PAYPAL") {
+          //   const paypalUrl = response.data.payUrl;
+          //   if (paypalUrl) {
+          //     window.location.href = paypalUrl;
+          //   } else {
+          //     toast.error("Không nhận được đường dẫn PayPal.");
+          //   }
+
+          //   if (method === "PAYPAL") {
+          //   const paypalUrl = response.data.payUrl;
+          //   const orderIdFromResponse = response.data.orderId;
+
+          //   if (paypalUrl && orderIdFromResponse) {
+
+          //     window.location.href = `${paypalUrl}&orderId=${orderIdFromResponse}`;
+          //   } else {
+          //     toast.error("Không nhận được đường dẫn PayPal.");
+          //   }
+          // }
+        } else if (method === "PAYPAL") {
+          const paypalUrl = response.data.payUrl;
+
+          if (paypalUrl && response.data.orderId) {
+            window.location.href = `${paypalUrl}&orderId=${response.data.orderId}`;
+          } else {
+            toast.error("Không nhận được đường dẫn PayPal.");
+          }
         }
       } else {
         toast.error(response.data?.message || "Đặt hàng thất bại");
+        return;
       }
     } catch (error) {
       console.error("Lỗi đặt hàng:", error);
@@ -333,25 +357,25 @@ const PlaceOrder = () => {
                 </span>
               </div>
               <div
-                onClick={() => setMethod("VNPAY")}
+                onClick={() => setMethod("PAYPAL")}
                 className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:shadow-md transition-all ${
-                  method === "VNPAY"
+                  method === "PAYPAL"
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-200"
                 }`}
               >
                 <img
                   className="h-6 w-6"
-                  src={assets.vnpay}
-                  alt="Biểu tượng Ngân hàng"
+                  src={assets.paypal}
+                  alt="Biểu tượng PayPal"
                 />
                 <span className="text-gray-800 font-medium">
-                  Thanh toán qua VNPay
+                  Thanh toán qua PayPal
                 </span>
               </div>
             </div>
             <div className="text-center mt-8">
-              {/* Hiển thị mã QR nếu chọn MOMO và đã có payUrl */}
+              {/* Hiển thị mã QR */}
               {method === "MOMO" && payurl && (
                 <div className="bg-white shadow-lg p-6 rounded-xl max-w-xs mx-auto">
                   <div className="mb-4">

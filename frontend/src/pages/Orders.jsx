@@ -10,7 +10,7 @@ import { FaSpinner, FaEye, FaTimesCircle } from "react-icons/fa";
 import CancelConfirmationModal from "../components/CancelConfirmationModal";
 
 const Orders = () => {
-  const { backendUrl, token, currency, navigate } = useContext(ShopContext);
+  const { backendUrl, token, currency, navigate, delivery_fee } = useContext(ShopContext);
   const [orders, setOrders] = useState([]);
   const [loadingOrderId, setLoadingOrderId] = useState(null);
   const [cancellingOrderId, setCancellingOrderId] = useState(null);
@@ -118,7 +118,7 @@ const Orders = () => {
   const getStatusText = (status) => {
     switch (status) {
       case "Order Placed":
-        return "Đang chờ xử lý";
+        return "Đang xử lý";
       case "Processing":
         return "Đang xử lý";
       case "Shipped":
@@ -230,13 +230,12 @@ const Orders = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-                  <p className="text-lg font-bold text-gray-900 text-center sm:text-left">
-                    Tổng cộng:{" "}
-                    <span className="text-orange-600">
-                      {calculateOrderTotal(order.items).toLocaleString("vi-VN")} {currency}
-                    </span>
-                  </p>
-
+                 <p className="text-lg font-bold text-gray-900 text-center sm:text-left">
+                  Tổng cộng:{" "}
+                  <span className="text-orange-600">
+                    {(calculateOrderTotal(order.items) + delivery_fee).toLocaleString("vi-VN")} {currency}
+                  </span>
+                </p>
                   {canCancelOrder(order.status) && (
                     <button
                       onClick={() => handleCancelClick(order._id)}

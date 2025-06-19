@@ -68,9 +68,11 @@ export const createMomoPayment = async ({ orderId, amount, orderInfo, orderData 
       status: "pending",
       method: "MOMO",
       transactionId: requestId, 
-      momoOrderId,
-      momoRequest: requestBody,
       amount,
+      momo: {
+      orderId: momoOrderId,
+      request: JSON.parse(requestBody),
+  },
     });
 
     return {
@@ -100,14 +102,15 @@ export const handleMomoIPN = async (data) => {
       throw new Error("Chữ ký không hợp lệ");
     }
 
-    const payment = await paymentModel.findOneAndUpdate(
-      { transactionId: data.requestId },
-      {
-        status: data.resultCode === 0 ? "completed" : "failed",
-        momoResponse: data,
-      },
-      { new: true }
-    );
+   const payment = await paymentModel.findOneAndUpdate(
+  { transactionId: data.requestId },
+  {
+    status: data.resultCode === 0 ? "completed" : "failed",
+    "momo.response": data,
+  },
+  { new: true }
+);
+
 
     if (!payment) {
       throw new Error("Không tìm thấy giao dịch");
@@ -133,8 +136,16 @@ export const handleMomoIPN = async (data) => {
   }
 };
 
-export const checkStatusPayment = async ({ momoOrderId }) => {
+export const checkStatusPayment = async ({ paymentId }) => {
   try {
+    
+    const payment = await paymentModel.findById(paymentId);
+    if (!payment || !payment.momo?.orderId) {
+      throw new Error("Không tìm thấy thông tin đơn hàng MoMo");
+    }
+
+    const momoOrderId = payment.momo.orderId;
+    
     const partnerCode = process.env.MOMO_PARTNER_CODE;
     const accessKey = process.env.MOMO_ACCESS_KEY;
     const secretKey = process.env.MOMO_SECRET_KEY;

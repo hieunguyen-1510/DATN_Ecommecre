@@ -3,20 +3,14 @@ import mongoose from "mongoose";
 const paymentSchema = new mongoose.Schema(
   {
     orderId: {
-      type: String, 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
       required: true,
       index: true,
     },
-    // If orderId is a strict MongoDB ObjectId:
-    // orderId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Order",
-    //   required: true,
-    //   index: true,
-    // },
     method: {
       type: String,
-      enum: ["COD", "MOMO", "VNPAY"],
+      enum: ["COD", "MOMO", "PAYPAL"],
       required: true,
       index: true,
     },
@@ -37,31 +31,25 @@ const paymentSchema = new mongoose.Schema(
       sparse: true,
       unique: true,
     },
-    momoOrderId: { 
-      type: String,
-      index: true,
-      sparse: true,
-      unique: true,
+
+    // MOMO
+    momo: {
+      orderId: { type: String, index: true, sparse: true },
+      request: { type: Object, default: {} },
+      response: { type: Object, default: {} },
     },
-    momoRequest: {
-      type: Object,
-      default: {},
+
+    // PAYPAL
+    paypal: {
+      orderId: { type: String, index: true, sparse: true },
+      payerId: { type: String, index: true, sparse: true },
+      captureId: { type: String, index: true, sparse: true },
+      response: { type: Object, default: {} },
     },
-    momoResponse: {
-      type: Object,
-      default: {},
-    },
+
     refundDetails: {
       type: Object,
       default: null,
-    },
-    vnpTransactionDate: {
-      type: String,
-      index: true,
-    },
-    vnpayResponse: { 
-      type: Object,
-      default: {},
     },
   },
   {

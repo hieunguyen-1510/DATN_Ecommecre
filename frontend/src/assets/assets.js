@@ -119,6 +119,7 @@ import bst_banner from "./bst_banner.jpg"
 import about_us from "./about_us.webp"
 import notification_icon from "./notification_icon.png"
 import close_icon from "./close_icon.png"
+import paypal from "./paypal.png"
 
 export const assets = {
   logo,
@@ -168,7 +169,8 @@ export const assets = {
   about_us,
   our_story,
   notification_icon,
-  close_icon
+  close_icon,
+  paypal
 };
 
 export const products = [

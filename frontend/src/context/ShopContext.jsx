@@ -116,24 +116,32 @@ const ShopContextProvider = (props) => {
   };
 
   // clear cart
-  const clearCart = async () => {
-    if (!token) {
+  const clearCart = async (silent = false) => {
+  if (!token) {
+    if (!silent) {
       toast.error("Vui lòng đăng nhập để xóa giỏ hàng!");
       navigate("/login");
-      return;
     }
-    try {
-      await axios.delete(`${backendUrl}/api/cart/clear`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    return;
+  }
 
-      setCartItems({});
-      // toast.success("Đã xóa giỏ hàng thành công!");
-    } catch (error) {
-      console.error("Lỗi khi xóa giỏ hàng:", error);
+  try {
+    await axios.delete(`${backendUrl}/api/cart/clear`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setCartItems({});
+    if (!silent) {
+      toast.success("Đã xóa giỏ hàng thành công!");
+    }
+  } catch (error) {
+    console.error("Lỗi khi xóa giỏ hàng:", error);
+    if (!silent) {
       toast.error(error.response?.data?.message || "Không thể xóa giỏ hàng");
     }
-  };
+  }
+};
+
 
   const getCartAmount = () => {
     let totalAmount = 0;

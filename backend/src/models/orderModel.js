@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
   paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
   address: { type: String, required: true },
-  paymentMethod: { type: String, enum: ["COD", "VNPAY", "MOMO"], required: true },
+  paymentMethod: { type: String, enum: ["COD", "PAYPAL", "MOMO"], required: true },
   items: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },

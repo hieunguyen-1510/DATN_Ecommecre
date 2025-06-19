@@ -78,10 +78,16 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const defaultRole = await Role.findOne({ name: "user" });
+    if (!defaultRole) {
+      return res.status(500).json({ success: false, message: "Default role not found" });
+    }
+
     const newUser = new userModel({
       name,
       email,
       password: hashedPassword,
+      role: defaultRole._id,
     });
 
     const user = await newUser.save();

@@ -66,10 +66,10 @@ const OrderStatusConfirmModal = ({ isOpen, onClose, onConfirm, orderId, newStatu
               </span> không?
             </p>
 
-            {/* Input lý do hủy chỉ hiển thị khi trạng thái mới là "Cancelled" */}
+            {/* Input lý do hủy  */}
             {isCancelledStatus && (
               <div className="mb-6">
-                <label htmlFor="cancel-reason-admin" className="block text-gray-700 text-sm font-semibold mb-2"> {/* Đổi màu label thành text-gray-700 để rõ hơn */}
+                <label htmlFor="cancel-reason-admin" className="block text-gray-700 text-sm font-semibold mb-2"> 
                   Lý do hủy (không bắt buộc):
                 </label>
                 <textarea

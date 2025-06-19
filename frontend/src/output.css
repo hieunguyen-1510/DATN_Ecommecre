@@ -821,6 +821,11 @@ body {
   margin-right: 0.75rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -1093,6 +1098,10 @@ body {
 
 .h-px {
   height: 1px;
+}
+
+.h-screen {
+  height: 100vh;
 }
 
 .max-h-\[80vh\] {
@@ -1769,12 +1778,6 @@ body {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.from-gray-900 {
-  --tw-gradient-from: #111827 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(17 24 39 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 .from-red-500 {
   --tw-gradient-from: #ef4444 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(239 68 68 / 0) var(--tw-gradient-to-position);
@@ -1809,10 +1812,6 @@ body {
 
 .to-gray-100 {
   --tw-gradient-to: #f3f4f6 var(--tw-gradient-to-position);
-}
-
-.to-gray-800 {
-  --tw-gradient-to: #1f2937 var(--tw-gradient-to-position);
 }
 
 .to-orange-500 {
@@ -2268,11 +2267,6 @@ body {
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
-.text-green-400 {
-  --tw-text-opacity: 1;
-  color: rgb(74 222 128 / var(--tw-text-opacity, 1));
-}
-
 .text-green-500 {
   --tw-text-opacity: 1;
   color: rgb(34 197 94 / var(--tw-text-opacity, 1));
@@ -2296,11 +2290,6 @@ body {
 .text-purple-600 {
   --tw-text-opacity: 1;
   color: rgb(147 51 234 / var(--tw-text-opacity, 1));
-}
-
-.text-red-400 {
-  --tw-text-opacity: 1;
-  color: rgb(248 113 113 / var(--tw-text-opacity, 1));
 }
 
 .text-red-500 {
@@ -2981,11 +2970,6 @@ a.group:hover hr {
   --tw-ring-color: rgb(254 215 170 / var(--tw-ring-opacity, 1));
 }
 
-.focus\:ring-red-400:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(248 113 113 / var(--tw-ring-opacity, 1));
-}
-
 .focus\:ring-red-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(239 68 68 / var(--tw-ring-opacity, 1));
@@ -3110,10 +3094,6 @@ a.group:hover hr {
 
   .sm\:h-6 {
     height: 1.5rem;
-  }
-
-  .sm\:h-72 {
-    height: 18rem;
   }
 
   .sm\:h-\[24rem\] {
@@ -3325,6 +3305,11 @@ a.group:hover hr {
     left: 2.5rem;
   }
 
+  .md\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .md\:mb-6 {
     margin-bottom: 1.5rem;
   }
@@ -3339,10 +3324,6 @@ a.group:hover hr {
 
   .md\:h-28 {
     height: 7rem;
-  }
-
-  .md\:h-96 {
-    height: 24rem;
   }
 
   .md\:h-\[28rem\] {

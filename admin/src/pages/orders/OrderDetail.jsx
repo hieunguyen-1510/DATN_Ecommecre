@@ -52,9 +52,9 @@ const OrderDetail = () => {
   }, [orderId, token, backendUrl]); 
 
   const handleCancel = async () => {
-    setLoadingAction(true); // Bắt đầu loading
+    setLoadingAction(true);
     try {
-      // Endpoint này là admin update status, không phải user cancel
+      
       const res = await axios.post(
         `${backendUrl}/api/orders/status`,
         { orderId, status: "Cancelled" }, 
@@ -73,7 +73,7 @@ const OrderDetail = () => {
           }
         );
         setOrder({ ...order, status: "Cancelled" }); 
-        setIsCancelModalOpen(false); // Đóng modal
+        setIsCancelModalOpen(false);
       } else {
         toast.error(
           <div>
@@ -91,7 +91,7 @@ const OrderDetail = () => {
         </div>
       );
     } finally {
-      setLoadingAction(false); // Kết thúc loading
+      setLoadingAction(false); 
     }
   };
 
@@ -143,13 +143,13 @@ const OrderDetail = () => {
                       ? "bg-green-100 text-green-800"
                       : "bg-yellow-100 text-yellow-800" 
               }`}>
-                {order.status === "Order Placed" ? "Đang chờ xử lý" : order.status}
+                {order.status === "Order Placed" ? "Đang xử lý" : order.status}
               </span>
             </p>
           </div>
         </div>
 
-        {/* Lý do hủy đơn hàng - THÊM PHẦN NÀY */}
+        {/* Lý do hủy đơn hàng */}
         {order.status === "Cancelled" && order.cancelReason && (
           <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg mb-6">
             <p className="font-bold mb-2">Lý do hủy:</p>
@@ -161,7 +161,7 @@ const OrderDetail = () => {
         <div className="border-t pt-4">
           <p className="text-xl font-bold text-gray-800">
             Tổng tiền:{" "}
-            <span className="text-orange-600"> {/* Đổi màu tổng tiền sang cam */}
+            <span className="text-orange-600">
               {order.totalAmount.toLocaleString("vi-VN", {
                 style: "currency",
                 currency: "VND",
@@ -182,20 +182,20 @@ const OrderDetail = () => {
           {order.items.map((item, i) => (
             <li 
               key={i} 
-              className="flex gap-4 p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition-colors" // Thêm shadow-sm
+              className="flex gap-4 p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition-colors" 
             >
               <img
                 src={item.productId?.image?.[0] || 'https://placehold.co/80x80/E0E0E0/6C6C6C?text=No+Image'} 
-                className="w-20 h-20 object-cover rounded-xl border border-gray-200" // Kích thước vuông
+                className="w-20 h-20 object-cover rounded-xl border border-gray-200" 
                 alt={item.productId?.name || 'Sản phẩm'}
                 onError={(e) => { e.target.src = 'https://placehold.co/80x80/E0E0E0/6C6C6C?text=No+Image'; }}
               />
               <div className="flex-1">
                 <p className="font-semibold text-gray-800 text-lg">{item.productId?.name || 'Sản phẩm đã bị xóa'}</p>
-                <div className="grid grid-cols-2 gap-2 mt-2 text-gray-600 text-sm"> {/* text-sm cho chi tiết */}
+                <div className="grid grid-cols-2 gap-2 mt-2 text-gray-600 text-sm"> 
                   <p>Số lượng: <span className="font-medium">{item.quantity}</span></p>
                   <p>Kích thước: <span className="font-medium">{item.size || 'N/A'}</span></p>
-                  <p className="col-span-2">Đơn giá: <span className="font-bold text-orange-500"> {/* Màu cam cho đơn giá */}
+                  <p className="col-span-2">Đơn giá: <span className="font-bold text-orange-500"> 
                     {item.price?.toLocaleString("vi-VN")}đ
                   </span></p>
                 </div>
@@ -211,12 +211,12 @@ const OrderDetail = () => {
         </div>
 
 
-        {/* Nút và Modal hủy đơn (Admin có thể hủy) */}
+        {/* Nút và Modal hủy đơn  */}
         {order.status !== "Cancelled" && order.status !== "Delivered" && ( 
           <div className="border-t pt-6 mt-6 flex justify-end">
             <button
               onClick={() => setIsCancelModalOpen(true)}
-              disabled={loadingAction} // Vô hiệu hóa nút khi đang loading
+              disabled={loadingAction} 
               className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg 
                 transition-all duration-200 hover:scale-105 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -248,11 +248,11 @@ const OrderDetail = () => {
         style={customStyles}
         contentLabel="Xác nhận hủy đơn"
       >
-        <div className="p-4 text-center"> {/* Căn giữa nội dung modal */}
+        <div className="p-4 text-center"> 
           <h3 className="text-2xl font-bold text-gray-800 mb-4">Xác nhận hủy đơn</h3>
           <p className="text-gray-600 mb-6 leading-relaxed">Bạn có chắc chắn muốn hủy đơn hàng này không? Thao tác này không thể hoàn tác.</p>
           
-          <div className="flex justify-center space-x-3 mt-4"> {/* Căn giữa các nút */}
+          <div className="flex justify-center space-x-3 mt-4">
             <button
               onClick={() => setIsCancelModalOpen(false)}
               className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-semibold transition-colors"
@@ -261,7 +261,7 @@ const OrderDetail = () => {
             </button>
             <button
               onClick={handleCancel}
-              disabled={loadingAction} // Vô hiệu hóa nút khi đang loading
+              disabled={loadingAction} 
               className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loadingAction ? 'Đang hủy...' : 'Xác nhận hủy'}
