@@ -104,9 +104,9 @@ import product6 from "./product6.jpg";
 import cod from "./cod.png"
 import momo from "./momo.png"
 import atm from "./atm.jpg"
-import menFashion from "./menFashion.avif"
-import womenFashion from "./womenFashion.avif"
-import kidsFashion from "./kidsFashion.avif"
+import menFashion from "./men_fashion.png"
+import womenFashion from "./women_fashion.png"
+import kidsFashion from "./kids_fashion.png"
 import profile from "./profile.jpg"
 import our_story from "./our_story.jpg"
 import mission_img from "./mission.jpg"
@@ -114,12 +114,26 @@ import community_img from "./community_img.jpg"
 import creative_img from "./creative_img.jpg"
 import quality_img from "./quality_img.jpg"
 import banner4 from "./banner4.avif"
-import vnpay from "./vnpay.png"
-import bst_banner from "./bst_banner.jpg"
-import about_us from "./about_us.webp"
+import banner_bst from "./banner_bst.jpg"
+import about_us from "./about.png"
 import notification_icon from "./notification_icon.png"
 import close_icon from "./close_icon.png"
 import paypal from "./paypal.png"
+import shirts from "./shirt.jpg"
+import jackets from "./jacket.jpg"
+import menBanner from "./men_banner.png"
+import kakiPants from "./kakiPants.jpg"
+import sweaters from "./sweaters.jpg"
+import womenLongSleeve from "./womenLongSleeve.jpg"
+import womenHoodie from "./womenHoodie.jpg"
+import womenSweater from "./womenSweater.jpg"
+import womenJackets from "./womenJackets.jpg"
+import womenKaki from "./womenKaki.jpg"
+import kidsSweater from "./kidsSweater.jpg"
+import kidsShorts from "./kidsShorts.jpg"
+import kidsTshirt from "./kidsTshirt.jpg"
+import womenBanner from "./women_banner.png"
+import kidsBanner from "./kids_banner.png"
 
 export const assets = {
   logo,
@@ -164,13 +178,27 @@ export const assets = {
   creative_img,
   community_img,
   banner4,
-  vnpay,
-  bst_banner,
+  banner_bst,
   about_us,
   our_story,
   notification_icon,
   close_icon,
-  paypal
+  paypal,
+  shirts,
+  menBanner,
+  jackets,
+  kakiPants,
+  sweaters,
+  womenLongSleeve,
+  womenHoodie,
+  womenSweater,
+  womenJackets,
+  womenKaki,
+  kidsSweater,
+  kidsShorts,
+  kidsTshirt,
+  womenBanner,
+  kidsBanner
 };
 
 export const products = [

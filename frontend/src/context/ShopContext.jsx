@@ -13,11 +13,11 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
   const [products, setProducts] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user")) || null
-  );
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
 
   const navigate = useNavigate();
 
@@ -267,16 +267,42 @@ const ShopContextProvider = (props) => {
   };
 
   // Search
-  const searchProducts = (searchTerm) => {
-    if (searchTerm) {
-      const filtered = products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts(products);
+  const fetchSearchResults = async(searchTerm) => {
+    setIsSearching(true);
+    try {
+      const response = await axios.get(`${backendUrl}/api/product/list?search=${searchTerm}`,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setSearchResults(response.data.products);
+      } else {
+        setSearchResults([]);
+        console.error(response.data.message || "Lỗi khi tìm kiếm sản phẩm.");
+      }
+      
+    } catch (error) {
+      console.error("Lỗi API tìm kiếm:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
     }
-  };
+  }
+
+  // gọi API tìm kiếm với debounce
+  useEffect(()=> {
+    const delayDebounce = setTimeout(() => {
+      if (search.trim()) {
+        fetchSearchResults(search.trim());
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  },[search, token]);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -293,10 +319,6 @@ const ShopContextProvider = (props) => {
       getProductsData();
     }
   }, [token]);
-
-  useEffect(() => {
-    searchProducts(search);
-  }, [search, products]);
 
   const value = {
     products,
@@ -323,6 +345,8 @@ const ShopContextProvider = (props) => {
     clearCart,
     fetchUserProfile,
     updateUserProfile,
+    searchResults,
+    isSearching
   };
 
   return (

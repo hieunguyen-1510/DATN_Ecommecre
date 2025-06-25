@@ -189,7 +189,6 @@ const EditProduct = ({ token }) => {
             <Select.Option value="Street Bottoms">Quần đường phố</Select.Option>
             <Select.Option value="Shorts">Quần short</Select.Option>
             <Select.Option value="Jeans">Quần jeans</Select.Option>
-            <Select.Option value="Short skirt">Chân váy</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item name="purchasePrice" label="Giá mua sản phẩm">

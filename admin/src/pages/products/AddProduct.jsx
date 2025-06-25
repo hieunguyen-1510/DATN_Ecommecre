@@ -83,7 +83,7 @@ const AddProduct = ({ token }) => {
     try {
       const formData = new FormData();
 
-      // Đảm bảo dữ liệu được gửi đúng định dạng
+     
       Object.keys(values).forEach((key) => {
         if (key === "sizes") {
           formData.append(key, JSON.stringify(values[key]));
@@ -92,7 +92,7 @@ const AddProduct = ({ token }) => {
         }
       });
 
-      // Chỉ gửi file mới (có originFileObj)
+      
       fileList.forEach((file, index) => {
         if (file.originFileObj) {
           formData.append(`image${index + 1}`, file.originFileObj);
@@ -204,7 +204,6 @@ const AddProduct = ({ token }) => {
             <Select.Option value="Street Bottoms">Quần đường phố</Select.Option>
             <Select.Option value="Shorts">Quần short</Select.Option>
             <Select.Option value="Jeans">Quần jeans</Select.Option>
-            <Select.Option value="Short skirt">Chân váy</Select.Option>
           </Select>
         </Form.Item>
         {/* "Giá mua" */}

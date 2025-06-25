@@ -8,53 +8,59 @@ import {
   FaInstagram,
   FaFacebookF,
   FaTiktok,
+  FaHome,
 } from "react-icons/fa";
 
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-400 mt-8 border-t border-gray-700">
-      <div className="container w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-16">
-          {/* Dịch vụ */}
-          <div className="space-y-5 text-center md:text-left">
-            <h4 className="font-extrabold text-base md:text-lg text-white mb-4 md:mb-6 uppercase tracking-wider">
-              Dịch vụ
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 md:py-7">
+        {/* Grid layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {/* Trang chủ */}
+          <div className="space-y-3 sm:space-y-4">
+            <h4 className="font-extrabold text-base text-white flex items-center gap-2 uppercase tracking-wider">
+              <FaHome className="text-blue-600 text-lg" />
+              TRANG CHỦ
             </h4>
-            <div className="flex items-start gap-3 sm:gap-4">
-              <div className="flex-shrink-0 mt-1">
-                <FaTruck className="text-lg text-blue-600" />
-              </div>
+            <p className="text-sm text-gray-300">
+              Street Style hân hạnh phục vụ!
+            </p>
+          </div>
+
+          {/* Dịch vụ */}
+          <div className="space-y-4">
+            <h4 className="font-extrabold text-base text-white uppercase tracking-wider">
+              DỊCH VỤ
+            </h4>
+            <div className="flex items-start gap-3">
+              <FaTruck className="text-blue-600 mt-1" />
               <div>
                 <p className="font-semibold text-gray-200">
                   Miễn phí vận chuyển
                 </p>
-
-                <p className="text-sm text-gray-400 mt-1">Cho đơn từ 500K</p>
+                <p className="text-sm">Cho đơn từ 500K</p>
               </div>
             </div>
-
-            <div className="flex items-start gap-4 pt-3">
-              <div className="flex-shrink-0 mt-1">
-                <FaShieldAlt className="text-lg text-blue-600" />
-              </div>
+            <div className="flex items-start gap-3">
+              <FaShieldAlt className="text-blue-600 mt-1" />
               <div>
                 <p className="font-semibold text-gray-200">Bảo hành 1:1</p>
-                <p className="text-sm text-gray-400 mt-1">Trong 7 ngày</p>
+                <p className="text-sm">Trong 7 ngày</p>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-5">
-            <h4 className="font-extrabold text-lg text-white mb-6 uppercase tracking-wider">
-              Hỗ trợ khách hàng
+          {/* Hỗ trợ khách hàng */}
+          <div className="space-y-4">
+            <h4 className="font-extrabold text-base text-white uppercase tracking-wider">
+              HỖ TRỢ KHÁCH HÀNG
             </h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2">
               <li>
                 <a
                   href="#"
-                  className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
+                  className="hover:text-blue-600 text-sm text-gray-300"
                 >
                   Hướng dẫn mua hàng
                 </a>
@@ -62,7 +68,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
+                  className="hover:text-blue-600 text-sm text-gray-300"
                 >
                   Chính sách đổi trả
                 </a>
@@ -70,7 +76,7 @@ const Footer = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
+                  className="hover:text-blue-600 text-sm text-gray-300"
                 >
                   FAQ
                 </a>
@@ -78,55 +84,49 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="space-y-5">
-            <h4 className="font-extrabold text-lg text-white mb-6 uppercase tracking-wider">
-              Liên hệ
+          {/* Liên hệ */}
+          <div className="space-y-4">
+            <h4 className="font-extrabold text-base text-white uppercase tracking-wider">
+              LIÊN HỆ
             </h4>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <FaPhone className="text-blue-600 flex-shrink-0 text-xl" />
-                <span className="text-gray-200">0348 134 940</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <FaEnvelope className="text-blue-600 flex-shrink-0 text-xl" />
-                <span className="text-gray-200">support@streetstyle.vn</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <FaClock className="text-blue-600 flex-shrink-0 text-xl" />
-                <span className="text-gray-200">9h - 17h30 (Nghỉ CN)</span>
-              </div>
+            <div className="flex items-center gap-3 text-sm">
+              <FaPhone className="text-blue-600" />
+              <span className="text-gray-200">0348 134 940</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <FaEnvelope className="text-blue-600" />
+              <span className="text-gray-200">support@streetstyle.vn</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <FaClock className="text-blue-600" />
+              <span className="text-gray-200">9h - 17h30 (Nghỉ CN)</span>
             </div>
 
-            {/* Social Media Icons */}
-            <div className="flex items-center gap-6 mt-6 justify-center md:justify-start">
+            {/* Mạng xã hội */}
+            <div className="flex items-center gap-4 pt-3">
               <a
                 href="https://www.instagram.com/"
-                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
+                className="hover:text-blue-600"
               >
-                <FaInstagram className="text-2xl" />
+                <FaInstagram className="text-xl text-gray-200" />
               </a>
               <a
                 href="https://www.facebook.com/"
-                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
+                className="hover:text-blue-600"
               >
-                <FaFacebookF className="text-2xl" />
+                <FaFacebookF className="text-xl text-gray-200" />
               </a>
-              <a
-                href="https://www.tiktok.com/"
-                className="text-gray-200 hover:text-blue-600 transition-colors duration-300"
-              >
-                <FaTiktok className="text-2xl" />
+              <a href="https://www.tiktok.com/" className="hover:text-blue-600">
+                <FaTiktok className="text-xl text-gray-200" />
               </a>
             </div>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-4 border-t border-gray-700 text-center">
-          <p className="text-gray-200 text-xs sm:text-sm px-2">
-            © 2025 STREET STYLE – Giấy chứng nhận Đăng ký kinh doanh số
-            0989908100.
+        <div className="mt-6 border-t border-gray-700 pt-4 text-center">
+          <p className="text-xs text-gray-400">
+            © 2025 STREET STYLE – ĐKKD: 0989908100
           </p>
         </div>
       </div>

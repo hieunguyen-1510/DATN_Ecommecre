@@ -9,7 +9,6 @@ const About = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  // Animation variants
   const sectionVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -27,7 +26,6 @@ const About = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email) {
-      //   console.log("Submitting email:", email);
       setIsSubmitted(true);
       setSubmitMessage(
         "Cảm ơn bạn đã đăng ký! Ưu đãi sẽ được gửi đến email của bạn."
@@ -35,7 +33,6 @@ const About = () => {
       setMessageType("success");
       setEmail("");
 
-      // Reset form 3s
       setTimeout(() => {
         setIsSubmitted(false);
         setSubmitMessage("");
@@ -70,12 +67,13 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        className="relative h-[24rem] sm:h-[28rem] md:h-[32rem]  bg-cover bg-center flex items-center"
+        className="relative h-[36rem] bg-cover bg-center flex items-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url(${assets.about_us})`,
         }}
       ></motion.section>
-      {/* ===== Our Story ===== */}
+
+      {/* ===== Our Story Section ===== */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -85,60 +83,43 @@ const About = () => {
       >
         <div className="container max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div variants={itemVariants} className="order-2 lg:order-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 <span className="text-red-600">Câu Chuyện</span> Của Chúng Tôi
               </h2>
-
-              <p className="text-sm md:text-base lg:text-lg text-gray-700 mb-4 leading-relaxed">
+              <p className="text-base text-gray-700 mb-6 leading-relaxed">
                 Năm 2020, từ một cửa hàng nhỏ tại Sài Gòn, Street Style ra đời
-                với sứ mệnh mang
-                <strong> văn hóa đường phố Việt Nam</strong> đến với thế giới.
+                với sứ mệnh mang văn hóa đường phố Việt Nam đến với thế giới.
                 Chúng tôi tin rằng thời trang không chỉ là quần áo, mà là cách
                 bạn kể câu chuyện của chính mình.
               </p>
-
-              <p className="text-base text-gray-700 mb-6 leading-relaxed">
-                Đến nay, chúng tôi tự hào đã đồng hành cùng hơn{" "}
-                <strong>5,000 khách hàng</strong>, mang đến những trải nghiệm
-                mua sắm khác biệt với chất lượng từng đường kim mũi chỉ.
-              </p>
-
-              <div className="flex flex-wrap gap-4">
+              <div className="flex gap-4">
                 <Link
                   to="/about"
-                  className="bg-gray-900 hover:bg-gray-800 text-white py-2 px-6 rounded-full transition-all duration-300 hover:shadow-lg" // Added duration and shadow
+                  className="bg-gray-900 text-white py-2 px-6 rounded-full hover:bg-gray-800 hover:shadow-lg transition-all"
                 >
                   Xem thêm
                 </Link>
                 <Link
                   to="/contact"
-                  className="border-2 border-gray-900 text-gray-900 hover:bg-gray-100 py-2 px-6 rounded-full transition-all duration-300 hover:shadow-lg" // Added duration and shadow
+                  className="border-2 border-gray-900 text-gray-900 py-2 px-6 rounded-full hover:bg-gray-100 hover:shadow-lg transition-all"
                 >
                   Liên hệ
                 </Link>
               </div>
-            </motion.div>
-
-            <motion.div
-              variants={itemVariants}
-              className="order-1 lg:order-2 relative"
-            >
+            </div>
+            <div>
               <img
-                src={
-                  assets.our_story ||
-                  "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80"
-                }
-                alt="Hình ảnh cửa hàng Street Style với các mẫu quần áo treo trên giá"
-                className="w-full max-w-lg mx-auto h-auto rounded-xl shadow-xl"
-                loading="lazy"
+                src={assets.our_story}
+                alt="Câu chuyện của chúng tôi"
+                className="w-full rounded-xl shadow-xl"
               />
-            </motion.div>
+            </div>
           </div>
         </div>
       </motion.section>
 
-      {/* ===== Mission ===== */}
+      {/* ===== Mission Section ===== */}
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -158,12 +139,10 @@ const About = () => {
                 />
               </div>
             </motion.div>
-
             <motion.div variants={itemVariants}>
               <h2 className="text-3xl font-semibold text-gray-900 mb-8">
                 <span className="text-red-700">Sứ Mệnh</span> & Tầm Nhìn
               </h2>
-
               <div className="space-y-8">
                 <div className="flex items-start">
                   <div className="bg-red-50 p-1 rounded-full mr-4 flex-shrink-0">
@@ -177,7 +156,6 @@ const About = () => {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start">
                   <div className="bg-red-50 p-1 rounded-full mr-4 flex-shrink-0">
                     <span className="text-red-700 text-xl">👁️</span>
@@ -202,59 +180,41 @@ const About = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="py-16 bg-white text-center mb-8 shadow-lg rounded-lg mx-4 md:mx-auto"
+        className="py-16 bg-white text-center"
       >
         <div className="container max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
             Sẵn sàng <span className="text-red-600">thay đổi</span> phong cách?
           </h2>
-          <p className="text-gray-600 mb-8 text-lg">
-            {" "}
-            {/* Increased font size slightly */}
+          <p className="text-gray-600 mb-8">
             Đăng ký nhận ngay ưu đãi 10% cho đơn hàng đầu tiên
           </p>
-
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+            className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email của bạn"
-              className="flex-grow px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 border border-gray-300"
+              className="flex-grow px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
               required
             />
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-full font-medium transition-all hover:scale-105 hover:shadow-lg" 
+              className="bg-red-600 text-white py-3 px-6 rounded-full hover:bg-red-700 hover:shadow-lg transition-all"
             >
               Đăng ký ngay
             </button>
           </form>
-
-          {isSubmitted && submitMessage && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className={`mt-4 text-sm flex items-center justify-center ${
+          {isSubmitted && (
+            <p
+              className={`mt-4 ${
                 messageType === "success" ? "text-green-600" : "text-red-600"
               }`}
             >
-              {messageType === "success" ? (
-                <span className="mr-2 text-lg">✅</span>
-              ) : (
-                <span className="mr-2 text-lg">❌</span>
-              )}
               {submitMessage}
-            </motion.p>
-          )}
-
-          {!isSubmitted && (
-            <p className="text-gray-500 text-sm mt-4">
-              Chúng tôi cam kết không spam email của bạn
             </p>
           )}
         </div>

@@ -96,7 +96,6 @@ const BannerSlider = () => {
   }
 
   return (
-    // <div className="w-full overflow-hidden px-2 sm:px-4 md:px-8">
     <div className="w-full overflow-hidden">
       <Slider {...settings}>
         {banners.map((banner) => (
@@ -105,11 +104,10 @@ const BannerSlider = () => {
               <img
                 src={banner.imageUrl}
                 alt={banner.title || "Banner"}
-                className="absolute inset-0 w-full h-full object-cover object-center bg-gray-100"
+                className="absolute inset-0 w-full h-full object-cover object-top bg-gray-100"
                 loading="lazy"
               />
 
-              {/* Optional: Overlay text */}
               {banner.title && (
                 <div className="absolute bottom-6 left-4 sm:left-6 md:left-10 text-white text-base sm:text-lg md:text-2xl lg:text-3xl font-semibold drop-shadow">
                   {banner.title}
