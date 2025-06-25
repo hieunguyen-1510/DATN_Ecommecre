@@ -144,7 +144,7 @@ const LatestCollection = () => {
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     whileHover={{ scale: 1.05 }}
                   >
-                    <span
+                    {/* <span
                       className={`inline-block border-2 text-xs sm:text-sm px-4 sm:px-6 py-1.5 sm:py-2 font-medium rounded-full transition-all ${
                         collection.theme === "dark"
                           ? "border-white hover:bg-white/20 text-white"
@@ -152,7 +152,7 @@ const LatestCollection = () => {
                       }`}
                     >
                       KHÁM PHÁ NGAY
-                    </span>
+                    </span> */}
                   </motion.div>
                 </Link>
               </motion.div>
