@@ -767,6 +767,10 @@ body {
   top: -5px;
 }
 
+.top-full {
+  top: 100%;
+}
+
 .z-0 {
   z-index: 0;
 }
@@ -960,6 +964,13 @@ body {
   margin-top: -16px;
 }
 
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
 .block {
   display: block;
 }
@@ -1006,6 +1017,10 @@ body {
 
 .h-10 {
   height: 2.5rem;
+}
+
+.h-16 {
+  height: 4rem;
 }
 
 .h-20 {
@@ -1100,6 +1115,10 @@ body {
   height: 100vh;
 }
 
+.max-h-80 {
+  max-height: 20rem;
+}
+
 .max-h-\[80vh\] {
   max-height: 80vh;
 }
@@ -1138,6 +1157,10 @@ body {
 
 .w-14 {
   width: 3.5rem;
+}
+
+.w-16 {
+  width: 4rem;
 }
 
 .w-2\/4 {
@@ -1515,6 +1538,11 @@ body {
 
 .rounded-xl {
   border-radius: 0.75rem;
+}
+
+.rounded-b-lg {
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 }
 
 .rounded-t-xl {
@@ -3020,6 +3048,10 @@ a.group:hover hr {
 
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
+}
+
+.disabled\:opacity-70:disabled {
+  opacity: 0.7;
 }
 
 .disabled\:shadow-none:disabled {

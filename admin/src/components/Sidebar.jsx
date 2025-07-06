@@ -90,11 +90,11 @@ const Sidebar = ({ setToken }) => {
               { path: "/users", label: "Người Dùng", icon: <UserOutlined /> },
               { path: "/customers", label: "Khách hàng", icon: <TeamOutlined /> },
               { path: "/products", label: "Sản phẩm", icon: <AppstoreOutlined /> },
+              { path: "/inventory", label: "Tồn kho", icon: <DatabaseOutlined /> },
+              { path: "/orders", label: "Đơn hàng", icon: <ContainerOutlined /> },
               { path: "/discounts", label: "Mã giảm giá", icon: <GiftOutlined /> },
               { path: "/banners", label: "Banner", icon: <PictureOutlined /> },
               { path: "/reviews", label: "Đánh giá", icon: <StarOutlined /> },
-              { path: "/inventory", label: "Tồn kho", icon: <DatabaseOutlined /> },
-              { path: "/orders", label: "Đơn hàng", icon: <ContainerOutlined /> },
               { path: "/payments", label: "Thanh toán", icon: <ShoppingCartOutlined /> },
             ].map(({ path, label, icon }) => (
               <NavLink key={path} to={path} className={navLinkStyles}>
