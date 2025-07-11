@@ -56,10 +56,10 @@ const BestSeller = () => {
       {/* Tiêu đề */}
       <div className="text-center pb-6 px-4 sm:px-6 lg:px-0">
         <Title text1="SẢN PHẨM" text2="BÁN CHẠY" />
-        <p className="w-full sm:w-3/4 md:w-1/2 mx-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed">
+        {/* <p className="w-full sm:w-3/4 md:w-1/2 mx-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed">
           Khám phá những mặt hàng độc đáo, thể hiện cá tính riêng, và luôn dẫn
           đầu xu hướng từ cộng đồng Street Style.
-        </p>
+        </p> */}
       </div>
 
       {/* Nút điều hướng */}

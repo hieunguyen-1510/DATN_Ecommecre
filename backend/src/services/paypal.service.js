@@ -10,7 +10,7 @@ export const createOrder = async (amount, options) => {
     const usdAmount = (amount / 24000).toFixed(2); // Đổi từ VND sang USD 
 
     const returnUrl = options.return_url || `${process.env.BACKEND_URL}/api/payment/success`;
-const cancelUrl = options.cancel_url || `${process.env.FRONTEND_URL}/payment-cancel`;
+    const cancelUrl = options.cancel_url || `${process.env.FRONTEND_URL}/payment-cancel`;
 
 
     // Debug log

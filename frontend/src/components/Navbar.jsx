@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  // const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const {
     setShowSearch,
     getCartCount,
@@ -72,20 +71,6 @@ const Navbar = () => {
             alt="Tìm kiếm"
             onClick={handleSearchClick}
           />
-          {/* Biểu tượng chuông thông báo */}
-          {/* <div className="relative">
-            <img
-              className="w-6 cursor-pointer"
-              src={assets.notification_icon}
-              alt="Thông báo"
-            /> */}
-          {/* Số lượng thông báo chưa đọc */}
-          {/* {unreadNotificationsCount > 0 && (
-              <p className="absolute right-[-5px] top-[-5px] w-4 text-center leading-4 bg-red-500 text-white aspect-square rounded-full text-[8px]">
-                {unreadNotificationsCount}
-              </p>
-            )}
-          </div> */}
           <div className="group relative">
             {token ? (
               <img
@@ -108,7 +93,7 @@ const Navbar = () => {
                     onClick={() => navigate("/profile")}
                     className="cursor-pointer hover:text-black"
                   >
-                    Hồ sơ của tôi
+                    Tài khoản
                   </p>
                   <p
                     onClick={() => navigate("/orders")}

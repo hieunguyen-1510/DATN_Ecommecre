@@ -77,7 +77,7 @@ const Profile = () => {
         </button>
 
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center mb-0">
-          Hồ sơ của tôi
+          Thông tin tài khoản
         </h1>
         <div className="flex flex-col items-center mb-6">
           <div className="relative group">

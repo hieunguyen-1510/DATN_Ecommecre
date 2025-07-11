@@ -763,10 +763,6 @@ body {
   top: 1rem;
 }
 
-.top-\[-5px\] {
-  top: -5px;
-}
-
 .top-full {
   top: 100%;
 }
@@ -1117,6 +1113,10 @@ body {
 
 .max-h-80 {
   max-height: 20rem;
+}
+
+.max-h-\[600px\] {
+  max-height: 600px;
 }
 
 .max-h-\[80vh\] {
@@ -1877,6 +1877,11 @@ body {
   fill: currentColor;
 }
 
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -2070,6 +2075,10 @@ body {
 
 .pl-6 {
   padding-left: 1.5rem;
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
 }
 
 .pr-10 {
@@ -3156,6 +3165,10 @@ a.group:hover hr {
     height: 3rem;
   }
 
+  .sm\:h-20 {
+    height: 5rem;
+  }
+
   .sm\:h-24 {
     height: 6rem;
   }
@@ -3611,8 +3624,8 @@ a.group:hover hr {
     gap: 2rem;
   }
 
-  .lg\:overflow-y-scroll {
-    overflow-y: scroll;
+  .lg\:overflow-y-auto {
+    overflow-y: auto;
   }
 
   .lg\:px-0 {

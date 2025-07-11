@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { assets } from "../assets/assets";
 
 const Login = () => {
   const { token, setToken, navigate, backendUrl, setUser } =
@@ -82,11 +83,18 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white p-8 shadow-2xl rounded-xl w-[90%] sm:max-w-md border border-gray-100 transform transition-all duration-300 hover:scale-[1.01]">
-        <h2 className="text-3xl font-extrabold text-center mb-8 uppercase tracking-widest text-gray-800">
+        <div className="flex justify-center mb-8">
+          <img
+            src={assets.logo}
+            alt="Shop Logo"
+            className="h-16 sm:h-20 object-contain"
+          />
+        </div>
+        {/* <h2 className="text-3xl font-extrabold text-center mb-8 uppercase tracking-widest text-gray-800">
           {currentState === "Login"
             ? "Chào mừng quay lại"
             : "Đăng ký để bắt đầu"}
-        </h2>
+        </h2> */}
 
         <form onSubmit={onSubmitHandler} className="flex flex-col gap-6">
           {currentState === "Sign Up" && (

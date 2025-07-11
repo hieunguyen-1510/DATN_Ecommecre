@@ -165,7 +165,7 @@ const Chatbot = () => {
                   </svg>
                 </button>
               )}
-              <h3 className="text-lg font-semibold">Trợ lý ảo AI</h3>
+              <h3 className="text-lg font-semibold">Hỗ trợ người dùng</h3>
             </div>
 
             {/* Nút đóng */}

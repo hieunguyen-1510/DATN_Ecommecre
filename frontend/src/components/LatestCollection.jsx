@@ -61,10 +61,10 @@ const LatestCollection = () => {
       {/* Tiêu đề */}
       <div className="text-center pb-12">
         <Title text1="BỘ SƯU TẬP" text2="MỚI NHẤT" />
-        <p className="w-full sm:w-3/4 md:w-1/2 m-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed text-center">
+        {/* <p className="w-full sm:w-3/4 md:w-1/2 m-auto text-sm sm:text-base text-gray-700 mt-4 font-light leading-relaxed text-center">
           Khám phá những thiết kế mới và nổi bật nhất được cập nhật liên tục từ
           shop, mang đậm dấu ấn Street Style.
-        </p>
+        </p> */}
       </div>
 
       {/* Hiển thị bộ sưu tập */}
@@ -162,7 +162,7 @@ const LatestCollection = () => {
       </div>
 
       {/* Nút CTA */}
-      <div className="text-center mt-8 px-2">
+      <div className="text-center mt-4 px-2">
         <motion.div
           whileHover={{
             scale: 1.05,
