@@ -28,12 +28,23 @@ export const getProductInfo = async (productName) => {
   return null;
 };
 
-export const getOderStatus = async (orderId, userId) => {
-  const order = await Order.findOne({ _id: orderId, userId: userId });
+export const getOderStatus = async (orderCode, userId) => {
+  let order = null;
+  // Nếu người dùng nhập đúng ObjectId 24 ký tự
+  if (/^[a-fA-F0-9]{24}$/.test(orderCode)) {
+    order = await Order.findOne({_id: orderCode, userId: userId});
+  }
+  // Nếu không tìm thấy, thử tìm theo mã rút gọn
+  if(!order && orderCode.length === 6){
+    const orders = await Order.find({userId});
+
+    order = orders.find((o) =>{
+      o._id.toString().slice(-6).toLowerCase() === orderCode.toLowerCase()
+    });
+  }
+
   if (order) {
-    return `Đơn hàng #${orderId.slice(-6)} của bạn đang có trạng thái: ${
-      orderId.status
-    }.`;
+    return `Đơn hàng #${order._id.toString.slice(-6)} của bạn đang có trạng thái: ${order.status}.`;
   }
   return null;
 };

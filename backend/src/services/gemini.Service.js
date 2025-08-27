@@ -9,6 +9,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 const getGeminiResponse = async (prompt) => {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash-preview-05-20",
+    // model: "gemini-pro",
   });
 
   try {
