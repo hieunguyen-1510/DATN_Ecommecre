@@ -2,6 +2,6 @@
 * .env
 
 # Node.js
-node_modules
+node_modules/
 
 backend/.gitignore
