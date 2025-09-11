@@ -1,106 +1,218 @@
-# 📘 SỬ DỤNG GIT & GITHUB CƠ BẢN
+🛍️ Street Style - Website Thời Trang
 
-## 🧠 1. Git và GitHub là gì?
+Dự án Street Style là một nền tảng thương mại điện tử chuyên về thời trang streetwear, bao gồm 3 phần chính:
 
-- **Git**: Công cụ quản lý phiên bản mã nguồn cục bộ.
-- **GitHub**: Nơi lưu trữ mã nguồn online, hỗ trợ làm việc nhóm và cộng tác.
+Frontend (Khách hàng): Giao diện mua sắm, giỏ hàng, thanh toán.
 
----
+Backend (API Server): Xử lý dữ liệu, thanh toán online, quản lý người dùng.
 
-## 🚀 2. Khởi tạo Git và kết nối với GitHub
+Admin (Trang quản trị): Quản lý sản phẩm, đơn hàng, khuyến mãi, thống kê.
 
-```bash
-git init
-git remote add origin https://github.com/tenuser/tenduan.git
+⚙️ Công nghệ sử dụng
 
-📥 3. Clone dự án từ GitHub về máy
-git clone https://github.com/tenuser/tenduan.git
+Frontend & Admin:
 
-🔎 4. Kiểm tra trạng thái và nhánh
-git status         # Xem trạng thái file thay đổi
-git branch         # Xem các nhánh local
-git branch -a      # Xem cả nhánh local và remote
+React 19 + Vite
 
-🌿 5. Tạo và chuyển nhánh
-git checkout -b ten-nhanh-moi    # Tạo và chuyển tới nhánh mới
-git checkout ten-nhanh-cu        # Chuyển về nhánh cũ
+TailwindCSS, Ant Design
 
-💾 6. Lưu và đẩy thay đổi lên GitHub
-git add .           # Thêm tất cả file
-git add index.html  # Hoặc 1 file cụ thể
+React Router DOM
 
-🔄 7. Kéo code từ GitHub về
-git pull origin ten-nhanh
+React Toastify, Framer Motion
 
-🔀 8. Gộp nhánh
-git checkout main
-git merge ten-nhanh
+Recharts, ApexCharts
+
+Backend:
+
+Node.js, Express
+
+MongoDB (Mongoose)
+
+Cloudinary (Upload ảnh)
+
+VNPay (Cổng thanh toán online)
+
+JWT (Xác thực người dùng)
+
+Nodemailer (Gửi email)
+
+📂 Cấu trúc thư mục
+street-style/
+│
+├── backend/           # API server
+│   ├── models/        # Mongoose models
+│   ├── routes/        # API endpoints
+│   ├── controllers/   # Logic xử lý
+│   ├── utils/         # Middleware & helper functions
+│   ├── server.js      # Điểm khởi động
+│   └── .env           # Cấu hình môi trường
+│
+├── frontend/          # Giao diện người dùng
+│   ├── src/
+│   │   ├── assets/        # Ảnh, icons
+│   │   ├── components/    # Component tái sử dụng
+│   │   ├── pages/         # Các trang chính
+│   │   ├── context/       # Quản lý state bằng Context API
+│   │   └── App.jsx
+│   └── vite.config.js
+│
+└── admin/             # Trang quản trị
+    ├── src/
+    │   ├── components/    # Component dùng cho admin
+    │   ├── pages/         # Trang quản trị
+    │   └── App.jsx
+    └── vite.config.js
+
+🚀 Cài đặt dự án
+1. Clone dự án
+git clone https://github.com/tenuser/street-style.git
+cd street-style
+
+2. Backend
+
+Cài đặt thư viện:
+
+cd backend
+npm install
 
 
-🧹 9. Xoá nhánh
+Tạo file .env trong thư mục backend:
 
-git branch -d ten-nhanh                   # Xoá nhánh local
-git push origin --delete ten-nhanh       # Xoá nhánh trên GitHub
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/streetstyle
+JWT_SECRET=your_jwt_secret_key
 
-🧭 CÁCH TẠO PULL REQUEST TRÊN GITHUB
+# VNPay config
+VNPAY_TMN_CODE=YOUR_VNPAY_CODE
+VNPAY_HASH_SECRET=YOUR_VNPAY_SECRET
+VNPAY_RETURN_URL=http://localhost:5173/payment-success
 
-✅ Bước 1: Push code của bạn lên GitHub
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-git push -u origin feature/ten-tinh-nang
-
-✅ Bước 2: Vào repo trên GitHub
-GitHub sẽ hiện thông báo:
-
-"Compare & pull request" → Bấm vào đó
-(nếu không thấy thì bạn vào tab "Pull Requests" và chọn "New Pull Request")
+# Email config
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_email_password
 
 
-base: nhánh bạn muốn merge vào (main, develop, ...)
+Chạy backend:
 
-compare: nhánh bạn đang làm việc (feature/login, bugfix/abc, ...)
+npm run server
 
-Viết tiêu đề & mô tả ngắn cho PR (ví dụ):
 
-✅ Thêm tính năng đăng nhập
-- Tạo form đăng nhập
-- Kiểm tra token hợp lệ
-Bấm Create pull request.
+Backend mặc định chạy tại: http://localhost:5000
 
-🧪 (Tuỳ chọn) Bước 3: Người khác review & merge
+3. Frontend
 
-Người review có thể comment, yêu cầu sửa đổi, hoặc chấp nhận.
+Cài đặt thư viện:
 
-Sau khi ổn, bạn hoặc người có quyền sẽ bấm Merge pull request.
+cd ../frontend
+npm install
 
-GitHub sẽ hợp nhất toàn bộ commit vào nhánh chính.
 
-💡 Sau khi merge, bạn nên:
+Tạo file .env trong thư mục frontend:
 
-git checkout main
-git pull origin main      # Lấy bản mới đã được merge
-git branch -d feature/ten-nhanh  # Xoá nhánh cũ local
-git push origin --delete feature/ten-nhanh  # Xoá nhánh trên GitHub (nếu cần)
+VITE_API_URL=http://localhost:5000/api
 
-📌 Tóm tắt nhanh quy trình:
 
-# Tạo nhánh làm việc mới
-git checkout -b feature/abc
-# Làm việc, sau đó:
+Chạy frontend:
+
+npm run dev
+
+
+Frontend mặc định chạy tại: http://localhost:5173
+
+4. Admin
+
+Cài đặt thư viện:
+
+cd ../admin
+npm install
+
+
+Tạo file .env trong thư mục admin:
+
+VITE_API_URL=http://localhost:5000/api
+
+
+Chạy admin:
+
+npm run dev
+
+
+Admin mặc định chạy tại: http://localhost:5174
+
+📜 Các lệnh npm chính
+Vị trí	Lệnh	Mô tả
+Backend	npm run server	Chạy backend với nodemon
+	npm start	Chạy backend chế độ production
+Frontend	npm run dev	Chạy frontend chế độ development
+	npm run build	Build frontend production
+Admin	npm run dev	Chạy admin chế độ development
+	npm run build	Build admin production
+🌐 Quy trình làm việc với Git & GitHub
+1. Clone dự án
+git clone https://github.com/tenuser/street-style.git
+
+2. Kiểm tra trạng thái code
+git status
+git branch
+
+3. Tạo nhánh mới
+git checkout -b feature/tinh-nang-moi
+
+4. Commit & push code
 git add .
 git commit -m "Hoàn thành tính năng ABC"
-git push -u origin feature/abc
-# Vào GitHub → Tạo Pull Request → Merge
-# Sau đó:
+git push -u origin feature/tinh-nang-moi
+
+5. Tạo Pull Request trên GitHub
+
+Vào GitHub → Chọn "Compare & pull request"
+
+base: main (hoặc develop)
+
+compare: feature/tinh-nang-moi
+
+Viết mô tả chi tiết → Create Pull Request
+
+6. Merge code
+
+Sau khi được review, nhóm trưởng merge code vào nhánh chính.
+
+7. Cập nhật code mới về máy
 git checkout main
 git pull origin main
-git branch -d feature/abc
-git push origin --delete feature/abc
+
+8. Xóa nhánh cũ
+git branch -d feature/tinh-nang-moi
+git push origin --delete feature/tinh-nang-moi
+
+🌐 Deploy dự án
+Frontend & Admin
+
+Build dự án:
+
+npm run build
 
 
+Deploy thư mục dist/ lên Vercel hoặc Netlify.
 
+Backend
 
+Deploy lên Render, Railway, hoặc VPS.
 
+Cấu hình biến môi trường .env.
 
+Chạy:
 
+npm install
+npm start
 
-```
+👥 Tác giả
+
+Nguyễn Lê Hoài Hiếu - Fullstack Developer
