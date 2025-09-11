@@ -18,7 +18,7 @@ import "slick-carousel/slick/slick-theme.css";
 import BackToTop from "./components/BackToTop";
 import Profile from "./components/Profile";
 import ResetPassword from "./pages/ResetPassword";
-import Chatbot from "./components/ChatBot";
+import Chatbot from "./components/Chatbot";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MenCollection from "./pages/MenCollection";
 import SubCollectionPage from "./pages/SubCollectionPage";
