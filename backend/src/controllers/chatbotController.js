@@ -1,4 +1,4 @@
-import getGeminiResponse from "../services/gemini.service.js";
+import getGeminiResponse from "../services/gemini.Service.js";
 import { buildKnowledgeBaseString } from "../services/knowledgeBase.service.js";
 import ChatMessage from "../models/chatMessageModel.js";
 import { v4 as uuidv4 } from "uuid";
