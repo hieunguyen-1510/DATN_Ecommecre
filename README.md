@@ -36,33 +36,6 @@ JWT (Xác thực người dùng)
 
 Nodemailer (Gửi email)
 
-📂 Cấu trúc thư mục
-street-style/
-│
-├── backend/           # API server
-│   ├── models/        # Mongoose models
-│   ├── routes/        # API endpoints
-│   ├── controllers/   # Logic xử lý
-│   ├── utils/         # Middleware & helper functions
-│   ├── server.js      # Điểm khởi động
-│   └── .env           # Cấu hình môi trường
-│
-├── frontend/          # Giao diện người dùng
-│   ├── src/
-│   │   ├── assets/        # Ảnh, icons
-│   │   ├── components/    # Component tái sử dụng
-│   │   ├── pages/         # Các trang chính
-│   │   ├── context/       # Quản lý state bằng Context API
-│   │   └── App.jsx
-│   └── vite.config.js
-│
-└── admin/             # Trang quản trị
-    ├── src/
-    │   ├── components/    # Component dùng cho admin
-    │   ├── pages/         # Trang quản trị
-    │   └── App.jsx
-    └── vite.config.js
-
 🚀 Cài đặt dự án
 1. Clone dự án
 git clone https://github.com/tenuser/street-style.git
